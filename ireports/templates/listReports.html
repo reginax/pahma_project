@@ -1,0 +1,38 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_static %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}" />{% endblock %}
+
+{% block coltype %}colMS{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+
+{% if reportData %}
+    <div class="reportlist">
+    <table>
+    <tr>
+        {% for label in labels %}
+            <th scope="row">{{ label }}</th>
+        {% endfor %}
+    </tr>
+        {% for csid, reportname, file in reportData %}
+        <tr>
+            {% if file == 'CSpace only' %}
+                <!-- td>{{ reportname }}</td><td>{{ file }}</td -->
+            {% else %}
+                <td><a href="{{ csid }}">{{ reportname }}</a></td><td>{{ file }}</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+{% else %}
+    <p>{% trans "No reports" %}</p>
+{% endif %}
+</div>
+{% endblock %}

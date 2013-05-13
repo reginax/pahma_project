@@ -1,0 +1,48 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_static %}
+
+{% block extrastyle %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}"
+          xmlns="http://www.w3.org/1999/html"/>{% endblock %}
+
+{% block coltype %}colMS{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+
+    <!-- h1>Report CSID {{ report_csid }}</h1 -->
+    <h2>{{ report }}</h2>
+    <form method="post" action=".">
+        {% csrf_token %}
+        <table>
+        {% for field in form.visible_fields %}
+            <tr>
+            <td>
+                <div>
+                {{ field.errors }}
+                <span class="filter-label">{{ field.label_tag }}</span>
+                </div>
+            </td>
+            <td>
+                {{ field }}
+            </td>
+            <td>
+                {{ field.help_text }}
+            </td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% for field in form.hidden_fields %}
+         <div style="display:none;">{{ field }}</div>
+    {% endfor %}
+        <hr/>
+        <button type="submit">report</button>
+        <button type="reset" >reset</button>
+        <input type="button" onclick="history.back();" value="back">
+
+    </form>
+
+{% endblock %}
