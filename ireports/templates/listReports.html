@@ -1,19 +1,10 @@
-{% extends "admin/base_site.html" %}
+{% extends "cspace_django_site/base_site.html" %}
 {% load i18n admin_static %}
-
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}" />{% endblock %}
-
-{% block coltype %}colMS{% endblock %}
-
-{% block bodyclass %}dashboard{% endblock %}
-
-{% block breadcrumbs %}{% endblock %}
 
 {% block content %}
 <div id="content-main">
 
 {% if reportData %}
-    <div class="reportlist">
     <table>
     <tr>
         {% for label in labels %}
@@ -30,7 +21,6 @@
         </tr>
         {% endfor %}
     </table>
-    </div>
 {% else %}
     <p>{% trans "No reports" %}</p>
 {% endif %}
