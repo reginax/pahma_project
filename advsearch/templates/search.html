@@ -1,0 +1,131 @@
+{% extends "cspace_django_site/base_site.html" %}
+{% load i18n admin_static %}
+
+{% block extrastyle %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}"
+          xmlns="http://www.w3.org/1999/html"/>{% endblock %}
+
+{% block coltype %}colMS{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+
+<style type="text/css">
+  /*<![CDATA[*/
+    @import "/static/css/jquery-ui-1.8.22.custom.css";
+    @import "/static/css/blue/style.css";
+  /*]]>*/
+  </style>
+<script type="text/javascript" src="/static/js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery-ui-1.8.22.custom.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.tablesorter.js"></script>
+<style>
+.ui-autocomplete-loading { background: white url('../images/ui-anim_basic_16x16.gif') right center no-repeat; }
+</style>
+
+    <div id="content-main">
+        <h2>{{ report }}</h2>
+        {% if error %}
+            <p style="color: red;">Please submit a search term.</p>
+        {% endif %}
+
+        {% if url %}
+            <i><a href="{{ url }}">{{ url }}</a></i>
+        {% endif %}
+        <div class="results">
+            <form action="" method="POST">
+                {% csrf_token %}
+                <table>
+                    {% for field in form.visible_fields %}
+                        <tr>
+                            <td>
+                                <div>
+                                    {{ field.errors }}
+                                    <span class="filter-label">{{ field.label_tag }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                {{ field }}
+                            </td>
+                            <td>
+                                {{ field.help_text }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <hr/><p/>
+                <input type="submit" value="Search">
+                <input type="checkbox" value="AsCsv"> download results as csv
+                <hr/><p/>
+                {% for field in form.hidden_fields %}
+                    <div style="display:none;">{{ field }}</div>
+                {% endfor %}
+            </form>
+
+            {% if zeroResults %}
+                <p>{% trans "No results" %}</p>
+            {% else %}
+                {% if results %}
+                    <div class="results">
+                        <table>
+                            <tr>
+                                {% for label in labels %}
+                                    <th scope="row">{{ label }}</th>
+                                {% endfor %}
+                            </tr>
+                            {% for row in results %}
+                                <tr>
+                                    <td><a target="cspace" href="{{ row.0 }}">{{ row.1 }}</a></td>
+                                    {% for cell in row.2 %}
+                                        <td>{{ cell }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+
+<script>
+
+$(document).ready(function () {
+
+$(function() {
+  $('[id^="sortTable"]').map(function() {
+        console.log(this);
+        $(this).tablesorter({debug: true})
+     });
+  });
+
+$('[id]').map(function() {
+    var elementID = $(this).attr('id');
+    if (elementID.indexOf('_') == 2) {
+        console.log(elementID);
+        $(this).autocomplete({
+            source: function(request, response) {
+                $.ajax({
+                    url: "/autosuggest?connect_string=dev.cspace.berkeley.edu:nuxeo:reporter:csR2p4rt2r",
+                    dataType: "json",
+                    data: {
+                        q : request.term,
+                        elementID : elementID
+                    },
+                    success: function(data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 2
+        });
+    }
+});
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "cspace_django_site/base_site.html" %}
+{% load i18n admin_static %}
+
+{% block content %}
+    <!-- uses jQuery masonry -->
+    <script src="{% static "js/jquery-1.7.1.min.js" %}"></script>
+    <script src="{% static "js/jquery.masonry.min.js" %}"></script>
+    <style>
+        .item {
+            width: 105px;
+            margin: 5px;
+            float: left;
+        }
+    </style>
+    <h2>{{ report }}</h2>
+    {% if error %}
+        <p style="color: red;">Please submit a search term.</p>
+    {% endif %}
+    <form action="" method="get">
+        <input type="text" name="pgSz" value="{{ pgSz }}">page size<br/>
+        <input type="text" name="pgNum" value="{{ pgNum }}">page number<br/>
+        <input type="submit" value="Search">
+        <hr/>
+        {% if url %}
+            <i><a href="{{ url }}">{{ url }}</a></i>
+            <hr/>
+        {% endif %}
+        {% if count > 0 %}
+            {{ count }} items
+        {% endif %}
+        {% if time %}
+            {{ time }} seconds
+            <hr/>
+        {% endif %}
+        {% for field in form.hidden_fields %}
+            <div style="display:none;">{{ field }}</div>
+        {% endfor %}
+    </form>
+    <div id="masonrycontainer">
+        {% for row in results %}
+            <div class="item">
+                <a target="image" href="http://dev.cspace.berkeley.edu/pahma_project/imageserver/blobs/{{ row.2 }}/derivatives/OriginalJpeg/content">
+                <img src="http://dev.cspace.berkeley.edu/pahma_project/imageserver/blobs/{{ row.2 }}/derivatives/Thumbnail/content">
+                </a><br/><a target="cspace" href="{{ row.0 }}">{{ row.1 }}</a>
+            </div>
+        {% endfor %}
+
+    </div><!-- #masonrycontainer -->
+    <script>
+        var $container = $('#masonrycontainer');
+        $container.imagesLoaded(function () {
+            $container.masonry({
+                itemSelector: '.item',
+                isAnimated: true
+            });
+
+        });
+    </script>
+{% endblock %}

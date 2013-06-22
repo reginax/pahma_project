@@ -136,6 +136,12 @@ INSTALLED_APPS = (
     'hello',
     'service',
     'ireports',
+    'search',
+    'advsearch',
+    'imagebrowser',
+    'imageserver',
+    'experiment',
+    'autosuggest'
 )
 
 # A sample logging configuration. The only tangible logging

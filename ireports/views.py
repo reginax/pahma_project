@@ -38,7 +38,7 @@ from common import cspace
 from cspace_django_site.main import cspace_django_site
 
 config = cspace_django_site.getConfig()
-TITLE = 'Phoebe A. Hearst Museum of Anthropology'
+TITLE = 'iReports Available'
 
 @login_required()
 def enumerateReports():
@@ -170,5 +170,5 @@ def ireport(request, report_csid):
                 form.fields[p] = forms.CharField(initial=parms[p][0], help_text=parms[p][2], required=True)
         
     return render_to_response('getReportParms.html',
-                              {'report_csid': report_csid, 'form': form, 'report': name, 'title': TITLE},
+                              {'report_csid': report_csid, 'form': form, 'report': name},
                               context_instance=RequestContext(request))

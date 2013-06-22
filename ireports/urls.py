@@ -5,5 +5,5 @@ from ireports import views
 
 urlpatterns = patterns('',
                        url(r'^$', views.index, name='index'),
-                       url(r'^(?P<report_csid>[\w-]+)/$', views.ireport, name='bgreport'),
+                       url(r'^(?P<report_csid>[\w-]+)/$', views.ireport, name='report'),
                        )

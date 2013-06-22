@@ -16,7 +16,7 @@ class cspace_django_site:
 
     @classmethod
     def loadConfig(cls):
-        result = cspace.getConfig(path.dirname(__file__), "main")
+        result = cspace.getConfig(path.dirname(__file__), 'main')
         return result
 
     @classmethod
