@@ -3,12 +3,7 @@ __author__ = 'jblowe'
 import re
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, render_to_response
-from django.template import RequestContext
-from django.http import HttpResponse, HttpResponseRedirect
-from django import forms
-
-from operator import itemgetter
+from django.shortcuts import render
 
 # alas, there are many ways the XML parsing functionality might be installed.
 # the following code attempts to find and import the best...

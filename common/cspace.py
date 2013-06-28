@@ -125,13 +125,13 @@ def postxml(realm, uri, hostname, protocol, port, username, password, payload, r
         return (url, None, e.reason, time.time() - elapsedtime)
 
     # if a POST, the Location element contains the new CSID
-    if info.getheader('Location'):
-        csid = re.search(uri+'/(.*)',info.getheader('Location'))
-        csid = csid.group(1)
-    else:
-        csid = ''
-    elapsedtime = time.time() - elapsedtime
-    return (url,data,csid,elapsedtime)
+    #if info.getheader('Location'):
+    #    csid = re.search(uri+'/(.*)',info.getheader('Location'))
+    #    csid = csid.group(1)
+    #else:
+    #    csid = ''
+    #elapsedtime = time.time() - elapsedtime
+    #return (url,data,csid,elapsedtime)
 
 class connection:
     def __init__(self, realm, uri, hostname, protocol, port, username, password, payload, requesttype):
