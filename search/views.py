@@ -43,7 +43,6 @@ def search(request):
     if 'kw' in request.GET and request.GET['kw']:
         kw = request.GET['kw']
         # do search
-        hostname = 'botgarden-dev.cspace.berkeley.edu'
         connection = cspace.connection.create_connection(config, request.user)
         (url, data, statusCode) = connection.make_get_request(
             'cspace-services/%s?kw=%s&&wf_deleted=false' % ('collectionobjects', kw))
@@ -57,6 +56,8 @@ def search(request):
             csid = csid.text
             objectNumber = i.find('.//objectNumber')
             objectNumber = objectNumber.text
+            # hardcoded here for now, should eventually get these from the authentication backend
+            # but tenant is not even stored there...
             hostname = 'pahma.cspace.berkeley.edu'
             tenant = 'pahma'
             link = 'http://%s:8180/collectionspace/ui/%s/html/cataloging.html?csid=%s' % (hostname, tenant, csid)

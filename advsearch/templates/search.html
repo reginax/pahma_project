@@ -1,16 +1,6 @@
 {% extends "cspace_django_site/base_site.html" %}
 {% load i18n admin_static %}
 
-{% block extrastyle %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}"
-          xmlns="http://www.w3.org/1999/html"/>{% endblock %}
-
-{% block coltype %}colMS{% endblock %}
-
-{% block bodyclass %}dashboard{% endblock %}
-
-{% block breadcrumbs %}{% endblock %}
-
 {% block content %}
 
 <style type="text/css">

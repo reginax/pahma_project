@@ -83,6 +83,8 @@ def images(request):
                 objectNumber = objectNumber.text
             except:
                 objectNumber = '0000'
+            # hardcoded here for now, should eventually get these from the authentication backend
+            # but tenant is not even stored there...
             hostname = 'pahma.cspace.berkeley.edu'
             tenant = 'pahma'
             link = 'http://%s:8180/collectionspace/ui/%s/html/media.html?csid=%s' % (hostname, tenant, csid)
