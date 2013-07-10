@@ -141,6 +141,8 @@ INSTALLED_APPS = (
     'advsearch',
     'imagebrowser',
     'imageserver',
+    #'solrproxy',
+    'solrapi',
     'experiment',
     'autosuggest'
 )
