@@ -21,7 +21,7 @@ def getfacets(response):
         _facets[key] = sorted(_v, key=lambda (a, b): b, reverse=True)
     return _facets
 
-#@login_required()
+@login_required()
 def solrquery(request, solr_core):
     elapsedtime = time.time()
     # create a connection to a solr server
