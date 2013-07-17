@@ -21,7 +21,7 @@ def getfacets(response):
         _facets[key] = sorted(_v, key=lambda (a, b): b, reverse=True)
     return _facets
 
-@login_required()
+#@login_required()
 def solrquery(request, solr_core):
     elapsedtime = time.time()
     # create a connection to a solr server
@@ -29,14 +29,22 @@ def solrquery(request, solr_core):
 
     if 'kw' in request.GET:
         kw = request.GET['kw']
+        fqs = []
+        #for fq in request.GET['fq']:
+        #    fqs.append[fq]
+
+        #fqs = {'medium_s:silver':99}
+        fqs = {}
         try:
             pixonly = request.GET['pixonly']
         except:
             pixonly = None
             # do a search
         if kw == '': kw = '*'
-        response = s.query('text:%s' % kw, facet='true', facet_field=['objectname_s', 'medium_s', 'culture_s'], rows=300,
-                           facet_limit=20, facet_mincount=1)
+        response = s.query('text:%s' % kw, facet='true',
+                           facet_field=['objectname_s', 'medium_s', 'culture_s'],
+                           fq=fqs,
+                           rows=300, facet_limit=20, facet_mincount=1)
         if kw == '*': kw = ''
 
         facetflds = getfacets(response)
@@ -50,7 +58,8 @@ def solrquery(request, solr_core):
         elapsedtime = time.time() - elapsedtime
         return render(request, 'index.html',
                       {'time': '%8.3f' % elapsedtime, 'title': TITLE, 'count': response._numFound,
-                       'results': results, 'kw': kw, 'pixonly': pixonly, 'facetsflds': facetflds, 'core': solr_core})
+                       'facetsflds': facetflds, 'fq': fqs,
+                       'results': results, 'kw': kw, 'pixonly': pixonly, 'core': solr_core})
 
     else:
         return render(request, 'index.html', {'title': TITLE})

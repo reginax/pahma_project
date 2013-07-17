@@ -1,0 +1,10 @@
+__author__ = 'jblowe'
+
+from django.conf.urls import patterns, url
+from imagegetter import views
+
+urlpatterns = patterns('',
+                       url(r'^stats', views.stats, name='stats'),
+                       # ex: /imageserver/blobs/5dbc3c43-b765-4c10-9d5d/derivatives/Medium/content
+                       url(r'^(?P<image>.+)$', views.get_image, name='get_image'),
+                       )

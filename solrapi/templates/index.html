@@ -24,17 +24,20 @@
             background: lightgoldenrodyellow;
         }
 
-        .noimage { padding-right: 5px;}
+        .noimage {
+            padding-right: 5px;
+        }
 
     </style>
     <h2>{{ report }}</h2>
     {% if error %}
         <p style="color: red;">Please submit a search term.</p>
     {% endif %}
-    <form action="" method="get">
+    <form id="solrsearch" action="" method="get">
         <input type="text" name="kw" value="{{ kw }}"> keyword<br/>
         <input type="submit" value="Search">
-        <input type="checkbox" {% if pixonly %}checked {% endif %} name='pixonly' value="pixonly"> only show objects with pictures
+        <input type="checkbox" {% if pixonly %}checked {% endif %} name='pixonly' value="pixonly"> only show objects
+        with pictures
         <hr/>
         {% if url %}
             <i><a href="{{ url }}">{{ url }}</a></i>
@@ -51,29 +54,34 @@
             <div style="display:none;">{{ field }}</div>
         {% endfor %}
     </form>
+    <div id="currfacets">
+        {% for cf,vf in fq.items %}
+            <li><a href="#" onclick="formSubmit('{{ cf }}')">{{ cf }}"</a>: {{ vf }}</li>
+        {% endfor %}
+    </div>
     <div id="facets">
         {% for key, value in facetsflds.items %}
             <h2>{{ key }}</h2>
             <ul>
-            {% for k2,v2 in value %}
-                <li>{{ k2 }}: {{ v2 }}</li>
-            {% endfor %}
+                {% for k2,v2 in value %}
+                    <li><a href="#" onclick="formSubmit('{{ k2 }}')">{{ k2 }}</a>: {{ v2 }}</li>
+                {% endfor %}
             </ul>
         {% endfor %}
     </div>
     <div id="masonrycontainer">
         {% for row in results %}
             <div class="item">
-            {% if row.blobs_ss %}
-                {% for blob in row.blobs_ss %}
-                    <a target="image"
-                       href="http://dev.cspace.berkeley.edu/pahma_project/imageserver/blobs/{{ blob }}/derivatives/OriginalJpeg/content">
-                        <img src="http://dev.cspace.berkeley.edu/pahma_project/imageserver/blobs/{{ blob }}/derivatives/Thumbnail/content">
-                    </a>
-                {% endfor %}
-            {% else %}
-                <div class="noimage">[no image]</div>
-            {% endif %}
+                {% if row.blobs_ss %}
+                    {% for blob in row.blobs_ss %}
+                        <a target="image"
+                           href="http://localhost:8000/imagesaver/blobs/{{ blob }}/derivatives/OriginalJpeg/content">
+                            <img src="http://localhost:8000/imagegetter/blobs/{{ blob }}/derivatives/Thumbnail/content">
+                        </a>
+                    {% endfor %}
+                {% else %}
+                    <div class="noimage">[no image]</div>
+                {% endif %}
                 <br/>{{ row.objectname_s }}
                 <br/><a target="cspace" href="./{{ core }}/?kw={{ row.id }}">{{ row.objectnumber_s }}</a>
             </div>
@@ -89,5 +97,11 @@
             });
 
         });
+
+        function formSubmit(term) {
+            console.log(term);
+            document.forms['solrsearch'].submit();
+        }
+
     </script>
 {% endblock %}
