@@ -27,6 +27,17 @@ DATABASES = {
     }
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': '/tmp/image_cache',
+        'CULL_FREQUENCY': 1000,
+        'OPTIONS': {
+            'MAX_ENTRIES': 100000
+        }
+    }
+}
+
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []
@@ -71,7 +82,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, '../static_root')
 
 # URL prefix for static files.
 # Example: "http://intakes.com/static/", "http://static.intakes.com/"
-STATIC_URL = '/static/'
+STATIC_URL = '/static_root/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -134,20 +145,10 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'hello',
-    'landing',
     'service',
-    'ireports',
-    'search',
-    'advsearch',
-    'imagebrowser',
     'imageserver',
-    'imagesaver',
-    'imagegetter',
-    'shelvedimages',
-    #'solrproxy',
-    'solrapi',
-    'experiment',
-    'autosuggest'
+    'publicsearch',
+    'uploadmedia'
 )
 
 # A sample logging configuration. The only tangible logging

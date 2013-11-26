@@ -1,0 +1,57 @@
+{% extends "cspace_django_site/base_site.html" %}
+{% load i18n admin_static %}
+{% load staticfiles %}
+
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static "publicsearch/css/tablesorter.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "cspace_django_site/css/smoothness/jquery-ui-1.10.3.custom.min.css" %}"/>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="{% static "cspace_django_site/js/jquery-1.10.0.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "cspace_django_site/js/jquery-ui-1.10.3.custom.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "publicsearch/js/PublicSearch.js" %}"></script>
+    <script type="text/javascript" src="{% static "publicsearch/js/jquery.tablesorter.js" %}"></script>
+{% endblock %}
+
+
+{% block content %}
+    <div id="content-main">
+        <div class="unit size1of4">
+            <div class="xxx">
+            {% if resultsOnly %}
+                 {% include "showfields.html" %}
+            {% else %}
+                <form method="post" class="searchForm" id="search" action=".">
+                    {% csrf_token %}
+                    <div>
+                        {% include "pahmafields.html" %}
+                        {% include "buttons.html" %}
+                    </div>
+                    <input type="hidden" value="{{ pane }}" name="pane" id="pane"/>
+                </form>
+            {% endif %}
+            {% include "searchstats.html" %}
+            </div>
+            <div class="xxx">
+                <form method="post" class="searchForm" id="selectedItems" action=".">
+                    {% csrf_token %}
+                    {% if count > 0 %}
+                        <div id="tabs">
+                        <ul>
+                            <li><a href="#results">Results</a></li>
+                            <li><a href="#facets">Facets</a></li>
+                            <li><a href="#maps">Maps</a></li>
+                        </ul>
+                        {% include "results.html" %}
+                        {% include "maps.html" %}
+                        {% include "facets.html" %}
+                        </div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+    {% block footer %}
+    {% endblock %}
+{% endblock %}

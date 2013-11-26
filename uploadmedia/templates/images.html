@@ -1,0 +1,33 @@
+<hr/>
+<h1>{{ count }} files uploaded</h1>
+<table cellspace="1" id="resultsListing" class="tablesorter">
+    <thead>
+    <tr>
+        <th>File Name</th>
+        <th>Object Number</th>
+        <th>File Size</th>
+        <th>Date Created</th>
+        <th>Creator</th>
+        <th>Contributor</th>
+        <th>Rights Holder</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for image in images %}
+        <tr>
+            <td>{{ image.name }}</td>
+            <td>
+                {% if image.objectCSID %}
+                    <a href="{{ image.objectCSID }}">{{ image.objectnumber }}</a>
+                {% else %}
+                    {{ image.objectnumber }}
+                {% endif %}</td>
+            <td>{{ image.size }}</td>
+            <td>{{ image.date }}</td>
+            <td>{{ image.creator }}</td>
+            <td>{{ image.contributor }}</td>
+            <td>{{ image.rightsholder }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

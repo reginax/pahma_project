@@ -1,0 +1,14 @@
+<div style="height: 30px; padding-top: 15px;">
+    <button type="submit" id="search-submit" name="search" class="prettyBtn">search</button>
+    <button type="submit" id="search-reset" name="reset" class="prettyBtn">reset</button>
+    <label for="">Display format: </label>
+    {% for displayTypeItem in displayTypes %}
+        <input type="radio" name="displayType" value="{{ displayTypeItem.0 }}"
+                {% ifequal displayTypeItem.0 displayType %}
+               checked="checked"
+                {% endifequal %}/>
+        <label for="">{{ displayTypeItem.1 }}</label>
+    {% endfor %}
+    &nbsp;  &nbsp; &nbsp;
+    <input type="checkbox" {% if pixonly %}checked {% endif %} name='pixonly' value="pixonly"> only show objects with images
+</div>

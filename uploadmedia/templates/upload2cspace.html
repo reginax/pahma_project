@@ -1,0 +1,18 @@
+{% extends "cspace_django_site/base_site.html" %}
+{% load i18n admin_static %}
+
+{% block scripts %}
+    <script type="text/javascript" src="{% static "cspace_django_site/js/jquery-1.10.0.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "cspace_django_site/js/jquery-ui-1.10.3.custom.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "publicsearch/js/jquery.tablesorter.js" %}"></script>
+{% endblock %}
+
+{% block content %}
+    <div id="content-main">
+
+        {% if images %}
+            {% include "images.html" %}
+        {% endif %}
+
+    </div>
+{% endblock %}
