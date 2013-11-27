@@ -146,6 +146,9 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'hello',
     'service',
+    'landing',
+    'service',
+    'ireports',
     'imageserver',
     'publicsearch',
     'uploadmedia'
