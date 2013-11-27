@@ -21,12 +21,17 @@
                     <a href="{{ image.objectCSID }}">{{ image.objectnumber }}</a>
                 {% else %}
                     {{ image.objectnumber }}
-                {% endif %}</td>
+                {% endif %}
+            </td>
             <td>{{ image.size }}</td>
-            <td>{{ image.date }}</td>
-            <td>{{ image.creator }}</td>
-            <td>{{ image.contributor }}</td>
-            <td>{{ image.rightsholder }}</td>
+            {% if image.error %}
+                <td colspan="4"><span style="color:red">{{ image.error }}</span></td>
+            {% else %}
+                <td>{{ image.date }}</td>
+                <td>{{ image.creator }}</td>
+                <td>{{ image.contributor }}</td>
+                <td>{{ image.rightsholder }}</td>
+            {% endif %}
         </tr>
     {% endfor %}
     </tbody>

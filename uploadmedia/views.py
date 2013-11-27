@@ -13,6 +13,9 @@ import time, datetime
 tempimagedir = "/tmp/upload_cache/%s"
 jobdir = "/tmp/upload_cache/%s.csv"
 
+#tempimagedir = "/tmp/%s"
+#jobdir = "/tmp/%s.csv"
+
 
 # following function take from stackoverflow...thanks!
 def get_exif(fn):
@@ -36,7 +39,7 @@ def getCSID(objectnumber):
 
 
 def writeCsv(filename, items, writeheader):
-    filehandle = codecs.open(filename, 'a', 'utf-8')
+    filehandle = codecs.open(filename, 'w', 'utf-8')
     writer = csv.writer(filehandle, delimiter='\t')
     writer.writerow(writeheader)
     for item in items:
@@ -74,18 +77,22 @@ def uploadfiles(request):
         constants = {'creator': creator, 'contributor': contributor, 'rightsholder': rightsholder}
         for afile in request.FILES.getlist('imagefiles'):
             #print afile
-            im = get_exif(afile)
-            objectnumber = getNumber(afile.name)
-            objectCSID = getCSID(objectnumber)
-            creator = creator if creator else im['Artist']
-            contributor = contributor if contributor else im['ImageDescription']
-            rightsholder = rightsholder if rightsholder else ''
-            imageinfo = {'name': afile.name, 'size': afile.size, 'objectnumber': objectnumber, 'objectCSID': objectCSID,
-                         'date': im['DateTimeDigitized'], 'creator': creator,
-                         'contributor': contributor, 'rightsholder': rightsholder}
-            images.append(imageinfo)
-            #images.append([afile.name,afile.size])
-            handle_uploaded_file(afile, imageinfo)
+            try:
+                im = get_exif(afile)
+                objectnumber = getNumber(afile.name)
+                objectCSID = getCSID(objectnumber)
+                creator = creator if creator else im['Artist']
+                contributor = contributor if contributor else im['ImageDescription']
+                rightsholder = rightsholder if rightsholder else ''
+                imageinfo = {'name': afile.name, 'size': afile.size, 'objectnumber': objectnumber, 'objectCSID': objectCSID,
+                             'date': im['DateTimeDigitized'], 'creator': creator,
+                             'contributor': contributor, 'rightsholder': rightsholder}
+                images.append(imageinfo)
+                #images.append([afile.name,afile.size])
+                handle_uploaded_file(afile, imageinfo)
+            except:
+                images.append({'name': afile.name, 'size': afile.size, 'error': 'problem extracting image metadata, not processed'})
+
         if len(images) > 0:
             jobnumber = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
             jobinfo['jobnumber'] = jobnumber
