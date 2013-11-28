@@ -75,16 +75,17 @@ def uploadfiles(request):
         creator = request.POST['creator']
         rightsholder = request.POST['rightsholder']
         constants = {'creator': creator, 'contributor': contributor, 'rightsholder': rightsholder}
-        for afile in request.FILES.getlist('imagefiles'):
+        for id,afile in enumerate(request.FILES.getlist('imagefiles')):
             #print afile
             try:
+                print "%s %s: %s %s (%s %s)" % ('id', id, 'name', afile.name, 'size', afile.size)
                 im = get_exif(afile)
                 objectnumber = getNumber(afile.name)
                 objectCSID = getCSID(objectnumber)
                 creator = creator if creator else im['Artist']
                 contributor = contributor if contributor else im['ImageDescription']
                 rightsholder = rightsholder if rightsholder else ''
-                imageinfo = {'name': afile.name, 'size': afile.size, 'objectnumber': objectnumber, 'objectCSID': objectCSID,
+                imageinfo = {'id': id, 'name': afile.name, 'size': afile.size, 'objectnumber': objectnumber, 'objectCSID': objectCSID,
                              'date': im['DateTimeDigitized'], 'creator': creator,
                              'contributor': contributor, 'rightsholder': rightsholder}
                 images.append(imageinfo)
