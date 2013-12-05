@@ -56,9 +56,12 @@ def writeCsv(filename, items, writeheader):
 
 # following function borrowed from Django docs, w modifications
 def handle_uploaded_file(f, imageinfo):
-    with open(tempimagedir % f.name, 'wb+') as destination:
+    destination = open(tempimagedir % f.name, 'wb+')
+    with destination:
         for chunk in f.chunks():
             destination.write(chunk)
+    destination.close()
+
 
 def assignValue(defaultValue,imageData,exifvalue):
     if exifvalue in imageData:
