@@ -60,6 +60,13 @@ def handle_uploaded_file(f, imageinfo):
         for chunk in f.chunks():
             destination.write(chunk)
 
+def assignValue(defaultValue,imageData,exifvalue):
+    if exifvalue in imageData:
+        return imageData[exifvalue]
+    elif defaultValue:
+        return defaultValue
+    else:
+        return ''
 
 @login_required()
 def uploadfiles(request):
@@ -82,11 +89,12 @@ def uploadfiles(request):
                 im = get_exif(afile)
                 objectnumber = getNumber(afile.name)
                 objectCSID = getCSID(objectnumber)
-                creator = creator if creator else im['Artist']
-                contributor = contributor if contributor else im['ImageDescription']
-                rightsholder = rightsholder if rightsholder else ''
+                creator = assignValue(creator,im,'Artist')
+                contributor = assignValue(contributor,im,'ImageDescription')
+                rightsholder = assignValue(rightsholder,im,'RightsHolder')
+                datetimedigitized = assignValue('',im,'DateTimeDigitized')
                 imageinfo = {'id': id, 'name': afile.name, 'size': afile.size, 'objectnumber': objectnumber, 'objectCSID': objectCSID,
-                             'date': im['DateTimeDigitized'], 'creator': creator,
+                             'date': datetimedigitized, 'creator': creator,
                              'contributor': contributor, 'rightsholder': rightsholder}
                 images.append(imageinfo)
                 #images.append([afile.name,afile.size])
