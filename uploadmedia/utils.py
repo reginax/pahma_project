@@ -5,10 +5,10 @@ import codecs
 import time, datetime
 
 tempimagedir = "/tmp/upload_cache/%s"
-jobdir = "/tmp/upload_cache/%s.step1.csv"
+jobdir = "/tmp/upload_cache/%s"
 
 #tempimagedir = "/tmp/%s"
-#jobdir = "/tmp/%s.step1.csv"
+#jobdir = "/tmp/%s"
 
 
 def getDropdowns():

@@ -6,6 +6,8 @@ from django.conf import settings
 from django import forms
 import time, datetime
 from utils import getDropdowns, handle_uploaded_file, assignValue, getCSID, getNumber, get_exif, writeCsv, getJobfile
+import subprocess
+import os,sys
 
 TITLE = 'Bulk Media Upload'
 
@@ -68,12 +70,26 @@ def uploadfiles(request):
         if len(images) > 0:
             jobnumber = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
             jobinfo['jobnumber'] = jobnumber
-            writeCsv(getJobfile(jobnumber), images,
+            writeCsv(getJobfile(jobnumber)+'.step1.csv', images,
                      ['name', 'size', 'objectnumber', 'date', 'creator', 'contributor', 'rightsholder'])
             jobinfo['estimatedtime'] = '%8.1f' % (len(images) * 10 / 60.0)
 
             if 'createmedia' in request.POST:
                 jobinfo['status'] = 'createmedia'
+                env =  {"PATH": os.environ["PATH"] + ":/usr/local/share/django/pahma_project/uploadmedia" }
+                print "starting job "+getJobfile(jobnumber)
+                #os.execlpe("bulkmediaupload.sh", "/tmp/upload_cache/%s" % jobnumber, env)
+                #print os.system("bulkmediaupload.sh " + getJobfile(jobnumber))
+                try:
+                    retcode = subprocess.call("./bulkmediaupload.sh " + getJobfile(jobnumber), shell=True)
+                    if retcode < 0:
+                        print >>sys.stderr, "Child was terminated by signal", -retcode
+                    else:
+                        print >>sys.stderr, "Child returned", retcode
+                except OSError as e:
+                    print >>sys.stderr, "Execution failed:", e
+                print "finished job "+ getJobfile(jobnumber)
+
             elif 'uploadmedia' in request.POST:
                 jobinfo['status'] = 'uploadmedia'
             else:

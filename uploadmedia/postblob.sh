@@ -10,7 +10,7 @@ USER="admin@pahma.cspace.berkeley.edu:Ph02b2-admin"
 IMGDIR=$1
 LOGDIR=""
 OUTPUTFILE=${2/step1/step2}
-LOGDIR="."
+LOGDIR=$1
 CURLLOG="$LOGDIR/curl.log"
 TRACELOG="$LOGDIR/trace.log"
 
