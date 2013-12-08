@@ -19,39 +19,82 @@
 
 {% block content %}
     <div id="content-main">
+        <h2>Select Files to Upload</h2>
+
         <form enctype="multipart/form-data" action="" method="post">
             {% csrf_token %}
             {% if status == 'down' %}
-                <h1><span style="color:red">System is down, please standby!</span></h1>
+                <h2><span style="color:red">System is down, please standby!</span></h2>
             {% else %}
                 <input type="file" name="imagefiles" multiple>
                 <hr/>
-                <h1>Override values in image files, if desired</h1>
+                <h2>Override values in image files, if desired</h2>
                 <table>
                     <tr>
+                        <th>Field</th>
+                        <th>Value</th>
+                        <th>Override Conditions</th>
+                        <!-- th>Instructions</th -->
+                    </tr>
+                    <tr>
                         <td>Creator</td>
-                        <td><input type="text" name="creator" value="{{ constants.creator }}"></td>
-                        <td><input type="checkbox" name="overidecreator" value="">Overide only if blank</td>
-                        <td><input type="checkbox" name="overidecreatoralways" value="">Always Overide</td>
+                        <td>
+                            <select id="creator" name="creator">
+                                <option value="">Please select</option>
+                                {% for displayname,refname in dropdowns.creators.items %}
+                                    <option value="{{ displayname }}">{{ displayname }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <select id="overridecreator" name="overridecreator">
+                                <option value="">Please select</option>
+                                {% for option in overrides %}
+                                    <option value="{{ option.0 }}">{{ option.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <!-- td rowspan="4">{% include "instructions.html" %}</td -->
                     </tr>
                     <tr>
                         <td>Contributor</td>
                         <td><input type="text" name="contributor" value="{{ constants.contributor }}"></td>
-                        <td><input type="checkbox" name="overidecontributor" value="">Overide only if blank</td>
-                        <td><input type="checkbox" name="overidecontributoralways" value="">Always Overide</td>
+                        <td>
+                            <select id="overridecontributor" name="overridecontributor">
+                                <option value="">Please select</option>
+                                {% for option in overrides %}
+                                    <option value="{{ option.0 }}">{{ option.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
                     </tr>
                     <tr>
                         <td>Rights Holder</td>
-                        <td><input type="text" name="rightsholder" value="{{ constants.rightsholder }}"></td>
-                        <td><input type="checkbox" name="overiderightsholder" value="">Overide only if blank</td>
-                        <td><input type="checkbox" name="overiderightsholderalways" value="">Always Overide</td>
+                        <td>
+                            <select id="rightsholder" name="rightsholder">
+                                <option value="">Please select</option>
+                                {% for displayname,refname in dropdowns.rightsholders.items %}
+                                    <option value="{{ displayname }}">{{ displayname }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <select id="overriderightsholder" name="overriderightsholder">
+                                <option value="">Please select</option>
+                                {% for option in overrides %}
+                                    <option value="{{ option.0 }}">{{ option.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
                     </tr>
                     <tr>
                         <td colspan="2"><input type="submit" name="createmedia"
-                                               value="Upload to CSpace and Create Media Records"></td>
+                                               value="Upload to CSpace and Create Media Records NOW (500 media max)">
+                        </td>
+                        <td colspan="2"><input type="submit" name="uploadmedia"
+                                               value="Upload to CSpace and Queue for LATER CSpace Ingestion"></td>
                     </tr>
                 </table>
-                </form>
 
                 {% if images %}
                     {% include "images.html" %}
@@ -59,14 +102,16 @@
 
                 {% if jobinfo %}
                     <hr/>
-                    <h1>Job {{ jobinfo.jobnumber }} enqueued. Estimated time to completion: {{ jobinfo.estimatedtime }}
-                        minutes.
-                        Please check back then.</h1>
+                    {% if jobinfo.status == 'uploadmedia' %}
+                        <h2>Job {{ jobinfo.jobnumber }} enqueued. Estimated time to completion: {{ jobinfo.estimatedtime }} minutes. Please check back then.</h2>
+                    {% endif %}
+                    {% if jobinfo.status == 'createmedia' %}
+                        <h2>Job {{ jobinfo.jobnumber }} completed. Time required: {{ jobinfo.estimatedtime }} minutes.</h2>
+                    {% endif %}
                     <input type="submit" name="checkjobs" value="View the Job Queue">
                 {% endif %}
-                </form>
             {% endif %}
-
+        </form>
     </div>
 {% endblock %}
 
@@ -74,7 +119,9 @@
     <table width="100%">
         <tbody>
         <tr>
-            <td style="vertical-align: middle">Current time: {{ timestamp }}. This is a test version and does not update CSpace.</td>
+            <td style="vertical-align: middle">Current time: {{ timestamp }}. This is a test version and does not update
+                CSpace.
+            </td>
             <td style="vertical-align: middle;width: 70px;">powered by</td>
             <td style="text-align: right; width: 160px;"><img
                     src="{% static "cspace_django_site/images/header-logo-cspace.png" %}" height="30px"></td>
