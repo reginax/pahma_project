@@ -7,8 +7,8 @@ import time, datetime
 tempimagedir = "/tmp/upload_cache/%s"
 jobdir = "/tmp/upload_cache/%s.step1.csv"
 
-tempimagedir = "/tmp/%s"
-jobdir = "/tmp/%s.step1.csv"
+#tempimagedir = "/tmp/%s"
+#jobdir = "/tmp/%s.step1.csv"
 
 
 def getDropdowns():

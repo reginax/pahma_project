@@ -9,7 +9,7 @@ from utils import getDropdowns, handle_uploaded_file, assignValue, getCSID, getN
 
 TITLE = 'Bulk Media Upload'
 
-#@login_required()
+@login_required()
 def uploadfiles(request):
 
     jobinfo = {}
