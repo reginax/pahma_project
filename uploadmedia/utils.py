@@ -88,7 +88,7 @@ def assignValue(defaultValue, override, imageData, exifvalue, refnameList):
         imageValue = imageValue.replace('"','')
         imageValue = imageValue.replace('\n','')
         imageValue = imageValue.replace('\r','')
-        return imageData[exifvalue], refnameList.get(imageValue, imageValue)
+        return imageValue, refnameList.get(imageValue, imageValue)
     elif override == 'ifblank':
         return defaultValue, refnameList.get(defaultValue, defaultValue)
     else:

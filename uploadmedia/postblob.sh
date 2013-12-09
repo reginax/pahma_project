@@ -12,6 +12,7 @@ LOGDIR=""
 OUTPUTFILE=${2/step1/step2}
 LOGDIR=$1
 CURLLOG="$LOGDIR/curl.log"
+CURLOUT="$LOGDIR/curl.out"
 TRACELOG="$LOGDIR/trace.log"
 
 TRACE=2
@@ -46,31 +47,35 @@ do
     continue
   fi
 
-  /bin/rm -f curl.out
+  /bin/rm -f $CURLOUT
 
   trace "curl -i -u \"$USER\"  --form file=\"@$FILEPATH\" --form press=\"OK\" \"$URL\""
-  curl -i -u "$USER" --form file="@$FILEPATH" --form press="OK" "$URL" -o curl.out
-  if [ ! -f curl.out ]
+  curl -i -u "$USER" --form file="@$FILEPATH" --form press="OK" "$URL" -o $CURLOUT
+  if [ ! -f $CURLOUT ]
   then
     trace "No output file, something failed for $FILEPATH"
     continue
   fi
 
-  if ! grep -q "HTTP/1.1 201 Created" curl.out
+  if ! grep -q "HTTP/1.1 201 Created" $CURLOUT
   then
     trace "Post did not return a 201 status code for $FILEPATH"
     continue
   fi
 
-  LOC=`grep "^Location: .*cspace-services/blobs/" curl.out`
+  LOC=`grep "^Location: .*cspace-services/blobs/" $CURLOUT`
   trace "LOC $LOC"
   CSID=${LOC##*cspace-services/blobs/}
   CSID=${CSID//$'\r'}
-  trace "CSID $CSID"
+  #trace "CSID $CSID"
 
-  cat curl.out >> $CURLLOG
+  cat $CURLOUT >> $CURLLOG
   rh=${rightsholder//$'\r'}
   echo "$FILENAME|$size|$objectnumber|$CSID|$digitizedDate|$creator|$contributor|$rh|$FILEPATH" >>  $OUTPUTFILE
 done < $2
+
+trace ">>>>>>>>>>>>>>> End of Blob Creation, starting Media and Relation record creation process: `date` "
+python /var/www/cgi-bin/uploadMedia.py $OUTPUTFILE >> $TRACELOG
+trace "Media record and relations created."
 
 trace "**** END OF RUN ******************** `date` **************************"

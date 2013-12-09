@@ -31,20 +31,21 @@ def mediaPayload(f):
 
 def uploadmedia(mediaElements, config):
 
-    realm = config.get('connect', 'realm')
-    hostname = config.get('connect', 'hostname')
-    username = config.get('connect', 'username')
-    password = config.get('connect', 'password')
-
-    #print relationsPayload(f)
+    try:
+        realm = config.get('connect', 'realm')
+        hostname = config.get('connect', 'hostname')
+        username = config.get('connect', 'username')
+        password = config.get('connect', 'password')
+    except:
+        print "could not get config."
 
     objectCSID = getCSID('objectnumber', mediaElements['objectnumber'], config)
     if objectCSID == []: 
         raise Exception("<span style='color:red'>Object Number not found: %s!</span>" % mediaElements['objectnumber'])
     else:
         objectCSID = objectCSID[0]
-	mediaElements['objectCSID'] = objectCSID
-        print "<br>object %s, csid: %s" % (mediaElements['objectnumber'],mediaElements['objectCSID'])
+    mediaElements['objectCSID'] = objectCSID
+    print "MEDIA: object %s, csid: %s" % (mediaElements['objectnumber'],mediaElements['objectCSID'])
 
     updateItems = {'objectStatus': 'found',
           'subjectCsid': '',
@@ -59,18 +60,20 @@ def uploadmedia(mediaElements, config):
 
     uri = 'media'
 
-    print "<br>posting to media REST API..."
+    elapsedtimetotal = 0.0
+    #print "<br>posting to media REST API..."
     payload = mediaPayload(updateItems)
     (url, data, mediaCSID, elapsedtime) = postxml('POST', uri, realm, hostname, username, password, payload)
-    print 'got mediacsid', mediaCSID, '. elapsedtime', elapsedtime
+    elapsedtimetotal += elapsedtime
+    #print 'got mediacsid', mediaCSID, '. elapsedtime', elapsedtime
     mediaElements['mediaCSID'] = mediaCSID
-    print "media REST API post succeeded..."
+    #print "media REST API post succeeded..."
 
     # now relate media record to collection object
 
     uri = 'relations'
     
-    print "<br>posting media2obj to relations REST API..."
+    #print "<br>posting media2obj to relations REST API..."
     
     updateItems['objectCsid'] = objectCSID
     updateItems['subjectCsid'] = mediaCSID
@@ -81,12 +84,13 @@ def uploadmedia(mediaElements, config):
     
     payload = relationsPayload(updateItems)
     (url, data, csid, elapsedtime) = postxml('POST', uri, realm, hostname, username, password, payload)
-    print 'got relation csid', csid, '. elapsedtime', elapsedtime
+    elapsedtimetotal += elapsedtime
+    #print 'got relation csid', csid, '. elapsedtime', elapsedtime
     mediaElements['media2objCSID'] = csid
-    print "relations REST API post succeeded..."
+    #print "relations REST API post succeeded..."
 
     # reverse the roles
-    print "<br>posting obj2media to relations REST API..."
+    #print "<br>posting obj2media to relations REST API..."
     temp = updateItems['objectCsid']
     updateItems['objectCsid'] = updateItems['subjectCsid']
     updateItems['subjectCsid'] = temp
@@ -94,11 +98,12 @@ def uploadmedia(mediaElements, config):
     updateItems['subjectDocumentType'] = 'CollectionObject'
     payload = relationsPayload(updateItems)
     (url, data, csid, elapsedtime) = postxml('POST', uri, realm, hostname, username, password, payload)
-    print 'got relation csid', csid, '. elapsedtime', elapsedtime
+    elapsedtimetotal += elapsedtime
+    #print 'got relation csid', csid, '. elapsedtime', elapsedtime
     mediaElements['obj2mediaCSID'] = csid
-    print "relations REST API post succeeded..."
+    #print "relations REST API post succeeded..."
 
-    print "<h3>Done w update!</h3>"
+    print "MEDIA: added media ",mediaCSID,'::',elapsedtimetotal
     return mediaElements
 
 
@@ -116,9 +121,10 @@ def getRecords(rawFile):
 if __name__ == "__main__":
 
 
-    form = {'webapp': 'uploadmediaDev'}
+    form = {'webapp': '/var/www/cgi-bin/uploadmediaDev'}
     config = getConfig(form)
 
+    #print 'config',config
     records,columns = getRecords(sys.argv[1])
     print '%s columns and %s lines found in file %s' % (columns,len(records),sys.argv[1])
     outputFile = sys.argv[1].replace('.step2.csv','.step3.csv')

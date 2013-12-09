@@ -18,6 +18,7 @@ def uploadfiles(request):
     constants = {}
     images = []
     dropdowns = getDropdowns()
+    elapsedtime = time.time()
 
     form = forms.Form(request)
     if request.POST:
@@ -77,18 +78,20 @@ def uploadfiles(request):
             if 'createmedia' in request.POST:
                 jobinfo['status'] = 'createmedia'
                 env =  {"PATH": os.environ["PATH"] + ":/usr/local/share/django/pahma_project/uploadmedia" }
-                loginfo('start', "finished job "+ getJobfile(jobnumber), request)
+                loginfo('start', getJobfile(jobnumber), request)
                 #os.execlpe("bulkmediaupload.sh", "/tmp/upload_cache/%s" % jobnumber, env)
                 #print os.system("bulkmediaupload.sh " + getJobfile(jobnumber))
                 try:
-                    retcode = subprocess.call("./bulkmediaupload.sh " + getJobfile(jobnumber), shell=True)
+                    #retcode = subprocess.call("/usr/local/share/django/pahma_project/uploadmedia/postblob.sh /tmp/upload_cache " + getJobfile(jobnumber) + ".step1.csv", shell=True)
+                    retcode = subprocess.call(["/usr/local/share/django/pahma_project/uploadmedia/bulkmediaupload.sh", getJobfile(jobnumber)])
+                    #loginfo('call',"/usr/local/share/django/pahma_project/uploadmedia/bulkmediaupload.sh " + getJobfile(jobnumber), request)
                     if retcode < 0:
-                        loginfo('process', "Child was terminated by signal %s" %  -retcode, request)
+                        loginfo('process', jobnumber+" Child was terminated by signal %s" %  -retcode, request)
                     else:
-                        loginfo('process', "Child returned %s" %  retcode, request)
+                        loginfo('process', jobnumber+": Child returned %s" %  retcode, request)
                 except OSError as e:
                     loginfo('error', "Execution failed: %s" % e, request)
-                loginfo('finish', "finished job "+ getJobfile(jobnumber), request)
+                loginfo('finish', getJobfile(jobnumber), request)
 
             elif 'uploadmedia' in request.POST:
                 jobinfo['status'] = 'uploadmedia'
@@ -99,7 +102,8 @@ def uploadfiles(request):
     timestamp = time.strftime("%b %d %Y %H:%M:%S", time.localtime())
     overrides = [['ifblank', 'Overide only if blank'],
                ['always', 'Always Overide']]
+    elapsedtime = time.time() - elapsedtime
 
     return render(request, 'uploadmedia.html',
                   {'title': TITLE, 'images': images, 'count': len(images), 'constants': constants, 'jobinfo': jobinfo,
-                   'dropdowns': dropdowns, 'overrides': overrides, 'status': status, 'timestamp': timestamp})
+                   'dropdowns': dropdowns, 'overrides': overrides, 'status': status, 'timestamp': timestamp, 'elapsedtime': '%8.2f' % elapsedtime})

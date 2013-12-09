@@ -106,7 +106,7 @@
                         <h2>Job {{ jobinfo.jobnumber }} enqueued. Estimated time to completion: {{ jobinfo.estimatedtime }} minutes. Please check back then.</h2>
                     {% endif %}
                     {% if jobinfo.status == 'createmedia' %}
-                        <h2>Job {{ jobinfo.jobnumber }} completed. Time required: {{ jobinfo.estimatedtime }} minutes.</h2>
+                        <h2>Job {{ jobinfo.jobnumber }} completed. Time required: {{ elapsedtime }} seconds.</h2>
                     {% endif %}
                     <input type="submit" name="checkjobs" value="View the Job Queue">
                 {% endif %}
@@ -119,8 +119,7 @@
     <table width="100%">
         <tbody>
         <tr>
-            <td style="vertical-align: middle">Current time: {{ timestamp }}. This is a test version and does not update
-                CSpace.
+            <td style="vertical-align: middle">Current time: {{ timestamp }}. This is a test version CSpace. But it does work!
             </td>
             <td style="vertical-align: middle;width: 70px;">powered by</td>
             <td style="text-align: right; width: 160px;"><img
