@@ -93,3 +93,22 @@ def assignValue(defaultValue, override, imageData, exifvalue, refnameList):
 
 def getJobfile(jobnumber):
     return jobdir % jobnumber
+
+
+def loginfo(infotype, context, request):
+    logdata = ''
+    #user = getattr(request, 'user', None)
+    if request.user and not request.user.is_anonymous():
+        username = request.user.username
+    else:
+        username = '-'
+    if 'count' in context:
+        count = context['count']
+    else:
+        count = '-'
+    if 'querystring' in context:
+        logdata = context['querystring']
+    if 'url' in context:
+        logdata += ' :: %s' % context['url']
+    logger.info('%s :: %s :: %s :: %s' % (infotype, count, username, logdata))
+    

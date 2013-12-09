@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django import forms
 import time, datetime
-from utils import getDropdowns, handle_uploaded_file, assignValue, getCSID, getNumber, get_exif, writeCsv, getJobfile
+from utils import getDropdowns, handle_uploaded_file, assignValue, getCSID, getNumber, get_exif, writeCsv, getJobfile, loginfo
 import subprocess
 import os,sys
 
@@ -77,18 +77,18 @@ def uploadfiles(request):
             if 'createmedia' in request.POST:
                 jobinfo['status'] = 'createmedia'
                 env =  {"PATH": os.environ["PATH"] + ":/usr/local/share/django/pahma_project/uploadmedia" }
-                print "starting job "+getJobfile(jobnumber)
+                loginfo('start', "finished job "+ getJobfile(jobnumber), request)
                 #os.execlpe("bulkmediaupload.sh", "/tmp/upload_cache/%s" % jobnumber, env)
                 #print os.system("bulkmediaupload.sh " + getJobfile(jobnumber))
                 try:
                     retcode = subprocess.call("./bulkmediaupload.sh " + getJobfile(jobnumber), shell=True)
                     if retcode < 0:
-                        print >>sys.stderr, "Child was terminated by signal", -retcode
+                        loginfo('process', "Child was terminated by signal %s" %  -retcode, request)
                     else:
-                        print >>sys.stderr, "Child returned", retcode
+                        loginfo('process', "Child returned %s" %  retcode, request)
                 except OSError as e:
-                    print >>sys.stderr, "Execution failed:", e
-                print "finished job "+ getJobfile(jobnumber)
+                    loginfo('error', "Execution failed: %s" % e, request)
+                loginfo('finish', "finished job "+ getJobfile(jobnumber), request)
 
             elif 'uploadmedia' in request.POST:
                 jobinfo['status'] = 'uploadmedia'
