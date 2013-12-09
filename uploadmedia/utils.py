@@ -3,6 +3,10 @@ from PIL.ExifTags import TAGS
 import csv
 import codecs
 import time, datetime
+import logging
+
+# Get an instance of a logger, log some startup info
+logger = logging.getLogger(__name__)
 
 tempimagedir = "/tmp/upload_cache/%s"
 jobdir = "/tmp/upload_cache/%s"
@@ -95,20 +99,12 @@ def getJobfile(jobnumber):
     return jobdir % jobnumber
 
 
-def loginfo(infotype, context, request):
+def loginfo(infotype, line, request):
     logdata = ''
     #user = getattr(request, 'user', None)
     if request.user and not request.user.is_anonymous():
         username = request.user.username
     else:
         username = '-'
-    if 'count' in context:
-        count = context['count']
-    else:
-        count = '-'
-    if 'querystring' in context:
-        logdata = context['querystring']
-    if 'url' in context:
-        logdata += ' :: %s' % context['url']
-    logger.info('%s :: %s :: %s :: %s' % (infotype, count, username, logdata))
-    
+    logger.info('%s :: %s :: %s' % (infotype, line, logdata))
+
