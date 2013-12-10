@@ -19,7 +19,7 @@
 
 {% block content %}
     <div id="content-main">
-        <h2>Select Files to Upload</h2>
+        <h2>1. Select Files to Upload</h2>
 
         <form enctype="multipart/form-data" action="" method="post">
             {% csrf_token %}
@@ -28,7 +28,7 @@
             {% else %}
                 <input type="file" name="imagefiles" multiple>
                 <hr/>
-                <h2>Override values in image files, if desired</h2>
+                <h2>2. Override values in image files, if desired</h2>
                 <table>
                     <tr>
                         <th>Field</th>
@@ -87,12 +87,19 @@
                             </select>
                         </td>
                     </tr>
+                <tr><td colspan="3"><h2>3. Select action to perform</h2></td></tr>
+
                     <tr>
-                        <td colspan="2"><input type="submit" name="createmedia"
-                                               value="Upload to CSpace and Create Media Records NOW (500 media max)">
+                        <td><input type="submit" name="createmedia"
+                                   value="Upload to CSpace and Create Media Records NOW (100 media files max)">
                         </td>
-                        <td colspan="2"><input type="submit" name="uploadmedia"
-                                               value="Upload to CSpace and Queue for LATER CSpace Ingestion"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="submit" name="uploadmedia"
+                                   value="Upload to CSpace and Queue for LATER CSpace Ingestion"></td>
+                    <tr>
+                        <td><input type="submit" name="deletemedia"
+                                   value="DELETE CSpace Blob and Media records associated with these images"></td>
                     </tr>
                 </table>
 
@@ -103,7 +110,8 @@
                 {% if jobinfo %}
                     <hr/>
                     {% if jobinfo.status == 'uploadmedia' %}
-                        <h2>Job {{ jobinfo.jobnumber }} enqueued. Estimated time to completion: {{ jobinfo.estimatedtime }} minutes. Please check back then.</h2>
+                        <h2>Job {{ jobinfo.jobnumber }} enqueued. Estimated time to
+                            completion: {{ jobinfo.estimatedtime }} minutes. Please check back then.</h2>
                     {% endif %}
                     {% if jobinfo.status == 'createmedia' %}
                         <h2>Job {{ jobinfo.jobnumber }} completed. Time required: {{ elapsedtime }} seconds.</h2>
@@ -119,8 +127,7 @@
     <table width="100%">
         <tbody>
         <tr>
-            <td style="vertical-align: middle">Current time: {{ timestamp }}. This is a test version CSpace. But it does work!
-            </td>
+            <td style="vertical-align: middle">Current time: {{ timestamp }}. This is a test version which updates the pahma-dev version of CSpace.</td>
             <td style="vertical-align: middle;width: 70px;">powered by</td>
             <td style="text-align: right; width: 160px;"><img
                     src="{% static "cspace_django_site/images/header-logo-cspace.png" %}" height="30px"></td>

@@ -24,9 +24,8 @@ def getDropdowns():
             },
         'rightsholders':
             {
-                "PAHMA": "urn:cspace:pahma.cspace.berkeley.edu:orgauthorities:name(organization):item:name(8107)'Phoebe A. Hearst Museum of Anthropology'",
-                "Regents of UC": "urn:cspace:pahma.cspace.berkeley.edu:orgauthorities:name(organization):item:name(6390)'University of California at Berkeley Regents'",
-                "Academy of Art University": "urn:cspace:pahma.cspace.berkeley.edu:orgauthorities:name(organization):item:name(8544)'Academy of Art University'"
+                "Phoebe A. Hearst Museum of Anthropology": "urn:cspace:pahma.cspace.berkeley.edu:orgauthorities:name(organization):item:name(8107)'Phoebe A. Hearst Museum of Anthropology'",
+                "University of California at Berkeley Regents": "urn:cspace:pahma.cspace.berkeley.edu:orgauthorities:name(organization):item:name(6390)'University of California at Berkeley Regents'"
             }
     }
 
