@@ -1,0 +1,18 @@
+{% if jobs %}
+    <hr/>
+    <h1>{{ count }} files in the queue</h1>
+    <table cellspace="1" id="resultsListing" class="tablesorter">
+        <thead>
+        <tr>
+            <th>File Name</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for job in jobs %}
+            <tr>
+                <td><a href="showresults/{{ job }}">{{ job }}</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

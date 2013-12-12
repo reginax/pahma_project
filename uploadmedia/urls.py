@@ -5,5 +5,7 @@ from uploadmedia import views
 
 urlpatterns = patterns('',
                        url(r'^$', views.uploadfiles, name='uploadfiles'),
+                       url(r'^showqueue$', views.showqueue, name='showqueue'),
+                       url(r'^showresults/(?P<filename>[\w\-\.]+)$', views.showresults, name='showresults'),
                        #url(r'createmedia', views.createmedia, name='createmedia'),
                        )

@@ -7,30 +7,35 @@ URL="${PROTO}${HOST}/$SRVC"
 CONTENT_TYPE="Content-Type: application/xml"
 USER="admin@pahma.cspace.berkeley.edu:Ph02b2-admin"
 
-IMGDIR=$1
-LOGDIR=""
-OUTPUTFILE=${2/step1/step2}
-LOGDIR=$1
+JOB=$1
+IMGDIR=$(dirname $1)
+INPUTFILE=$JOB.step1.csv
+OUTPUTFILE=$JOB.step2.csv
+LOGDIR=$IMGDIR
 CURLLOG="$LOGDIR/curl.log"
 CURLOUT="$LOGDIR/curl.out"
-TRACELOG="$LOGDIR/trace.log"
+TRACELOG="$JOB.trace.log"
+
+rm -f $OUTPUTFILE
+rm -f $JOB.step3.csv
 
 TRACE=2
 
 function trace()
 {
+   tdate=`date "+%Y-%m-%d %H:%M:%S"`
    [ "$TRACE" -eq 1 ] && echo "TRACE: $1"
-   [ "$TRACE" -eq 2 ] && echo "TRACE: $1" >> $TRACELOG
+   [ "$TRACE" -eq 2 ] && echo "TRACE: [$JOB : $tdate ] $1" >> $TRACELOG
 }
 
 trace "**** START OF RUN ******************** `date` **************************"
 trace "media directory: $1"
 trace "output file: $OUTPUTFILE"
 
-if [ ! -f "$2" ]
+if [ ! -f "$INPUTFILE" ]
 then
-    trace "Missing input file: $2"
-    echo "Missing input file: $2 exiting..."
+    trace "Missing input file: $INPUTFILE"
+    echo "Missing input file: $INPUTFILE exiting..."
     exit
 else
     trace "input file: $2"
@@ -72,10 +77,13 @@ do
   cat $CURLOUT >> $CURLLOG
   rh=${rightsholder//$'\r'}
   echo "$FILENAME|$size|$objectnumber|$CSID|$digitizedDate|$creator|$contributor|$rh|$FILEPATH" >>  $OUTPUTFILE
-done < $2
+done < $INPUTFILE
 
 trace ">>>>>>>>>>>>>>> End of Blob Creation, starting Media and Relation record creation process: `date` "
 python /var/www/cgi-bin/uploadMedia.py $OUTPUTFILE >> $TRACELOG
 trace "Media record and relations created."
+
+mv $INPUTFILE $JOB.original.csv
+mv $JOB.step3.csv $JOB.processed.csv
 
 trace "**** END OF RUN ******************** `date` **************************"

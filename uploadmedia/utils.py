@@ -4,6 +4,7 @@ import csv
 import codecs
 import time, datetime
 import logging
+from os import listdir
 
 # Get an instance of a logger, log some startup info
 logger = logging.getLogger(__name__)
@@ -11,8 +12,35 @@ logger = logging.getLogger(__name__)
 tempimagedir = "/tmp/upload_cache/%s"
 jobdir = "/tmp/upload_cache/%s"
 
-#tempimagedir = "/tmp/%s"
-#jobdir = "/tmp/%s"
+tempimagedir = "/tmp/%s"
+jobdir = "/tmp/%s"
+
+
+def getJobfile(jobnumber):
+    return jobdir % jobnumber
+
+
+def getJoblist():
+    from os import listdir
+    from os.path import isfile, join
+    mypath = jobdir % ''
+    joblist = [ f for f in listdir(mypath) if isfile(join(mypath,f)) and '.csv' in f ]
+    joblist.sort(reverse=True)
+    return joblist
+
+
+def loginfo(infotype, line, request):
+    logdata = ''
+    #user = getattr(request, 'user', None)
+    if request.user and not request.user.is_anonymous():
+        username = request.user.username
+    else:
+        username = '-'
+    logger.info('%s :: %s :: %s' % (infotype, line, logdata))
+
+
+def getQueue(jobtypes):
+    return [x for x in listdir(jobdir % '') if '%s.csv' % jobtypes in x]
 
 
 def getDropdowns():
@@ -84,26 +112,34 @@ def assignValue(defaultValue, override, imageData, exifvalue, refnameList):
         imageValue = imageData[exifvalue]
         # a bit of cleanup
         imageValue = imageValue.strip()
-        imageValue = imageValue.replace('"','')
-        imageValue = imageValue.replace('\n','')
-        imageValue = imageValue.replace('\r','')
+        imageValue = imageValue.replace('"', '')
+        imageValue = imageValue.replace('\n', '')
+        imageValue = imageValue.replace('\r', '')
         return imageValue, refnameList.get(imageValue, imageValue)
     elif override == 'ifblank':
         return defaultValue, refnameList.get(defaultValue, defaultValue)
     else:
         return '', ''
 
+def viewFile(logfilename,numtodisplay):
 
-def getJobfile(jobnumber):
-    return jobdir % jobnumber
+    print '<table width="100%">\n'
+    print ('<tr>'+ (4 * '<th class="ncell">%s</td>') +'</tr>\n') % ('locationDate,objectNumber,objectStatus,handler'.split(','))
+    try:
+        file_handle = open(logfilename)
+        file_size = file_handle.tell()
+        file_handle.seek(max(file_size - 9*1024, 0))
 
+        lastn = file_handle.read().splitlines()[-numtodisplay:]
+        for i in lastn:
+ 	    i = i.replace('urn:cspace:pahma.cspace.berkeley.edu:personauthorities:name(person):item:name','')
+            line = ''
+            if i[0] == '#' : continue
+	    for l in [i.split('\t')[x] for x in [0,1,2,5]] : line += ('<td>%s</td>' % l)
+	    #for l in i.split('\t') : line += ('<td>%s</td>' % l)
+            print '<tr>' + line  + '</tr>'
 
-def loginfo(infotype, line, request):
-    logdata = ''
-    #user = getattr(request, 'user', None)
-    if request.user and not request.user.is_anonymous():
-        username = request.user.username
-    else:
-        username = '-'
-    logger.info('%s :: %s :: %s' % (infotype, line, logdata))
+    except:
+	print '<tr><td colspan="4">failed. sorry.</td></tr>'
 
+    print '</table>'

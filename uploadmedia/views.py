@@ -1,11 +1,12 @@
 __author__ = 'jblowe'
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponse
+from django.core.servers.basehttp import FileWrapper
 from django.conf import settings
 from django import forms
 import time, datetime
-from utils import getDropdowns, handle_uploaded_file, assignValue, getCSID, getNumber, get_exif, writeCsv, getJobfile, loginfo
+from utils import getDropdowns, handle_uploaded_file, assignValue, getCSID, getNumber, get_exif, writeCsv, getJobfile, viewFile, getJoblist, loginfo, getQueue
 import subprocess
 import os,sys
 
@@ -83,8 +84,8 @@ def uploadfiles(request):
                 #print os.system("bulkmediaupload.sh " + getJobfile(jobnumber))
                 try:
                     #retcode = subprocess.call("/usr/local/share/django/pahma_project/uploadmedia/postblob.sh /tmp/upload_cache " + getJobfile(jobnumber) + ".step1.csv", shell=True)
-                    retcode = subprocess.call(["/usr/local/share/django/pahma_project/uploadmedia/bulkmediaupload.sh", getJobfile(jobnumber)])
-                    #loginfo('call',"/usr/local/share/django/pahma_project/uploadmedia/bulkmediaupload.sh " + getJobfile(jobnumber), request)
+                    retcode = subprocess.call(["/usr/local/share/django/pahma_project/uploadmedia/postblob.sh", getJobfile(jobnumber)])
+                    #loginfo('call',"/usr/local/share/django/pahma_project/uploadmedia/postblob.sh " + getJobfile(jobnumber), request)
                     if retcode < 0:
                         loginfo('process', jobnumber+" Child was terminated by signal %s" %  -retcode, request)
                     else:
@@ -95,6 +96,8 @@ def uploadfiles(request):
 
             elif 'uploadmedia' in request.POST:
                 jobinfo['status'] = 'uploadmedia'
+            elif 'checkjobs' in request.POST:
+                processedfiles = getQueue('processed')
             else:
                 jobinfo['status'] = 'No status possible'
 
@@ -107,3 +110,18 @@ def uploadfiles(request):
     return render(request, 'uploadmedia.html',
                   {'title': TITLE, 'images': images, 'count': len(images), 'constants': constants, 'jobinfo': jobinfo,
                    'dropdowns': dropdowns, 'overrides': overrides, 'status': status, 'timestamp': timestamp, 'elapsedtime': '%8.2f' % elapsedtime})
+
+
+@login_required()
+def showresults(request, filename):
+    f = open(getJobfile(filename), "rb")
+    response = HttpResponse(FileWrapper(f), content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+    return response
+
+
+@login_required()
+def showqueue(request):
+    jobs = getJoblist()
+    return render(request, 'uploadmedia.html',
+                      {'title': TITLE, 'jobs': jobs, 'count': len(jobs)})
