@@ -21,7 +21,7 @@
     <div id="content-main">
         <h2>1. Select Files to Upload</h2>
 
-        <form enctype="multipart/form-data" action="./" method="post">
+        <form enctype="multipart/form-data" action="{% url 'uploadmedia:uploadfiles' %}" method="post">
             {% csrf_token %}
             {% if status == 'down' %}
                 <h2><span style="color:red">System is down, please standby!</span></h2>
@@ -119,7 +119,7 @@
                 {% endif %}
             {% endif %}
         </form>
-        <form action="showqueue" method="post">
+        <form action="{% url 'uploadmedia:showqueue' %}" method="post">
             {% csrf_token %}
             <h2>4. Check on jobs and uploads</h2>
             <input type="submit" name="checkjobs" value="View the Job Queue">
