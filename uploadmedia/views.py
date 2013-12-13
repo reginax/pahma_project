@@ -33,15 +33,9 @@ def uploadfiles(request):
 
         creatorDisplayname = request.POST['creator']
         overrideCreator = request.POST['overridecreator']
-        defaultCreator = ''
-        if creatorDisplayname in dropdowns['creators']:
-            defaultCreator = dropdowns['creators'][creatorDisplayname]
 
         rightsholderDisplayname = request.POST['rightsholder']
         overrideRightsholder = request.POST['overriderightsholder']
-        defaultRightsholder = ''
-        if creatorDisplayname in dropdowns['rightsholders']:
-            defaultRightsholder = dropdowns['rightsholders'][rightsholderDisplayname]
 
         constants = {'creator': creatorDisplayname, 'contributor': contributor, 'rightsholder': rightsholderDisplayname}
 

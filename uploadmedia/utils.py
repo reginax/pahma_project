@@ -89,6 +89,10 @@ def writeCsv(filename, items, writeheader):
         for x in writeheader:
             if x in item.keys():
                 cell = item[x]
+                cell = cell.strip()
+                cell = cell.replace('"', '')
+                cell = cell.replace('\n', '')
+                cell = cell.replace('\r', '')
             else:
                 cell = ''
             row.append(cell)
