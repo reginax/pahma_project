@@ -12,6 +12,10 @@ import os,sys
 
 TITLE = 'Bulk Media Upload'
 
+overrides = [['ifblank', 'Overide only if blank'],
+             ['always', 'Always Overide']]
+
+
 @login_required()
 def uploadfiles(request):
 
@@ -103,8 +107,6 @@ def uploadfiles(request):
 
     status = 'up'
     timestamp = time.strftime("%b %d %Y %H:%M:%S", time.localtime())
-    overrides = [['ifblank', 'Overide only if blank'],
-               ['always', 'Always Overide']]
     elapsedtime = time.time() - elapsedtime
 
     return render(request, 'uploadmedia.html',
@@ -123,5 +125,10 @@ def showresults(request, filename):
 @login_required()
 def showqueue(request):
     jobs = getJoblist()
+
+    dropdowns = getDropdowns()
+    elapsedtime = time.time()
+
     return render(request, 'uploadmedia.html',
-                      {'title': TITLE, 'jobs': jobs, 'count': len(jobs)})
+                  {'dropdowns': dropdowns, 'overrides': overrides,
+                   'title': TITLE, 'jobs': jobs, 'count': len(jobs)})
