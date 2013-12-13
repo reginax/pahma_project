@@ -1,12 +1,11 @@
 #!/bin/bash
 
-PROTO="https"
+PROTO="https://"
 HOST="dev.cspace.berkeley.edu"
 SRVC="cspace-services/blobs"
 URL="${PROTO}${HOST}/$SRVC"
-TYPE="Content-Type: application/xml"
+CONTENT_TYPE="Content-Type: application/xml"
 USER="admin@pahma.cspace.berkeley.edu:Ph02b2-admin"
-BASEURL="${PROTO}://${HOST}/${SRVC}"
 
 JOB=$1
 IMGDIR=$(dirname $1)
@@ -55,11 +54,8 @@ do
 
   /bin/rm -f $CURLOUT
 
-  #trace "curl -i -u \"$USER\"  --form file=\"@$FILEPATH\" --form press=\"OK\" \"$URL\""
-  #curl -i -u "$USER" --form file="@$FILEPATH" --form press="OK" "$URL" -o $CURLOUT
-  URL="${BASEURL}?blobUri=file://$FILEPATH"
-  trace "curl -X POST -i -u \"$USER\" -H \"$TYPE\" $URL -o $CURLOUT"
-  curl -X POST -i -u "$USER" -H "$TYPE" $URL -o $CURLOUT
+  trace "curl -i -u \"$USER\"  --form file=\"@$FILEPATH\" --form press=\"OK\" \"$URL\""
+  curl -i -u "$USER" --form file="@$FILEPATH" --form press="OK" "$URL" -o $CURLOUT
   if [ ! -f $CURLOUT ]
   then
     trace "No output file, something failed for $FILEPATH"

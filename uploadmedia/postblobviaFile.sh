@@ -55,8 +55,6 @@ do
 
   /bin/rm -f $CURLOUT
 
-  #trace "curl -i -u \"$USER\"  --form file=\"@$FILEPATH\" --form press=\"OK\" \"$URL\""
-  #curl -i -u "$USER" --form file="@$FILEPATH" --form press="OK" "$URL" -o $CURLOUT
   URL="${BASEURL}?blobUri=file://$FILEPATH"
   trace "curl -X POST -i -u \"$USER\" -H \"$TYPE\" $URL -o $CURLOUT"
   curl -X POST -i -u "$USER" -H "$TYPE" $URL -o $CURLOUT

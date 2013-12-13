@@ -84,12 +84,8 @@ def uploadfiles(request):
                 jobinfo['status'] = 'createmedia'
                 env =  {"PATH": os.environ["PATH"] + ":/usr/local/share/django/pahma_project/uploadmedia" }
                 loginfo('start', getJobfile(jobnumber), request)
-                #os.execlpe("bulkmediaupload.sh", "/tmp/upload_cache/%s" % jobnumber, env)
-                #print os.system("bulkmediaupload.sh " + getJobfile(jobnumber))
                 try:
-                    #retcode = subprocess.call("/usr/local/share/django/pahma_project/uploadmedia/postblob.sh /tmp/upload_cache " + getJobfile(jobnumber) + ".step1.csv", shell=True)
                     retcode = subprocess.call(["/usr/local/share/django/pahma_project/uploadmedia/postblob.sh", getJobfile(jobnumber)])
-                    #loginfo('call',"/usr/local/share/django/pahma_project/uploadmedia/postblob.sh " + getJobfile(jobnumber), request)
                     if retcode < 0:
                         loginfo('process', jobnumber+" Child was terminated by signal %s" %  -retcode, request)
                     else:
@@ -124,11 +120,13 @@ def showresults(request, filename):
 
 @login_required()
 def showqueue(request):
-    jobs = getJoblist()
-
-    dropdowns = getDropdowns()
     elapsedtime = time.time()
+    jobs = getJoblist()
+    dropdowns = getDropdowns()
+    elapsedtime = time.time() - elapsedtime
+    status = 'up'
+    timestamp = time.strftime("%b %d %Y %H:%M:%S", time.localtime())
 
     return render(request, 'uploadmedia.html',
-                  {'dropdowns': dropdowns, 'overrides': overrides,
-                   'title': TITLE, 'jobs': jobs, 'count': len(jobs)})
+                  {'dropdowns': dropdowns, 'overrides': overrides, 'timestamp': timestamp, 'elapsedtime': '%8.2f' % elapsedtime,
+                   'status': status, 'title': TITLE, 'jobs': jobs, 'count': len(jobs)})
