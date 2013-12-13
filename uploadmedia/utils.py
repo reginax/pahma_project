@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 tempimagedir = "/tmp/upload_cache/%s"
 jobdir = "/tmp/upload_cache/%s"
 
-#tempimagedir = "/tmp/%s"
-#jobdir = "/tmp/%s"
+tempimagedir = "/tmp/%s"
+jobdir = "/tmp/%s"
 
 
 def getJobfile(jobnumber):
@@ -88,7 +88,7 @@ def writeCsv(filename, items, writeheader):
         row = []
         for x in writeheader:
             if x in item.keys():
-                cell = item[x]
+                cell = str(item[x])
                 cell = cell.strip()
                 cell = cell.replace('"', '')
                 cell = cell.replace('\n', '')
