@@ -56,8 +56,8 @@ do
   /bin/rm -f $CURLOUT
 
   URL="${BASEURL}?blobUri=file://$FILEPATH"
-  trace "curl -X POST -i -u \"$USER\" -H \"$TYPE\" $URL -o $CURLOUT"
-  curl -X POST -i -u "$USER" -H "$TYPE" $URL -o $CURLOUT
+  trace "curl -X POST -i -u \"$USER\" -H \"$TYPE\" "$URL" -o $CURLOUT"
+  curl -X POST -i -u "$USER" -H "$TYPE" "$URL" -o $CURLOUT
   if [ ! -f $CURLOUT ]
   then
     trace "No output file, something failed for $FILEPATH"
