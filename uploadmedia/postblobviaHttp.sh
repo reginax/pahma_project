@@ -44,6 +44,7 @@ fi
 while IFS=$'\t' read FILENAME size objectnumber digitizedDate creator contributor rightsholder
 do
   FILEPATH="$IMGDIR/$FILENAME"
+  FILEPATH=$(echo $FILEPATH | sed -e 's/ /%20/g')
   trace ">>>>>>>>>>>>>>> Starting: $objectnumber | $digitizedDate | $FILENAME"
 
   if [ ! -f "$FILEPATH" ]
