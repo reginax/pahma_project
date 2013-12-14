@@ -45,7 +45,6 @@ fi
 while IFS=$'\t' read FILENAME size objectnumber digitizedDate creator contributor rightsholder
 do
   FILEPATH="$IMGDIR/$FILENAME"
-  FILEPATH=$(echo $FILEPATH | sed -e 's/ /%20/g')
   trace ">>>>>>>>>>>>>>> Starting: $objectnumber | $digitizedDate | $FILENAME"
 
   if [ ! -f "$FILEPATH" ]
@@ -56,7 +55,8 @@ do
 
   /bin/rm -f $CURLOUT
 
-  URL="${BASEURL}?blobUri=file://$FILEPATH"
+  FILEPATHFIXED=$(echo $FILEPATH | sed -e 's/ /%20/g')
+  URL="${BASEURL}?blobUri=file://$FILEPATHFIXED"
   trace "curl -X POST -i -u \"$USER\" -H \"$TYPE\" "$URL" -o $CURLOUT"
   curl -X POST -i -u "$USER" -H "$TYPE" "$URL" -o $CURLOUT
   if [ ! -f $CURLOUT ]
