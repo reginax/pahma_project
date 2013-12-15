@@ -104,7 +104,7 @@ def uploadfiles(request):
                    'dropdowns': dropdowns, 'overrides': overrides, 'status': status, 'timestamp': timestamp, 'elapsedtime': '%8.2f' % elapsedtime})
 
 
-#@login_required()
+@login_required()
 def showresults(request, filename):
     f = open(getJobfile(filename), "rb")
     response = HttpResponse(FileWrapper(f), content_type='text/csv')

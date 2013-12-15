@@ -23,21 +23,21 @@ def getJobfile(jobnumber):
 def getJoblist():
     from os import listdir
     from os.path import isfile, join
-    mypath = jobdir % ''
-    filelist = [ f for f in listdir(mypath) if isfile(join(mypath,f)) and '.csv' in f or '.log' in f ]
+    jobpath = jobdir % ''
+    filelist = [ f for f in listdir(jobpath) if isfile(join(jobpath,f)) and '.csv' in f or 'trace.log' in f ]
     jobdict = {}
     for f in filelist:
         parts = f.split('.')
-        if 'original' in parts[-2]: continue
-        elif 'processed' in parts[-2]: status = 'complete'
-        elif 'step1' in parts[-2]: status = 'pending'
-        elif 'step2' in parts[-2]: continue
+        if 'original' in parts[1]: continue
+        elif 'processed' in parts[1]: status = 'complete'
+        elif 'step1' in parts[1]: status = 'pending'
+        elif 'step2' in parts[1]: continue
         # we are in fact keeping the step2 files for now, but let's not show them...
-        #elif 'step2' in parts[-2]: status = 'blobs in progress'
-        elif 'step3' in parts[-2]: status = 'media in progress'
-        elif 'trace' in parts[-2]: status = 'run log'
+        #elif 'step2' in parts[1]: status = 'blobs in progress'
+        elif 'step3' in parts[1]: status = 'media in progress'
+        elif 'trace' in parts[1]: status = 'run log'
         else: status = 'unknown'
-        jobkey = '.'.join(parts[:-2])
+        jobkey = parts[0]
         if not jobkey in jobdict: jobdict[jobkey] = []
         jobdict[jobkey].append([ f, status])
     joblist = [[ jobkey,jobdict[jobkey]] for jobkey in sorted(jobdict.keys(),reverse=True)]
