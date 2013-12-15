@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 tempimagedir = "/tmp/upload_cache/%s"
 jobdir = "/tmp/upload_cache/%s"
 
-tempimagedir = "/tmp/%s"
-jobdir = "/tmp/%s"
+#tempimagedir = "/tmp/%s"
+#jobdir = "/tmp/%s"
 
 
 def getJobfile(jobnumber):
