@@ -24,22 +24,25 @@ def getJoblist():
     from os import listdir
     from os.path import isfile, join
     mypath = jobdir % ''
-    filelist = [ f for f in listdir(mypath) if isfile(join(mypath,f)) and '.csv' in f ]
+    filelist = [ f for f in listdir(mypath) if isfile(join(mypath,f)) and '.csv' in f or '.log' in f ]
     jobdict = {}
     for f in filelist:
         parts = f.split('.')
-        if 'processed' in parts[-2]: status = 'complete'
+        if 'original' in parts[-2]: continue
+        elif 'processed' in parts[-2]: status = 'complete'
         elif 'step1' in parts[-2]: status = 'pending'
-        elif 'step2' in parts[-2]: status = 'blobs in progress'
+        elif 'step2' in parts[-2]: continue
+        # we are in fact keeping the step2 files for now, but let's not show them...
+        #elif 'step2' in parts[-2]: status = 'blobs in progress'
         elif 'step3' in parts[-2]: status = 'media in progress'
         elif 'trace' in parts[-2]: status = 'run log'
         else: status = 'unknown'
         jobkey = '.'.join(parts[:-2])
-        if not f in jobdict: jobdict[jobkey] = []
+        if not jobkey in jobdict: jobdict[jobkey] = []
         jobdict[jobkey].append([ f, status])
     joblist = [[ jobkey,jobdict[jobkey]] for jobkey in sorted(jobdict.keys(),reverse=True)]
     count = len(joblist)
-    return joblist[0:10], count
+    return joblist[0:20], count
 
 
 def loginfo(infotype, line, request):
