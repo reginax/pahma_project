@@ -104,7 +104,7 @@ def uploadfiles(request):
                    'dropdowns': dropdowns, 'overrides': overrides, 'status': status, 'timestamp': timestamp, 'elapsedtime': '%8.2f' % elapsedtime})
 
 
-@login_required()
+#@login_required()
 def showresults(request, filename):
     f = open(getJobfile(filename), "rb")
     response = HttpResponse(FileWrapper(f), content_type='text/csv')
@@ -112,10 +112,10 @@ def showresults(request, filename):
     return response
 
 
-@login_required()
+#@login_required()
 def showqueue(request):
     elapsedtime = time.time()
-    jobs = getJoblist()
+    jobs,count = getJoblist()
     dropdowns = getDropdowns()
     elapsedtime = time.time() - elapsedtime
     status = 'up'
@@ -123,4 +123,4 @@ def showqueue(request):
 
     return render(request, 'uploadmedia.html',
                   {'dropdowns': dropdowns, 'overrides': overrides, 'timestamp': timestamp, 'elapsedtime': '%8.2f' % elapsedtime,
-                   'status': status, 'title': TITLE, 'jobs': jobs, 'count': len(jobs)})
+                   'status': status, 'title': TITLE, 'jobs': jobs, 'count': count})

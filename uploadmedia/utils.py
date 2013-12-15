@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 tempimagedir = "/tmp/upload_cache/%s"
 jobdir = "/tmp/upload_cache/%s"
 
-#tempimagedir = "/tmp/%s"
-#jobdir = "/tmp/%s"
+tempimagedir = "/tmp/%s"
+jobdir = "/tmp/%s"
 
 
 def getJobfile(jobnumber):
@@ -24,9 +24,22 @@ def getJoblist():
     from os import listdir
     from os.path import isfile, join
     mypath = jobdir % ''
-    joblist = [ f for f in listdir(mypath) if isfile(join(mypath,f)) and '.csv' in f ]
-    joblist.sort(reverse=True)
-    return joblist
+    filelist = [ f for f in listdir(mypath) if isfile(join(mypath,f)) and '.csv' in f ]
+    jobdict = {}
+    for f in filelist:
+        parts = f.split('.')
+        if 'processed' in parts[-2]: status = 'complete'
+        elif 'step1' in parts[-2]: status = 'pending'
+        elif 'step2' in parts[-2]: status = 'blobs in progress'
+        elif 'step3' in parts[-2]: status = 'media in progress'
+        elif 'trace' in parts[-2]: status = 'run log'
+        else: status = 'unknown'
+        jobkey = '.'.join(parts[:-2])
+        if not f in jobdict: jobdict[jobkey] = []
+        jobdict[jobkey].append([ f, status])
+    joblist = [[ jobkey,jobdict[jobkey]] for jobkey in sorted(jobdict.keys(),reverse=True)]
+    count = len(joblist)
+    return joblist[0:10], count
 
 
 def loginfo(infotype, line, request):

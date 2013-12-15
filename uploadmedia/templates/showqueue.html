@@ -8,9 +8,12 @@
         </tr>
         </thead>
         <tbody>
-        {% for job in jobs %}
+        {% for jobno,jobinfo in jobs %}
             <tr>
-                <td><a href="showresults/{{ job }}">{{ job }}</a></td>
+                <td>{{ jobno }}</td>
+                {% for j in jobinfo %}
+                <td><a href="showresults/{{ j.0 }}">{{ j.1 }}</a></td>
+                {% endfor %}
             </tr>
         {% endfor %}
         </tbody>
