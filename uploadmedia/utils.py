@@ -24,7 +24,7 @@ def getJoblist():
     from os import listdir
     from os.path import isfile, join
     jobpath = jobdir % ''
-    filelist = [ f for f in listdir(jobpath) if isfile(join(jobpath,f)) and '.csv' in f or 'trace.log' in f ]
+    filelist = [ f for f in listdir(jobpath) if isfile(join(jobpath,f)) and ('.csv' in f or 'trace.log' in f) ]
     jobdict = {}
     for f in filelist:
         parts = f.split('.')
