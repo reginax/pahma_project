@@ -42,7 +42,7 @@ def getJoblist():
         jobdict[jobkey].append([ f, status])
     joblist = [[ jobkey,jobdict[jobkey]] for jobkey in sorted(jobdict.keys(),reverse=True)]
     count = len(joblist)
-    return joblist[0:20], count
+    return joblist[0:200], count
 
 
 def loginfo(infotype, line, request):

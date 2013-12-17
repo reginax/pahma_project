@@ -112,7 +112,7 @@ def showresults(request, filename):
     return response
 
 
-#@login_required()
+@login_required()
 def showqueue(request):
     elapsedtime = time.time()
     jobs,count = getJoblist()
