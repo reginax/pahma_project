@@ -30,6 +30,7 @@ def getJoblist():
         parts = f.split('.')
         if 'original' in parts[1]: continue
         elif 'processed' in parts[1]: status = 'complete'
+        elif 'inprogress' in parts[1]: status = 'job started'
         elif 'step1' in parts[1]: status = 'pending'
         elif 'step2' in parts[1]: continue
         # we are in fact keeping the step2 files for now, but let's not show them...

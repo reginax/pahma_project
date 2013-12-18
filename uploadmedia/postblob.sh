@@ -1,16 +1,21 @@
 #!/bin/bash
 
-PROTO="https"
-HOST="dev.cspace.berkeley.edu"
+PROTO="https://"
+HOST="pahma.cspace.berkeley.edu"
 SRVC="cspace-services/blobs"
 URL="${PROTO}${HOST}/$SRVC"
-TYPE="Content-Type: application/xml"
+CONTENT_TYPE="Content-Type: application/xml"
 USER="admin@pahma.cspace.berkeley.edu:xxxxxxx"
-BASEURL="${PROTO}://${HOST}/${SRVC}"
 
 JOB=$1
 IMGDIR=$(dirname $1)
-INPUTFILE=$JOB.step1.csv
+
+mv $INPUTFILE $JOB.original.csv
+
+# claim this job...by renaming the input file
+mv $JOB.step1.csv $JOB.inprogress.csv
+INPUTFILE=$JOB.inprogress.csv
+
 OUTPUTFILE=$JOB.step2.csv
 LOGDIR=$IMGDIR
 CURLLOG="$LOGDIR/curl.log"
@@ -55,10 +60,8 @@ do
 
   /bin/rm -f $CURLOUT
 
-  FILEPATHFIXED=$(echo $FILEPATH | sed -e 's/ /%20/g')
-  URL="${BASEURL}?blobUri=file://$FILEPATHFIXED"
-  trace "curl -X POST -i -u \"$USER\" -H \"$TYPE\" \"$URL\" -o $CURLOUT"
-  curl -X POST -i -u "$USER" -H "$TYPE" "$URL" -o $CURLOUT
+  trace "curl -i -u \"$USER\"  --form file=\"@$FILEPATH\" --form press=\"OK\" \"$URL\""
+  curl -i -u "$USER" --form file="@$FILEPATH" --form press="OK" "$URL" -o $CURLOUT
   if [ ! -f $CURLOUT ]
   then
     trace "No output file, something failed for $FILEPATH"
