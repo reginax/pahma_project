@@ -1,13 +1,11 @@
 #!/bin/bash
 
 PROTO="https://"
-#HOST="pahma.cspace.berkeley.edu"
 HOST="pahma-dev.cspace.berkeley.edu"
 SRVC="cspace-services/blobs"
 URL="${PROTO}${HOST}/$SRVC"
 CONTENT_TYPE="Content-Type: application/xml"
-#USER="admin@pahma.cspace.berkeley.edu:GielfEdAfHyFraicedapt5"
-USER="admin@pahma.cspace.berkeley.edu:Ph02b2-admin"
+USER="admin@pahma.cspace.berkeley.edu:xxxxxxx"
 
 JOB=$1
 IMGDIR=$(dirname $1)
