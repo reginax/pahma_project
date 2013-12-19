@@ -85,6 +85,7 @@ def get_exif(fn):
 
 def getNumber(filename):
     objectnumber = filename.split('_')[0]
+    objectnumber = objectnumber.replace('.JPG','').replace('.jpg','')
     return objectnumber
 
 

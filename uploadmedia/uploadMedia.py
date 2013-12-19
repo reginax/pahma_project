@@ -40,13 +40,13 @@ def uploadmedia(mediaElements, config):
         password = config.get('connect', 'password')
     except:
         print "could not get config."
+        raise
 
     elapsedtimetotal = time.time()
     objectCSID = getCSID('objectnumber', mediaElements['objectnumber'], config)
     if objectCSID == [] or objectCSID is None:
-        mediaElements['objectCSID'] = 'NoObjectFound'
-        mediaCSID = 'NoObjectForMedia'
-        mediaElements['mediaCSID'] = mediaCSID
+        print "could not get objectnumber's csid."
+        raise
         #raise Exception("<span style='color:red'>Object Number not found: %s!</span>" % mediaElements['objectnumber'])
     else:
         objectCSID = objectCSID[0]
@@ -149,11 +149,16 @@ if __name__ == "__main__":
         for v1, v2 in enumerate(
                 'name size objectnumber blobCSID date creator contributor rightsholder fullpathtofile'.split(' ')):
             mediaElements[v2] = r[v1]
-            #print mediaElements
+        #print mediaElements
         if 'objectnumber' in mediaElements:
             mediaElements['objectnumber'] = mediaElements['objectnumber'].replace('.JPG','').replace('.jpg','')
         print 'objectnumber %s' % mediaElements['objectnumber']
-        mediaElements = uploadmedia(mediaElements, config)
+        try:
+            mediaElements = uploadmedia(mediaElements, config)
+        except:
+            mediaElements['mediaCSID'] = 'NoObjectFound'
+            mediaElements['objectCSID'] = 'NoObjectForMedia'
+
         r.append(mediaElements['mediaCSID'])
         r.append(mediaElements['objectCSID'])
         outputfh.writerow(r)
