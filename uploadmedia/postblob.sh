@@ -1,16 +1,16 @@
 #!/bin/bash
 
 PROTO="https://"
-HOST="pahma.cspace.berkeley.edu"
+#HOST="pahma.cspace.berkeley.edu"
+HOST="pahma-dev.cspace.berkeley.edu"
 SRVC="cspace-services/blobs"
 URL="${PROTO}${HOST}/$SRVC"
 CONTENT_TYPE="Content-Type: application/xml"
-USER="admin@pahma.cspace.berkeley.edu:xxxxxxx"
+#USER="admin@pahma.cspace.berkeley.edu:GielfEdAfHyFraicedapt5"
+USER="admin@pahma.cspace.berkeley.edu:Ph02b2-admin"
 
 JOB=$1
 IMGDIR=$(dirname $1)
-
-mv $INPUTFILE $JOB.original.csv
 
 # claim this job...by renaming the input file
 mv $JOB.step1.csv $JOB.inprogress.csv
@@ -44,12 +44,19 @@ then
     echo "Missing input file: $INPUTFILE exiting..."
     exit
 else
-    trace "input file: $2"
+    trace "input file: $INPUTFILE"
 fi
 
 while IFS=$'\t' read FILENAME size objectnumber digitizedDate creator contributor rightsholder
 do
   FILEPATH="$IMGDIR/$FILENAME"
+
+  # skip header
+  if [ "$FILENAME" == "name" ]
+  then
+    continue
+  fi
+
   trace ">>>>>>>>>>>>>>> Starting: $objectnumber | $digitizedDate | $FILENAME"
 
   if [ ! -f "$FILEPATH" ]
@@ -60,8 +67,22 @@ do
 
   /bin/rm -f $CURLOUT
 
-  trace "curl -i -u \"$USER\"  --form file=\"@$FILEPATH\" --form press=\"OK\" \"$URL\""
-  curl -i -u "$USER" --form file="@$FILEPATH" --form press="OK" "$URL" -o $CURLOUT
+  FILEPATH2="$FILEPATH"
+  if [[ "$FILEPATH" == *,* ]]
+  then
+     trace "renaming $FILEPATH..."
+     FILEPATH2=$(echo $FILEPATH | sed -e 's/,/:/g')
+     cp "$FILEPATH" "$FILEPATH2"
+  fi
+
+  trace "curl -i -u \"$USER\"  --form file=\"@${FILEPATH2}\" --form press=\"OK\" \"$URL\""
+  curl -i -u "$USER" --form file="@${FILEPATH2}" --form press="OK" "$URL" -o $CURLOUT
+
+  if [ -f "$FILEPATH2" ]
+  then
+    rm "$FILEPATH2"
+  fi
+
   if [ ! -f $CURLOUT ]
   then
     trace "No output file, something failed for $FILEPATH"

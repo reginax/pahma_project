@@ -51,7 +51,6 @@ def uploadmedia(mediaElements, config):
     else:
         objectCSID = objectCSID[0]
         mediaElements['objectCSID'] = objectCSID
-        print "MEDIA: object %s, csid: %s" % (mediaElements['objectnumber'], mediaElements['objectCSID'])
 
         updateItems = {'objectStatus': 'found',
                        'subjectCsid': '',
@@ -73,6 +72,7 @@ def uploadmedia(mediaElements, config):
         #print 'got mediacsid', mediaCSID, '. elapsedtime', elapsedtime
         mediaElements['mediaCSID'] = mediaCSID
         #print "media REST API post succeeded..."
+        print "MEDIA: objectnumber %s, objectcsid: %s, mediacsid: %s" % (mediaElements['objectnumber'], objectCSID, mediaCSID)
 
         # now relate media record to collection object
 
