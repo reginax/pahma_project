@@ -1,9 +1,11 @@
 import csv
 import sys
 import codecs
+import time
 
 from cswaUtils import *
 from cswaDB import getCSID
+
 
 def mediaPayload(f):
     payload = """<?xml version="1.0" encoding="UTF-8"?>
@@ -26,11 +28,11 @@ def mediaPayload(f):
 </document>
 """
     payload = payload % (
-        f['blobCsid'], f['rightsHolderRefname'], f['creator'],  f['contributor'], f['objectNumber'])
+        f['blobCsid'], f['rightsHolderRefname'], f['creator'], f['contributor'], f['objectNumber'])
     return payload
 
-def uploadmedia(mediaElements, config):
 
+def uploadmedia(mediaElements, config):
     try:
         realm = config.get('connect', 'realm')
         hostname = config.get('connect', 'hostname')
@@ -39,105 +41,123 @@ def uploadmedia(mediaElements, config):
     except:
         print "could not get config."
 
+    elapsedtimetotal = time.time()
     objectCSID = getCSID('objectnumber', mediaElements['objectnumber'], config)
-    if objectCSID == []: 
-        raise Exception("<span style='color:red'>Object Number not found: %s!</span>" % mediaElements['objectnumber'])
+    if objectCSID == [] or objectCSID is None:
+        mediaElements['objectCSID'] = 'NoObjectFound'
+        mediaCSID = 'NoObjectForMedia'
+        mediaElements['mediaCSID'] = mediaCSID
+        #raise Exception("<span style='color:red'>Object Number not found: %s!</span>" % mediaElements['objectnumber'])
     else:
         objectCSID = objectCSID[0]
-    mediaElements['objectCSID'] = objectCSID
-    print "MEDIA: object %s, csid: %s" % (mediaElements['objectnumber'],mediaElements['objectCSID'])
+        mediaElements['objectCSID'] = objectCSID
+        print "MEDIA: object %s, csid: %s" % (mediaElements['objectnumber'], mediaElements['objectCSID'])
 
-    updateItems = {'objectStatus': 'found',
-          'subjectCsid': '',
-          'objectCsid': mediaElements['objectCSID'],
-          'objectNumber': mediaElements['objectnumber'],
-          'blobCsid': mediaElements['blobCSID'],
-          'rightsHolderRefname': mediaElements['rightsholder'],
-          'contributor': mediaElements['contributor'],
-          'creator': mediaElements['creator'],
-          'mediaDate': mediaElements['date'],
-          }
+        updateItems = {'objectStatus': 'found',
+                       'subjectCsid': '',
+                       'objectCsid': mediaElements['objectCSID'],
+                       'objectNumber': mediaElements['objectnumber'],
+                       'blobCsid': mediaElements['blobCSID'],
+                       'rightsHolderRefname': mediaElements['rightsholder'],
+                       'contributor': mediaElements['contributor'],
+                       'creator': mediaElements['creator'],
+                       'mediaDate': mediaElements['date'],
+        }
 
-    uri = 'media'
+        uri = 'media'
 
-    elapsedtimetotal = 0.0
-    #print "<br>posting to media REST API..."
-    payload = mediaPayload(updateItems)
-    (url, data, mediaCSID, elapsedtime) = postxml('POST', uri, realm, hostname, username, password, payload)
-    elapsedtimetotal += elapsedtime
-    #print 'got mediacsid', mediaCSID, '. elapsedtime', elapsedtime
-    mediaElements['mediaCSID'] = mediaCSID
-    #print "media REST API post succeeded..."
+        #print "<br>posting to media REST API..."
+        payload = mediaPayload(updateItems)
+        (url, data, mediaCSID, elapsedtime) = postxml('POST', uri, realm, hostname, username, password, payload)
+        #elapsedtimetotal += elapsedtime
+        #print 'got mediacsid', mediaCSID, '. elapsedtime', elapsedtime
+        mediaElements['mediaCSID'] = mediaCSID
+        #print "media REST API post succeeded..."
 
-    # now relate media record to collection object
+        # now relate media record to collection object
 
-    uri = 'relations'
-    
-    #print "<br>posting media2obj to relations REST API..."
-    
-    updateItems['objectCsid'] = objectCSID
-    updateItems['subjectCsid'] = mediaCSID
-    # "urn:cspace:pahma.cspace.berkeley.edu:media:id(%s)" % mediaCSID
-    
-    updateItems['objectDocumentType'] = 'CollectionObject'
-    updateItems['subjectDocumentType'] = 'Media'
-    
-    payload = relationsPayload(updateItems)
-    (url, data, csid, elapsedtime) = postxml('POST', uri, realm, hostname, username, password, payload)
-    elapsedtimetotal += elapsedtime
-    #print 'got relation csid', csid, '. elapsedtime', elapsedtime
-    mediaElements['media2objCSID'] = csid
-    #print "relations REST API post succeeded..."
+        uri = 'relations'
 
-    # reverse the roles
-    #print "<br>posting obj2media to relations REST API..."
-    temp = updateItems['objectCsid']
-    updateItems['objectCsid'] = updateItems['subjectCsid']
-    updateItems['subjectCsid'] = temp
-    updateItems['objectDocumentType'] = 'Media'
-    updateItems['subjectDocumentType'] = 'CollectionObject'
-    payload = relationsPayload(updateItems)
-    (url, data, csid, elapsedtime) = postxml('POST', uri, realm, hostname, username, password, payload)
-    elapsedtimetotal += elapsedtime
-    #print 'got relation csid', csid, '. elapsedtime', elapsedtime
-    mediaElements['obj2mediaCSID'] = csid
-    #print "relations REST API post succeeded..."
+        #print "<br>posting media2obj to relations REST API..."
 
-    print "MEDIA: added media ",mediaCSID,'::',elapsedtimetotal
+        updateItems['objectCsid'] = objectCSID
+        updateItems['subjectCsid'] = mediaCSID
+        # "urn:cspace:pahma.cspace.berkeley.edu:media:id(%s)" % mediaCSID
+
+        updateItems['objectDocumentType'] = 'CollectionObject'
+        updateItems['subjectDocumentType'] = 'Media'
+
+        payload = relationsPayload(updateItems)
+        (url, data, csid, elapsedtime) = postxml('POST', uri, realm, hostname, username, password, payload)
+        #elapsedtimetotal += elapsedtime
+        #print 'got relation csid', csid, '. elapsedtime', elapsedtime
+        mediaElements['media2objCSID'] = csid
+        #print "relations REST API post succeeded..."
+
+        # reverse the roles
+        #print "<br>posting obj2media to relations REST API..."
+        temp = updateItems['objectCsid']
+        updateItems['objectCsid'] = updateItems['subjectCsid']
+        updateItems['subjectCsid'] = temp
+        updateItems['objectDocumentType'] = 'Media'
+        updateItems['subjectDocumentType'] = 'CollectionObject'
+        payload = relationsPayload(updateItems)
+        (url, data, csid, elapsedtime) = postxml('POST', uri, realm, hostname, username, password, payload)
+        #elapsedtimetotal += elapsedtime
+        #print 'got relation csid', csid, '. elapsedtime', elapsedtime
+        mediaElements['obj2mediaCSID'] = csid
+        #print "relations REST API post succeeded..."
+
+    print "MEDIA: ", mediaCSID, '::',  '%8.2f' % (time.time() - elapsedtimetotal)
     return mediaElements
+
+
+class CleanlinesFile(file):
+    def next(self):
+        line = super(CleanlinesFile, self).next()
+        l = line.replace('\r', '').replace('\n', '') + '\n'
+        print line
+        return l
 
 
 def getRecords(rawFile):
     try:
         records = []
         #csvfile = csv.reader(codecs.open(rawFile,'rb','utf-8'),delimiter="\t")
-        csvfile = csv.reader(open(rawFile,'rb'),delimiter="|")
+        f = CleanlinesFile(rawFile, 'rb')
+        csvfile = csv.reader(f, delimiter="|")
         for row, values in enumerate(csvfile):
             records.append(values)
-        return records,len(values)
+        return records, len(values)
     except:
         raise
+
 
 if __name__ == "__main__":
 
 
     form = {'webapp': '/var/www/cgi-bin/uploadmediaDev'}
+    form = {'webapp': 'uploadmediaDev'}
     config = getConfig(form)
 
     #print 'config',config
-    records,columns = getRecords(sys.argv[1])
-    print '%s columns and %s lines found in file %s' % (columns,len(records),sys.argv[1])
-    outputFile = sys.argv[1].replace('.step2.csv','.step3.csv')
-    outputfh = csv.writer(open(outputFile,'wb'),delimiter="\t")
-
+    records, columns = getRecords(sys.argv[1])
+    print '%s columns and %s lines found in file %s' % (columns, len(records), sys.argv[1])
+    outputFile = sys.argv[1].replace('.step2.csv', '.step3.csv')
+    outputfh = csv.writer(open(outputFile, 'wb'), delimiter="\t")
 
     for i, r in enumerate(records):
 
         mediaElements = {}
-        for v1,v2 in enumerate('name size objectnumber blobCSID date creator contributor rightsholder fullpathtofile'.split(' ')):
+        for v1, v2 in enumerate(
+                'name size objectnumber blobCSID date creator contributor rightsholder fullpathtofile'.split(' ')):
             mediaElements[v2] = r[v1]
-        #print mediaElements
-        mediaElements = uploadmedia(mediaElements,config)
+            #print mediaElements
+        if 'objectnumber' in mediaElements:
+            mediaElements['objectnumber'] = mediaElements['objectnumber'].replace('.JPG','').replace('.jpg','')
+        print 'objectnumber %s' % mediaElements['objectnumber']
+        mediaElements = uploadmedia(mediaElements, config)
         r.append(mediaElements['mediaCSID'])
+        r.append(mediaElements['objectCSID'])
         outputfh.writerow(r)
 

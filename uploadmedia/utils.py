@@ -12,9 +12,6 @@ logger = logging.getLogger(__name__)
 tempimagedir = "/tmp/upload_cache/%s"
 jobdir = "/tmp/upload_cache/%s"
 
-#tempimagedir = "/tmp/%s"
-#jobdir = "/tmp/%s"
-
 
 def getJobfile(jobnumber):
     return jobdir % jobnumber
@@ -26,7 +23,7 @@ def getJoblist():
     jobpath = jobdir % ''
     filelist = [ f for f in listdir(jobpath) if isfile(join(jobpath,f)) and ('.csv' in f or 'trace.log' in f) ]
     jobdict = {}
-    for f in filelist:
+    for f in sorted(filelist):
         parts = f.split('.')
         if 'original' in parts[1]: continue
         elif 'processed' in parts[1]: status = 'complete'
