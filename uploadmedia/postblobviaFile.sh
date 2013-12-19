@@ -11,8 +11,6 @@ BASEURL="${PROTO}://${HOST}/${SRVC}"
 JOB=$1
 IMGDIR=$(dirname $1)
 
-mv $INPUTFILE $JOB.original.csv
-
 # claim this job...by renaming the input file
 mv $JOB.step1.csv $JOB.inprogress.csv
 INPUTFILE=$JOB.inprogress.csv

@@ -65,6 +65,7 @@ do
 
   /bin/rm -f $CURLOUT
 
+  # if filename contains commas, translate them to colons (cf CSPACE-5497)
   FILEPATH2="$FILEPATH"
   if [[ "$FILEPATH" == *,* ]]
   then
@@ -76,6 +77,7 @@ do
   trace "curl -i -u \"$USER\"  --form file=\"@${FILEPATH2}\" --form press=\"OK\" \"$URL\""
   curl -i -u "$USER" --form file="@${FILEPATH2}" --form press="OK" "$URL" -o $CURLOUT
 
+  # get rid of the extra file we created, if necessary
   if [ -f "$FILEPATH2" ]
   then
     rm "$FILEPATH2"
