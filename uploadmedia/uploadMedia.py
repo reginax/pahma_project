@@ -115,9 +115,7 @@ def uploadmedia(mediaElements, config):
 class CleanlinesFile(file):
     def next(self):
         line = super(CleanlinesFile, self).next()
-        l = line.replace('\r', '').replace('\n', '') + '\n'
-        print line
-        return l
+        return line.replace('\r', '').replace('\n', '') + '\n'
 
 
 def getRecords(rawFile):
@@ -137,12 +135,11 @@ if __name__ == "__main__":
 
 
     form = {'webapp': '/var/www/cgi-bin/uploadmediaDev'}
-    form = {'webapp': 'uploadmediaDev'}
     config = getConfig(form)
 
     #print 'config',config
     records, columns = getRecords(sys.argv[1])
-    print '%s columns and %s lines found in file %s' % (columns, len(records), sys.argv[1])
+    print 'MEDIA: %s columns and %s lines found in file %s' % (columns, len(records), sys.argv[1])
     outputFile = sys.argv[1].replace('.step2.csv', '.step3.csv')
     outputfh = csv.writer(open(outputFile, 'wb'), delimiter="\t")
 
