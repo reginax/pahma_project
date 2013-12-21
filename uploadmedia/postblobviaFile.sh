@@ -6,6 +6,7 @@ SRVC="cspace-services/blobs"
 URL="${PROTO}${HOST}/$SRVC"
 TYPE="Content-Type: application/xml"
 USER="admin@pahma.cspace.berkeley.edu:xxxxxxx"
+MEDIACONFIG="uploadmediaDev"
 BASEURL="${PROTO}://${HOST}/${SRVC}"
 
 JOB=$1
@@ -62,7 +63,7 @@ do
   # probably should urlencode the entire filepath...
   FILEPATHFIXED=$(echo $FILEPATH | sed -e 's/ /%20/g')
   URL="${BASEURL}?blobUri=file://$FILEPATHFIXED"
-  trace "curl -X POST -i -u \"$USER\" -H \"$TYPE\" "$URL" -o $CURLOUT"
+  trace "curl -X POST -i -u \"xxxxx\" -H \"$TYPE\" "$URL" -o $CURLOUT"
   curl -X POST -i -u "$USER" -H "$TYPE" "$URL" -o $CURLOUT
   if [ ! -f $CURLOUT ]
   then
@@ -88,7 +89,7 @@ do
 done < $INPUTFILE
 
 trace ">>>>>>>>>>>>>>> End of Blob Creation, starting Media and Relation record creation process: `date` "
-python /var/www/cgi-bin/uploadMedia.py $OUTPUTFILE >> $TRACELOG
+python /var/www/cgi-bin/uploadMedia.py $OUTPUTFILE $MEDIACONFIG >> $TRACELOG
 trace "Media record and relations created."
 
 mv $INPUTFILE $JOB.original.csv

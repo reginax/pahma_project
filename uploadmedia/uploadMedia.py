@@ -45,7 +45,7 @@ def uploadmedia(mediaElements, config):
     elapsedtimetotal = time.time()
     objectCSID = getCSID('objectnumber', mediaElements['objectnumber'], config)
     if objectCSID == [] or objectCSID is None:
-        print "could not get objectnumber's csid."
+        print "could not get objectnumber's csid: %s." % mediaElements['objectnumber']
         raise
         #raise Exception("<span style='color:red'>Object Number not found: %s!</span>" % mediaElements['objectnumber'])
     else:
@@ -72,7 +72,6 @@ def uploadmedia(mediaElements, config):
         #print 'got mediacsid', mediaCSID, '. elapsedtime', elapsedtime
         mediaElements['mediaCSID'] = mediaCSID
         #print "media REST API post succeeded..."
-        print "MEDIA: objectnumber %s, objectcsid: %s, mediacsid: %s" % (mediaElements['objectnumber'], objectCSID, mediaCSID)
 
         # now relate media record to collection object
 
@@ -108,7 +107,8 @@ def uploadmedia(mediaElements, config):
         mediaElements['obj2mediaCSID'] = csid
         #print "relations REST API post succeeded..."
 
-    print "MEDIA: ", mediaCSID, '::',  '%8.2f' % (time.time() - elapsedtimetotal)
+    print "MEDIA: objectnumber %s, objectcsid: %s, mediacsid: %s, %8.2f" % (
+        mediaElements['objectnumber'], objectCSID, mediaCSID, (time.time() - elapsedtimetotal))
     return mediaElements
 
 
@@ -134,7 +134,7 @@ def getRecords(rawFile):
 if __name__ == "__main__":
 
 
-    form = {'webapp': '/var/www/cgi-bin/uploadmediaDev'}
+    form = {'webapp': '/var/www/cgi-bin/' + sys.argv[2]}
     config = getConfig(form)
 
     #print 'config',config

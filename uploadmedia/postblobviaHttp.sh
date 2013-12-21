@@ -6,6 +6,7 @@ SRVC="cspace-services/blobs"
 URL="${PROTO}${HOST}/$SRVC"
 CONTENT_TYPE="Content-Type: application/xml"
 USER="admin@pahma.cspace.berkeley.edu:xxxxxxx"
+MEDIACONFIG="uploadmediaDev"
 
 JOB=$1
 IMGDIR=$(dirname $1)
@@ -74,7 +75,7 @@ do
      cp "$FILEPATH" "$FILEPATH2"
   fi
 
-  trace "curl -i -u \"$USER\"  --form file=\"@${FILEPATH2}\" --form press=\"OK\" \"$URL\""
+  trace "curl -i -u \"xxxxx\"  --form file=\"@${FILEPATH2}\" --form press=\"OK\" \"$URL\""
   curl -i -u "$USER" --form file="@${FILEPATH2}" --form press="OK" "$URL" -o $CURLOUT
 
   # get rid of the extra file we created, if necessary
@@ -107,7 +108,7 @@ do
 done < $INPUTFILE
 
 trace ">>>>>>>>>>>>>>> End of Blob Creation, starting Media and Relation record creation process: `date` "
-python /var/www/cgi-bin/uploadMedia.py $OUTPUTFILE >> $TRACELOG
+python /var/www/cgi-bin/uploadMedia.py $OUTPUTFILE $MEDIACONFIG >> $TRACELOG
 trace "Media record and relations created."
 
 mv $INPUTFILE $JOB.original.csv

@@ -76,7 +76,6 @@ def uploadfiles(request):
 
             if 'createmedia' in request.POST:
                 jobinfo['status'] = 'createmedia'
-                env =  {"PATH": os.environ["PATH"] + ":/usr/local/share/django/pahma_project/uploadmedia" }
                 loginfo('start', getJobfile(jobnumber), request)
                 try:
                     retcode = subprocess.call(["/usr/local/share/django/pahma_project/uploadmedia/postblob.sh", getJobfile(jobnumber)])
@@ -90,8 +89,6 @@ def uploadfiles(request):
 
             elif 'uploadmedia' in request.POST:
                 jobinfo['status'] = 'uploadmedia'
-            elif 'checkjobs' in request.POST:
-                processedfiles = getQueue('processed')
             else:
                 jobinfo['status'] = 'No status possible'
 
