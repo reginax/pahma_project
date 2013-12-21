@@ -78,12 +78,8 @@ do
   trace "curl -i -u \"xxxxx\"  --form file=\"@${FILEPATH2}\" --form press=\"OK\" \"$URL\""
   curl -i -u "$USER" --form file="@${FILEPATH2}" --form press="OK" "$URL" -o $CURLOUT
 
-  # get rid of the extra file we created, if necessary
-  if [ -f "$FILEPATH2" ]
-  then
-    rm "$FILEPATH2"
-  fi
-
+  # NB: we should someday get rid of the extra files created...
+  
   if [ ! -f $CURLOUT ]
   then
     trace "No output file, something failed for $FILEPATH"
