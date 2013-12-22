@@ -38,7 +38,11 @@ def getJoblist():
         jobkey = parts[0]
         if not jobkey in jobdict: jobdict[jobkey] = []
         jobdict[jobkey].append([ f, status])
-    joblist = [[ jobkey,jobdict[jobkey]] for jobkey in sorted(jobdict.keys(),reverse=True)]
+    joblist = [[ jobkey,False,jobdict[jobkey]] for jobkey in sorted(jobdict.keys(),reverse=True)]
+    for ajob in joblist:
+        ajob[1] = True
+        for s in ajob[2] :
+            if s[1] in ['complete','pending']: ajob[1] = False
     count = len(joblist)
     return joblist[0:200], count
 
@@ -140,6 +144,7 @@ def assignValue(defaultValue, override, imageData, exifvalue, refnameList):
     else:
         return '', ''
 
+# this function not currently in use
 def viewFile(logfilename,numtodisplay):
 
     print '<table width="100%">\n'

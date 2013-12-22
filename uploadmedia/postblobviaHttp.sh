@@ -79,7 +79,7 @@ do
   curl -i -u "$USER" --form file="@${FILEPATH2}" --form press="OK" "$URL" -o $CURLOUT
 
   # NB: we should someday get rid of the extra files created...
-  
+
   if [ ! -f $CURLOUT ]
   then
     trace "No output file, something failed for $FILEPATH"

@@ -1,16 +1,23 @@
 {% if jobs %}
     <hr/>
-    <h1>{{ count }} files in the queue</h1>
+    <h1>{{ count }} jobs in the queue</h1>
     <table cellspace="1" id="resultsListing" class="tablesorter">
         <thead>
         <tr>
-            <th>File Name</th>
+            <th>Job Number</th>
+            <th>Job Flag</th>
+            <th>Job States</th>
         </tr>
         </thead>
         <tbody>
-        {% for jobno,jobinfo in jobs %}
+        {% for jobno,jobfailed,jobinfo in jobs %}
             <tr>
                 <td>{{ jobno }}</td>
+                {% if jobfailed == True %}
+                    <td><span style="color: red">Failed.</span></td>
+                {% else %}
+                    <td></td>
+                {% endif %}
                 {% for j in jobinfo %}
                     <td><a href="showresults/{{ j.0 }}">{{ j.1 }}</a></td>
                 {% endfor %}
