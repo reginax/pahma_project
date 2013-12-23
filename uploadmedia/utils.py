@@ -156,14 +156,15 @@ def viewFile(logfilename,numtodisplay):
 
         lastn = file_handle.read().splitlines()[-numtodisplay:]
         for i in lastn:
- 	    i = i.replace('urn:cspace:pahma.cspace.berkeley.edu:personauthorities:name(person):item:name','')
+            i = i.replace('urn:cspace:pahma.cspace.berkeley.edu:personauthorities:name(person):item:name','')
             line = ''
-            if i[0] == '#' : continue
-	    for l in [i.split('\t')[x] for x in [0,1,2,5]] : line += ('<td>%s</td>' % l)
-	    #for l in i.split('\t') : line += ('<td>%s</td>' % l)
+            if i[0] == '#' : pass
+        for l in [i.split('\t')[x] for x in [0,1,2,5]] :
+            line += ('<td>%s</td>' % l)
+            #for l in i.split('\t') : line += ('<td>%s</td>' % l)
             print '<tr>' + line  + '</tr>'
 
     except:
-	print '<tr><td colspan="4">failed. sorry.</td></tr>'
+        print '<tr><td colspan="4">failed. sorry.</td></tr>'
 
     print '</table>'

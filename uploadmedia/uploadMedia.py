@@ -107,8 +107,6 @@ def uploadmedia(mediaElements, config):
         mediaElements['obj2mediaCSID'] = csid
         #print "relations REST API post succeeded..."
 
-    print "MEDIA: objectnumber %s, objectcsid: %s, mediacsid: %s, %8.2f" % (
-        mediaElements['objectnumber'], objectCSID, mediaCSID, (time.time() - elapsedtimetotal))
     return mediaElements
 
 
@@ -155,11 +153,15 @@ if __name__ == "__main__":
         print 'objectnumber %s' % mediaElements['objectnumber']
         try:
             mediaElements = uploadmedia(mediaElements, config)
+            print "MEDIA: objectnumber %s, objectcsid: %s, mediacsid: %s, %8.2f" % (
+                mediaElements['objectnumber'], mediaElements['objectCSID'], mediaElements['mediaCSID'], (time.time() - elapsedtimetotal))
+            r.append(mediaElements['mediaCSID'])
+            r.append(mediaElements['objectCSID'])
+            outputfh.writerow(r)
         except:
-            mediaElements['mediaCSID'] = 'NoObjectFound'
-            mediaElements['objectCSID'] = 'NoObjectForMedia'
+            print "MEDIA: create failed for objectnumber %s, %8.2f" % (
+                mediaElements['objectnumber'], (time.time() - elapsedtimetotal))
 
-        r.append(mediaElements['mediaCSID'])
-        r.append(mediaElements['objectCSID'])
-        outputfh.writerow(r)
+
+
 
