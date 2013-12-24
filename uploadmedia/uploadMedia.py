@@ -3,7 +3,7 @@ import sys
 import codecs
 import time
 
-from cswaUtils import *
+from cswaUtils import postxml, relationsPayload, getConfig
 from cswaDB import getCSID
 
 
@@ -42,7 +42,6 @@ def uploadmedia(mediaElements, config):
         print "could not get config."
         raise
 
-    elapsedtimetotal = time.time()
     objectCSID = getCSID('objectnumber', mediaElements['objectnumber'], config)
     if objectCSID == [] or objectCSID is None:
         print "could not get objectnumber's csid: %s." % mediaElements['objectnumber']
@@ -132,8 +131,12 @@ def getRecords(rawFile):
 if __name__ == "__main__":
 
 
-    form = {'webapp': '/var/www/cgi-bin/' + sys.argv[2]}
-    config = getConfig(form)
+    try:
+        form = {'webapp': '/var/www/cgi-bin/' + sys.argv[2]}
+        config = getConfig(form)
+    except:
+        print "MEDIA: could not get configuration"
+        sys.exit()
 
     #print 'config',config
     records, columns = getRecords(sys.argv[1])
@@ -143,6 +146,7 @@ if __name__ == "__main__":
 
     for i, r in enumerate(records):
 
+        elapsedtimetotal = time.time()
         mediaElements = {}
         for v1, v2 in enumerate(
                 'name size objectnumber blobCSID date creator contributor rightsholder fullpathtofile'.split(' ')):
