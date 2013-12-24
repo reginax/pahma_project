@@ -5,6 +5,7 @@ import codecs
 import time, datetime
 import logging
 from os import listdir
+from xml.sax.saxutils import escape
 
 # Get an instance of a logger, log some startup info
 logger = logging.getLogger(__name__)
@@ -138,6 +139,7 @@ def assignValue(defaultValue, override, imageData, exifvalue, refnameList):
         imageValue = imageValue.replace('"', '')
         imageValue = imageValue.replace('\n', '')
         imageValue = imageValue.replace('\r', '')
+        imageValue = escape(imageValue)
         return imageValue, refnameList.get(imageValue, imageValue)
     elif override == 'ifblank':
         return defaultValue, refnameList.get(defaultValue, defaultValue)
