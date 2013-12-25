@@ -43,7 +43,7 @@ def getJoblist():
     for ajob in joblist:
         ajob[1] = True
         for s in ajob[2] :
-            if s[1] in ['complete','pending']: ajob[1] = False
+            if s[1] in ['complete','pending','job started']: ajob[1] = False
     count = len(joblist)
     return joblist[0:200], count
 

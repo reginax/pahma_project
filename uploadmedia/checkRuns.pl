@@ -52,7 +52,7 @@ sub checkMissing {
 	$isMissing = 0 if $step =~ /(processed|step1|inprogress)/;
       }
     }
-  print "$missing{$name}\n" if $isMissing;
+  print "$name ::: \t$missing{$name}\n" if $isMissing;
   }
 }
 
@@ -64,6 +64,19 @@ sub checkDuplicates {
 
   foreach my $name (sort keys %duplicates) {
   print "$missing{$name}\n" if $duplicates{$name} > 1;
+  }
+}
+
+
+sub checkCsids {
+  my %csids = %{shift()};
+  foreach my $name (sort keys %csids) {
+    print $name . "\t";
+    my %csidlist = %{$csids{$name}};
+    foreach my $type (split(' ','blob media object')) {		      
+      print "$csidlist{$type}\t";
+    }
+    print "\n";
   }
 }
 
@@ -92,6 +105,7 @@ my %missing;
 my %duplicates;
 my %joberrors;
 my %errors;
+my %csids;
 my $JOB;
 
 if ($ARGV[1] =~ /^[\d\-]+$/) { #if we have a single job, just do stats for it..
@@ -108,7 +122,14 @@ foreach my $filename ( <$DIR/$JOB*.csv>) { # nb: no slash between dir and file..
      next if /^name/; # skip header rows
      $i++;
      chomp;
-     my ($name,$size,$objectnumber,$date,$creator,$contributor,$rightsholder,$mediacsid,$objectcsid) = split /[\t\|]/;
+     s/\r//g;
+     my ($name,$size,$objectnumber,$blobcsid,$date,$creator,$contributor,$rightsholder,$fullpath,$mediacsid,$objectcsid);
+     if ($step =~ /(step1|original)/) {
+       ($name,$size,$objectnumber,$date,$creator,$contributor,$rightsholder) = split /[\t\|]/;
+     }
+     else {
+       ($name,$size,$objectnumber,$blobcsid,$date,$creator,$contributor,$rightsholder,$fullpath,$mediacsid,$objectcsid) = split /[\t\|]/;
+     }
      next if $objectcsid =~ /NoObjectFound/;
      #next if $step =~ /step1/;
      #print "  $run\t$step\t$i\t$name\n";
@@ -116,6 +137,10 @@ foreach my $filename ( <$DIR/$JOB*.csv>) { # nb: no slash between dir and file..
      $images{$name}{$run}{$step}++;
      $duplicates{$name}++ if $step eq 'processed';
      $missing{$name} = $_ if $step =~ /(original|step1)/;
+     $csids{$name}{'media'} = $mediacsid if $mediacsid;
+     $csids{$name}{'object'} = $objectcsid if $objectcsid;
+     #print STDERR $filename,'::',$blobcsid,'::',$_,"\n" if ($blobcsid =~ /:/);
+     $csids{$name}{'blob'} = $blobcsid if $blobcsid;
    }
 }
 
@@ -158,7 +183,11 @@ elsif  ($ARGV[0] eq 'images') {
   checkSteps(\%images);
 }
 
+elsif  ($ARGV[0] eq 'csids') { 
+  checkCsids(\%csids);
+}
+
 else {
-  print "usage: perl checkRuns.pl <jobs missing duplicates images> [yyyy-mm-dd-hh-mm-ss]\n";
+  print "usage: perl checkRuns.pl <jobs missing duplicates images csids> [yyyy-mm-dd-hh-mm-ss]\n";
 }
   
