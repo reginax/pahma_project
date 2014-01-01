@@ -73,7 +73,8 @@ sub checkCsids {
   foreach my $name (sort keys %csids) {
     print $name . "\t";
     my %csidlist = %{$csids{$name}};
-    foreach my $type (split(' ','blob media object')) {		      
+    foreach my $type (split(' ','objectnumber blob media object')) {	
+      $csidlist{$type} =~ s/,$//;	      
       print "$csidlist{$type}\t";
     }
     print "\n";
@@ -130,17 +131,17 @@ foreach my $filename ( <$DIR/$JOB*.csv>) { # nb: no slash between dir and file..
      else {
        ($name,$size,$objectnumber,$blobcsid,$date,$creator,$contributor,$rightsholder,$fullpath,$mediacsid,$objectcsid) = split /[\t\|]/;
      }
-     next if $objectcsid =~ /NoObjectFound/;
+     #next if $objectcsid =~ /NoObjectFound/;
      #next if $step =~ /step1/;
      #print "  $run\t$step\t$i\t$name\n";
      $jobs{$run}{$step}++;
      $images{$name}{$run}{$step}++;
      $duplicates{$name}++ if $step eq 'processed';
      $missing{$name} = $_ if $step =~ /(original|step1)/;
-     $csids{$name}{'media'} = $mediacsid if $mediacsid;
-     $csids{$name}{'object'} = $objectcsid if $objectcsid;
-     #print STDERR $filename,'::',$blobcsid,'::',$_,"\n" if ($blobcsid =~ /:/);
-     $csids{$name}{'blob'} = $blobcsid if $blobcsid;
+     $csids{$name}{'objectnumber'} = $objectnumber if $objectnumber;
+     $csids{$name}{'media'} .= $mediacsid . ',' if ($mediacsid && !($csids{$name}{'media'} =~ /$mediacsid/));
+     $csids{$name}{'object'} .= $objectcsid . ',' if ($objectcsid && !($csids{$name}{'object'} =~ /$objectcsid/));
+     $csids{$name}{'blob'} .= $blobcsid . ',' if ($blobcsid && !($csids{$name}{'blob'} =~ /$blobcsid/));
    }
 }
 
