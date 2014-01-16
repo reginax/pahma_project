@@ -1,5 +1,5 @@
 __author__ = 'jblowe'
-
+# Add comment just to create a new diff between the most recent versions.
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
