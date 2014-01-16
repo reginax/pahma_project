@@ -5,7 +5,7 @@ HOST="dev.cspace.berkeley.edu"
 SRVC="cspace-services/blobs"
 URL="${PROTO}${HOST}/$SRVC"
 TYPE="Content-Type: application/xml"
-USER="admin@pahma.cspace.berkeley.edu:Ph02b2-admin"
+USER="admin@pahma.cspace.berkeley.edu:xxxxxx"
 BASEURL="${PROTO}://${HOST}/${SRVC}"
 
 JOB=$1
