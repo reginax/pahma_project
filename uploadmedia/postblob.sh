@@ -1,5 +1,5 @@
 #!/bin/bash
-# Add comment just to create a new diff between the most recent versions.
+
 PROTO="https"
 HOST="pahma-dev.cspace.berkeley.edu"
 SRVC="cspace-services/blobs"
