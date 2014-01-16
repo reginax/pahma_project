@@ -37,7 +37,7 @@ def save_image(request, image):
     port = '8180'
 
     username = 'import@pahma.cspace.berkeley.edu'
-    password = 'lash428!puck'
+    password = 'xxxxxx'
 
     server = protocol + "://" + hostname + ":" + port
     passman = urllib2.HTTPPasswordMgr()
