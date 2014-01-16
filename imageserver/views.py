@@ -12,7 +12,7 @@ import urllib2
 import ConfigParser
 import time
 
-# Add comment just to create a new diff between the most recent versions.
+
 #@login_required()
 def get_image(request, image):
     #config = cspace_django_site.getConfig()
