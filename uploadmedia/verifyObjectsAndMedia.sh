@@ -22,7 +22,7 @@ do
   #SQL2=$(echo $SQL| sed -e 's/xxobjnoxx/$1/g')
   SQL2="${SQL}'$objectnumber'"
   #echo "${SQL2}"
-  results=`psql -A  -t -U reporter -d "host=pahma.cspace.berkeley.edu dbname=nuxeo password=csR2p4rt2r" -c "$SQL2"`
+  results=`psql -A  -t -U reporter -d "host=pahma.cspace.berkeley.edu dbname=nuxeo password=xxxxxx" -c "$SQL2"`
   echo "$imagefile|$objectnumber|$results"|tr '\n' ' '
   echo
 done

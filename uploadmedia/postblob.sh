@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PROTO="https://"
+PROTO="https"
 HOST="pahma-dev.cspace.berkeley.edu"
 SRVC="cspace-services/blobs"
 URL="${PROTO}${HOST}/$SRVC"
