@@ -1,9 +1,0 @@
-{% extends "cspace_django_site/base_site.html" %}
-{% load i18n admin_static %}
-
-{% block content %}
-    <h2>{{ report }}</h2>
-        {% if count > 0 %}
-            {{ count }} items.
-        {% endif %}
-{% endblock %}
