@@ -31,10 +31,11 @@ sub checkJobs {
     }
     print "\n";
   } 
-  print "totals\t";
+  print "totals.............\t";
   foreach my $step (@columnheaders) {
     print $totals{$step} . "\t";
   }
+  print "\n";
 }
 
 sub checkMissing {
