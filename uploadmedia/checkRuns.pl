@@ -12,7 +12,7 @@ sub checkJobs {
   print "\n";
 
   my @columnheaders = split(' ','step1 original step2 step3 processed inprogress discrepancy logerrors');
-  print "job\t";
+  print "job................\t";
   print join "\t",@columnheaders;
   print "\n";
 
