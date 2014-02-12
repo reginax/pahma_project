@@ -1,4 +1,11 @@
-#rm /tmp/upload_cache/$1*
+##
+#
+# run a single
+#
+# invoke as ./runJob.sh YYYY-MM-DD-HH-MM-SS
+#
+# (script expects "/tmp/upload_cache/YYYY-MM-DD-HH-MM-SS.step1.csv to exist
+#
 if [ -f /tmp/upload_cache/$1.original.csv ]
 then
   echo "/tmp/upload_cache/$1.original.csv already exists; job has already been run"

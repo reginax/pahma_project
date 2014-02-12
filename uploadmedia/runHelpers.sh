@@ -1,3 +1,30 @@
+####################################################
+#
+# this directory contains a few "helper" scripts 
+# in perl which are not (obviously) part of the
+# webapp. 
+#
+# These scripts expect the dev/prod deployment of the
+# BMU webapp on pahma-dev to operate correctly.
+#
+# this shell script, while it will run, is mostly
+# a demonstration of the operation of these helpers.
+# 
+# The two helpers examine the result of BMU operation
+# and:
+#
+# make various reports on the jobs, e.g. how many
+# media files were uploaded, how many successful
+# were attached to media records and object, etc.
+#
+# make discrepancy reports to help users identify and
+# repair failures.
+#
+# all very ad hoc and rickety!
+#
+# jblowe 2/2/2014
+#
+####################################################
 cp /home/developers/pahma/4solr.pahma.media.csv media.csv
 perl checkRuns.pl csids > csids.csv
 perl checkObj.pl > MediaNBlobs.txt
