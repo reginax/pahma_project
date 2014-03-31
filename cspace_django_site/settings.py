@@ -33,7 +33,7 @@ CACHES = {
         'LOCATION': '/tmp/image_cache',
         'CULL_FREQUENCY': 1000,
         'OPTIONS': {
-            'MAX_ENTRIES': 100000
+            'MAX_ENTRIES': 1000000
         }
     }
 }
@@ -150,6 +150,7 @@ INSTALLED_APPS = (
     'service',
     'ireports',
     'imageserver',
+    'imagebrowser',
     'publicsearch',
     'uploadmedia'
 )

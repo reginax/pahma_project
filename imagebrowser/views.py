@@ -12,30 +12,25 @@ from django import forms
 
 from operator import itemgetter
 
-# the following code attempts to find and import the best...
-try:
-    from xml.etree.ElementTree import tostring, parse, Element, fromstring
+from publicsearch.utils import writeCsv, doSearch, setupGoogleMap, setupBMapper, setDisplayType, setConstants, loginfo
 
-    print("running with xml.etree.ElementTree")
-except ImportError:
-    try:
-        from lxml import etree
+MAXMARKERS = 65
+MAXRESULTS = 1000
+MAXLONGRESULTS = 50
+IMAGESERVER = 'https://pahma-dev.cspace.berkeley.edu/pahma_project/imageserver' # no final slash
+SOLRSERVER = 'http://localhost:8983/solr'
+SOLRCORE = 'pahma-metadata'
 
-        print("running with lxml.etree")
-    except ImportError:
-        try:
-            # normal cElementTree install
-            import cElementTree as etree
+from os import path
+from common import cspace # we use the config file reading function
 
-            print("running with cElementTree")
-        except ImportError:
-            try:
-                # normal ElementTree install
-                import elementtree.ElementTree as etree
+config = cspace.getConfig(path.dirname(__file__), 'imagebrowser')
 
-                print("running with ElementTree")
-            except ImportError:
-                print("Failed to import ElementTree from any known place")
+MAXMARKERS = config.get('imagebrowser', 'MAXMARKERS')
+MAXRESULTS = config.get('imagebrowser', 'MAXRESULTS')
+MAXLONGRESULTS = config.get('imagebrowser', 'MAXLONGRESULTS')
+IMAGESERVER = config.get('imagebrowser', 'IMAGESERVER')
+
 
 from common import cspace
 from cspace_django_site.main import cspace_django_site
@@ -55,47 +50,26 @@ def images(request):
     :param request: two parameters to pass to CSpace: pgNum and pgSz
     :return: page of images
     """
-    if 'pgNum' in request.GET and request.GET['pgNum']:
-        elapsedtime = time.time()
-        pgSz = request.GET['pgSz']
-        pgNum = request.GET['pgNum']
+    #if 'keyword' in request.GET and request.GET['keyword']:
+    if request.method == 'GET' and request.GET != {}:
+        context = {'searchValues': request.GET}
+
+        context = setConstants(context)
+        loginfo('start search', context, request)
+
+        maxresults = request.GET['maxresults']
         # do search
-        connection = cspace.connection.create_connection(config, request.user)
-        (url, data, statusCode) = connection.make_get_request(
-            'cspace-services/%s?pgNum=%s&pgSz=%s&wf_deleted=false' % ('media', pgNum, pgSz))
-        #...collectionobjects?pgNum=%27orchid%27&wf_deleted=false
-        cspaceXML = fromstring(data)
-        items = cspaceXML.findall('.//list-item')
-        count = cspaceXML.find('.//totalItems')
-        count = count.text
-        results = []
-        for i in items:
-            r = []
-            csid = i.find('.//csid')
-            csid = csid.text
-            blobCsid = i.find('.//blobCsid')
-            try:
-                blobCsid = blobCsid.text
-            except:
-                blobCsid = '0000'
-            objectNumber = i.find('.//identificationNumber')
-            try:
-                objectNumber = objectNumber.text
-            except:
-                objectNumber = '0000'
-            # hardcoded here for now, should eventually get these from the authentication backend
-            # but tenant is not even stored there...
-            hostname = 'pahma.cspace.berkeley.edu'
-            tenant = 'pahma'
-            link = 'http://%s:8180/collectionspace/ui/%s/html/media.html?csid=%s' % (hostname, tenant, csid)
-            r.append(link)
-            r.append(objectNumber)
-            r.append(blobCsid)
-            results.append(r)
-        elapsedtime = time.time() - elapsedtime
-        return render(request, 'showImages.html',
-                      {'results': results, 'pgNum': pgNum, 'count': count, 'url': url, 'pgSz': pgSz,
-                       'title': TITLE, 'time': '%8.2f' % elapsedtime})
+        context = doSearch(SOLRSERVER, SOLRCORE, context)
+        context['imageserver'] = IMAGESERVER
+        context['keyword'] = request.GET['keyword']
+        #context['pgNum'] = pgNum if 'pgNum' in context else '1'
+        #context['url'] = url
+        context['maxresults'] = maxresults
+        context['displayType'] = 'list'
+        context['pixonly'] = 'true'
+        context['title'] = TITLE
+
+        return render(request, 'showImages.html', context)
 
     else:
-        return render(request, 'showImages.html', {'title': TITLE, 'pgNum': 10, 'pgSz': 20})
+        return render(request, 'showImages.html', {'title': TITLE, 'pgNum': 10, 'maxresults': 20})

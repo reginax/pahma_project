@@ -32,11 +32,18 @@
             <label>Object Name</label>
         </td>
         <td>
-            <input type="text" id="determination" name="determination"
-                   value="{{ searchValues.determination }}"/>
+            <input type="text" id="objectname" name="objectname"
+                   value="{{ searchValues.objectname }}"/>
         </td>
+
         <td>
-            <label>Medium</label></td>
+            <label>Medium</label>
+        <select id="medium_qualifier" name="medium_qualifier">
+                {% for option in qualifiers %}
+                    <option value="{{option}}"{% if option == searchValues.medium_qualifier %} selected{% endif %}>{{option}}</option>
+                {% endfor %}
+        </select>
+        </td>
         <td>
             <input type="text" id="medium" name="medium"
                    value="{{ searchValues.medium }}"/>
@@ -64,9 +71,15 @@
         </td>
         <td>
             <label>Culture</label>
+       <select id="culture_qualifier" name="culture_qualifier">
+                {% for option in qualifiers %}
+                    <option value="{{option}}"{% if option == searchValues.culture_qualifier %} selected{% endif %}>{{option}}</option>
+                {% endfor %}
+        </select>
         </td>
         <td>
-            <input type="text" id="culture" name="culture" value="{{ searchValues.culture }}"/>
+            <input type="text" id="culture" name="culture"
+                   value="{{ searchValues.culture }}"/>
         </td>
         <td>
             <label>Description</label>

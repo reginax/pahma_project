@@ -15,17 +15,13 @@
             <input type="checkbox" name="item-{{ item.counter }}" value="{{ item.csid }}" checked>
             <b><a href="?displayType=full&accession={{ item.accession }}">{{ item.accession }}</a></b>
         </div>
-        <div><h2><a href="#" onclick="submitForm(0,'determination','{{ item.determination }}')">{{ item.determination }}</a></h2>
+        <div><h2><a href="#" onclick="submitForm(0,'objectname','{{ item.objectname }}')">{{ item.objectname }}</a></h2>
             {% if item.majorgroup %}
             (<a href="#" onclick="submitForm(0,'majorgroup','{{ item.majorgroup }}')">{{ item.majorgroup }}</a>){% endif %}</div>
         <div>
             {% if item.provenance %}
             Provenance:
-            <a href="#" onclick="submitForm(0,'county','{{ item.provenance }}')">{{ item.provenance }}</a>
-            {%  else %}
-            <a href="#" onclick="submitForm(0,'county','{{ item.county }}')">{{ item.county }}</a> /
-            <a href="#" onclick="submitForm(0,'state','{{ item.state }}')">{{ item.state }}</a> /
-            <a href="#" onclick="submitForm(0,'country','{{ item.country }}')">{{ item.country }}</a>
+            <a href="#" onclick="submitForm(0,'medium','{{ item.medium }}')">{{ item.medium }}</a>
             {% endif %}
         </div>
         {% if item.L1 and item.L2 %}

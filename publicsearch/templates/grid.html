@@ -1,33 +1,34 @@
-{% for item in items %}
+<div class="grid-wrapper">
+    {% for item in items %}
     <div class="grid">
         <div class="tiny" style="padding-bottom: 4px;">
             <input type="checkbox" name="item-{{ item.counter }}" value="{{ item.csid }}" checked>
-            <a href="?accession={{ item.accession }}&displayType=v2">{{ item.accession }}</a>
+            <a href="?maxresults=1&accession={{ item.accession }}&displayType=full">{{ item.accession }}</a>
         </div>
         {% if item.blobs %}
             <div>
-            {% for t in item.blobs %}
-                <a target="image"
-                   href="{{ imageserver }}/blobs/{{ t }}/derivatives/OriginalJpeg/content">
-                    <img height="100px"
-                         src="{{ imageserver }}/blobs/{{ t }}/derivatives/Thumbnail/content"/>
-                </a>
-            {% endfor %}
+                {% for t in item.blobs %}
+                    <a target="image"
+                       href="{{ imageserver }}/blobs/{{ t }}/derivatives/OriginalJpeg/content">
+                        <img height="100px"
+                             src="{{ imageserver }}/blobs/{{ t }}/derivatives/Thumbnail/content"/>
+                    </a>
+                {% endfor %}
             </div>
         {% else %}
             <div style="height: 100px; width: 100px; background-color: lightgray">
             <br/>&nbsp;[no image]
             </div>
         {% endif %}
-        <p><h4>{{ item.determination }}</h4></p>
-        {% if item.provenance %}
-        <p class="tiny">Provenance: {{ item.provenance }}</p>{% endif %}
+        <p><h4>{{ item.objectname }}</h4></p>
         {% if item.collector %}
         <p class="tiny">Collector: {{ item.collector }}</p>{% endif %}
+        {% if item.medium %}
+        <p class="tiny">Medium: {{ item.medium }}</p>{% endif %}
+        {% if item.culture %}
+        <p class="tiny">Culture: {{ item.culture }}</p>{% endif %}
         {% if item.collectionnumber %}
         <p class="tiny">Collection Number: {{ item.collectionnumber }}</p>{% endif %}
-        {% if item.locality %}
-        <p class="tiny">Locality: {{ item.locality }}</p>{% endif %}
         {% if item.earlycollectiondate %}
             <p class="tiny">Collection date: {{ item.collectiondate }}</p>{% endif %}
         {% if item.habitat %}
@@ -36,3 +37,4 @@
             <p class="tiny">Elevation: {{ item.elevation }} {{ item.elevationunit }}</p>{% endif %}
     </div>
 {% endfor %}
+</div>

@@ -3,7 +3,7 @@
     <tr>
         <th></th>
         <th>Museum Number</th>
-        <th>Object Number</th>
+        <th>Object Name</th>
         <th>Collector</th>
         <th>Collection Date</th>
         <th>Medium</th>
@@ -23,7 +23,7 @@
             </td>
             <td>
                 <a href="#"
-                   onclick="submitForm(0,'determination','{{ item.determination }}')">{{ item.determination }}</a>
+                   onclick="submitForm(0,'determination','{{ item.objectname }}')">{{ item.objectname }}</a>
             </td>
             <td><a href="#"
                    onclick="submitForm(0,'collector','{{ item.collector }}')">{{ item.collector }}</a>
