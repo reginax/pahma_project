@@ -2,8 +2,9 @@
 
 from os import path
 from common import cspace # we use the config file reading function
+from cspace_django_site import settings
 
-config = cspace.getConfig(path.dirname(__file__), 'search')
+config = cspace.getConfig(path.join(settings.BASE_PARENT_DIR, 'config'), 'search')
 
 MAXMARKERS = config.get('search', 'MAXMARKERS')
 MAXRESULTS = config.get('search', 'MAXRESULTS')

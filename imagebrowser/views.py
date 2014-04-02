@@ -23,8 +23,9 @@ SOLRCORE = 'pahma-metadata'
 
 from os import path
 from common import cspace # we use the config file reading function
+from cspace_django_site import settings
 
-config = cspace.getConfig(path.dirname(__file__), 'imagebrowser')
+config = cspace.getConfig(path.join(settings.BASE_PARENT_DIR, 'config'), 'imagebrowser')
 
 MAXMARKERS = config.get('imagebrowser', 'MAXMARKERS')
 MAXRESULTS = config.get('imagebrowser', 'MAXRESULTS')

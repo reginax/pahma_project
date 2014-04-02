@@ -1,113 +1,186 @@
-$(document).ready(function () {
-    $('.drillDown').click(function () {
-        $(this).hide();
-        $(this).parent().children('.drilled').show();
-        $(this).parent().children('.drillUp').show();
-    });
-
-    $('.drillUp').click(function () {
-        $(this).hide();
-        $(this).parent().children('.drilled').hide();
-        $(this).parent().children('.drillDown').show();
-    });
-
-    $('#resultsListing').tablesorter({
-        headers: {
-            0: {sorter: false},
-            1: {width: '100px' },
-            2: {width: '260px' },
-            4: {width: '90px' },
-            9: {width: '180px' }
-        }
-    });
-
-    // $('#map-google').click(function () {
-    //     $('#pane').val(2);
-    // });
-    // $('#map-bmapper').click(function () {
-    //     $('#pane').val(2);
-    // });
-    
-    var activePane = $('#pane').val();
-    $( "#tabs" ).tabs({ active: activePane,
-        beforeActivate: function(activePane) {
-            return function( e, ui ) {
-                activePane = ui.newPanel.index() - 1;
-                $('#pane').val(activePane);
-                console.log(activePane);
-            }
-        }(activePane) 
-    });
-    
-    
-    //console.log('pane is:', $('#pane').val());
-    // $( "#tabs" ).tabs( "option", "active", $('#pane').val() );
-
-    // we copy the input values from the search form and add them to selectedItems form
-    // as hidden values to preserve those values after each selection is made.
-    $('#selectedItems').submit(function () {
-
-        $('#search input').each(function () {
-            var el = $(this);
-            //console.log(el.attr('name'), ': type is', el.attr('type'), el.val());
-            if (el.attr('type') == 'radio') {
-                //console.log('check', el.checked);
-                if ($('input[name="' + name + '"]:checked').length != 0) {
-                    //if (el.checked) {
-                    //console.log('radio', el.attr('name'), el.val());
-                    $('<input type="hidden" name="' + el.attr('name') + '" />')
+function getFormData(formId) {
+    //create requestObj from search form
+    var searchForm = $(formId).find(':input').not($('button'));
+    var formData = {};
+    $.each(searchForm, function (formData) {
+        return function (index, inputItem) {
+            if ($(inputItem).attr('type') == 'checkbox') {
+                if ($(inputItem).is(':checked')) {
+                    formData[$(inputItem).attr('name')] = $(inputItem).val();
                 }
             }
             else {
-                //console.log(el.attr('name'), el.val());
-                $('<input type="hidden" name="' + el.attr('name') + '" />')
-                    .val(el.val())
-                    .appendTo('#selectedItems');
+                formData[$(inputItem).attr('name')] = $(inputItem).val();
             }
+        }
+    }(formData));
+
+    return formData;
+}
+
+function chooseSlideDirection(targetId) {
+    var Elem = $(targetId);
+    if ($(Elem).css("display") == "none") { Elem.slideDown(); }
+    else { Elem.slideUp(); }
+}
+
+
+$(document).ready(function () {
+    $('#about').click(function() {
+        chooseSlideDirection('#aboutTarget');
+        $('#helpTarget').slideUp();
+        $('#creditsTarget').slideUp();
+    });
+    $('#help').click(function() {
+        chooseSlideDirection('#helpTarget');
+        $('#aboutTarget').slideUp();
+        $('#creditsTarget').slideUp();
+    });
+    $('#credits').click(function() {
+        chooseSlideDirection('#creditsTarget');
+        $('#helpTarget').slideUp();
+        $('#aboutTarget').slideUp();
+    });
+    
+    $("#acceptterms").click(function () {
+        $(this).css({
+            background: "",
+            border: ""
         });
+    });
+
+    $('#search-reset').click(function () {
+        $('#search')[0].reset();
+        $('#resultsPanel').html('');
+    });
+
+    $('#search-list, #search-full, #search-grid').click(function () {
+        submitForm($(this).attr('name'));
+    });
+
+    $('#search input[type=text]').keypress(function(event) {
+        if (event.which == 13) {
+            submitForm('search-list');
+        }
+    });
+
+    var submitForm = function(displaytype) {
+        var formData = getFormData('#search');
+        formData[displaytype] = '';
+
+        if (!formData['acceptterms']) {
+            $("#acceptterms")
+                .css({
+                    background: "yellow",
+                    border: "3px red solid"
+                });
+        }
+        else {
+            $('#resultsPanel').css({
+                display: "none"
+            });
+
+            $('#waitingImage').css({
+                display: "block"
+            });
+
+            $.post("../results/", formData).done(function (data) {
+                $('#resultsPanel').html(data);
+                $('#resultsListing').tablesorter({
+                    headers: {
+                        0: {sorter: false},
+                        1: {width: '100px' },
+                        2: {width: '260px' },
+                        4: {width: '90px', sorter: 'isoDate' },
+                        9: {width: '180px' }
+                    }
+                });
+                $('#tabs').tabs({ active: 0 });
+
+                $('#resultsPanel').css({
+                    display: "block"
+                });
+
+                $('#waitingImage').css({
+                    display: "none"
+                });
+            });
+        }
+    };
+
+    $(document).on('click', '#select-items', function() {
+        if ($('#select-items').is(':checked')) {
+            $('#selectedItems input:checkbox').prop('checked', true);
+        } else {
+            $('#selectedItems input:checkbox').prop('checked', false);
+        }
+    });
+
+    $(document).on('click', '.map-item', function () {
+        var Elem = $(this).siblings('.small-map');
+        if ($(Elem).css("display") == "none") {
+            var marker = ($(Elem).attr('data-marker'));
+            console.log('img ' + marker);
+            $(Elem).html('<img src="http://maps.google.com/maps/api/staticmap?&zoom=10&size=400x200&maptype=roadmap&markers=' +
+            marker + '&sensor=false"/>' +
+            '<div style="height: 40px;">' +
+            '<small><a target="_map" href="http://maps.google.com/?q=loc:'+marker+'&amp;source=embed">Larger Map</a>'+
+            '</small></div>');
+            Elem.slideDown();
+        }
+        else {
+            Elem.slideUp();
+        }
+    });
+
+    $(document).on('click', '.facet-item', function () {
+        var key = ($(this).attr('data-facetType'));
+        var value = ($(this).text());
+
+        if (key != '') {
+            var keyElement = $('#' + key);
+            var keyElQual = $('#' + key + '_qualifier');
+            if (keyElement != null) {
+                keyElement.val(value);
+                if (keyElQual != null) {
+                    keyElQual.val('exact');
+                }
+            }
+        }
+
+        var formData = getFormData('#search');
+        // TODO: CURRENTLY DEFAULT TO SEARCH-LIST BUT SHOULD HAVE A PERSISTENT DISPLAY TYPE? CURRENTLY DOESN'T ON DEV
+        formData['search-list'] = '';
+
+        $.post("../results/", formData).done(function (data) {
+            $('#resultsPanel').html(data);
+            $('#resultsListing').tablesorter({
+                headers: {
+                    0: {sorter: false},
+                    1: {width: '100px' },
+                    2: {width: '260px' },
+                    4: {width: '90px', sorter: 'isoDate' },
+                    9: {width: '180px' }
+                }
+            });
+            $('#tabs').tabs({ active: 1 });
+        });
+    });
+
+    $(document).on('click', '#map-bmapper, #map-google', function () {
+        var formData = getFormData('#selectedItems');
+        // formData[$(this).attr('name')] = '';
+
+        if ($(this).attr('id') == 'map-bmapper') {
+            $.post("../bmapper/", formData).done(function (data) {
+                window.open(data, '_blank');
+            });
+        } else if ($(this).attr('id') == 'map-google') {
+            $.post("../gmapper/", formData).done(function (data) {
+                $('#maps').html(data);
+            });
+        }
     });
 // we need to make sure this gets done in the event the page is created anew (e.g. via a pasted URL)
 $('#tabs').tabs({ active: 0 });
 });
-
-
-function textToggle(divName) {
-    var ele = document.getElementById(divName);
-    var ele_toggle = document.getElementById(divName + '_toggle');
-    if (ele.style.display == 'none') {
-        ele.style.display = 'block';
-        ele_toggle.innerHTML = "hide";
-    }
-    else {
-        ele.style.display = 'none';
-        ele_toggle.innerHTML = "show";
-    }
-    return false;
-}
-
-
-function submitForm(pane, key, value) {
-    //console.log(key, value);
-    if (key != '') {
-        document.getElementById(key).value = value;
-    }
-    document.getElementById('pane').value = pane;
-    //console.log('pane',pane);
-    document.forms['search'].submit();
-    return false;
-}
-
-$(function () {
-    $("[id^=select-items]").click(function (event) {
-        var selected = this.checked;
-        var mySet = $(this).attr("name");
-        mySet = mySet.replace('select-', '');
-        // console.log(mySet);
-        // Iterate each checkbox
-        $("[name^=" + mySet + "]").each(function () {
-            this.checked = selected;
-        });
-    });
-    return false;
-});
-
