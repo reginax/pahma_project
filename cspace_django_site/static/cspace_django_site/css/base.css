@@ -72,12 +72,15 @@ a:hover { color: #036; }
 .size1of10{width:10%;}
 .size2of10{width:20%;}
 
-.float{
-    margin: 7px;
+.grid{
+    margin: 5px;
     /* chrome & firefox only */
 	display: inline-block;
-	width: 210px;
-	height: 250px;
+    width: 180px;
+    vertical-align: top;
+    position: relative;
+    height: 300px;
+    overflow: hidden;
 }
 
 p.tiny{
@@ -240,7 +243,7 @@ a#logout:hover { background-color: #333; color: #FFF; }
         cspace_django_project/cspace_django_site/static/cspace_django_site/images/header-logo.png
         Then comment the following background line, and uncomment the line after that. */
     
-    /* background: url(../images/header-logo-cspace.png) no-repeat right top; */
+    #background: url(../images/header-logo-cspace.png) no-repeat right top;
     background: url(../images/header-logo-pahma.png) no-repeat left top, url(../images/header-logo-cspace.png) no-repeat right top;
 }
 

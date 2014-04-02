@@ -4,3 +4,4 @@ logs/logfile.txt*
 logs/settings.log
 config/*.cfg
 *.DS_Store
+.idea
