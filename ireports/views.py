@@ -10,8 +10,13 @@ from django import forms
 
 from operator import itemgetter
 
-#JRXMLDIRECTORY = '/usr/local/share/django/jrxml/%s'
-JRXMLDIRECTORY = '../jrxml/%s'
+from common import cspace # we use the config file reading function
+from cspace_django_site import settings
+
+from os import path
+
+config = cspace.getConfig(path.join(settings.BASE_PARENT_DIR, 'config'), 'ireports')
+JRXMLDIRPATTERN = config.get('connect', 'JRXMLDIRPATTERN')
 # alas, there are many ways the XML parsing functionality might be installed.
 # the following code attempts to find and import the best...
 try:
@@ -55,7 +60,7 @@ def getReportparameters(filename):
     parms = {}
     csidParms = True
     try:
-        reportXML = parse(JRXMLDIRECTORY % filename)
+        reportXML = parse(JRXMLDIRPATTERN % filename)
         parameters = reportXML.findall('{http://jasperreports.sourceforge.net/jasperreports}parameter')
         #print 'parameters',parameters
         for p in parameters:
