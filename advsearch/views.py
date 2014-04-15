@@ -7,7 +7,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django import forms
 import re
 
-
 #parms = {'kw': ['orchid', 'true', 'a keyword search value, please', 'Keyword']}
 #parms = {'determination': ['Allium hyalinum Curran', 'true', '', 'taxon'],
 #    'object Number': ['UC903060', 'true', '', 'collectionobjects_common%3AobjectNumber']}
@@ -15,9 +14,9 @@ parms = {
     #'determination': ['Allium hyalinum Curran', 'true', '', 'collectionobjects_ucjeps%3Ataxon', ''],
     #'field collection country': ['Peru', 'true', '', 'collectionobjects_ucjeps%3AfieldLocCountry', ''],
     'field location verbatim': ['', 'true', '', 'collectionobjects_pahma%3Apahmafieldlocverbatim', ''],
-    'field collector': ['Kroeber', 'true', '', 'collectionobjects_common%3AfieldCollectors',''],
-    'object Number': ['', 'true', '', 'collectionobjects_common%3AobjectNumber','']
-    }
+    'field collector': ['Kroeber', 'true', '', 'collectionobjects_common%3AfieldCollectors', ''],
+    'object Number': ['', 'true', '', 'collectionobjects_common%3AobjectNumber', '']
+}
 #from operator import itemgetter
 
 # alas, there are many ways the XML parsing functionality might be installed.
@@ -46,11 +45,14 @@ except ImportError:
             except ImportError:
                 print("Failed to import ElementTree from any known place")
 
+from os import path
 from common import cspace
-from cspace_django_site.main import cspace_django_site
+from cspace_django_site import settings
 
-config = cspace_django_site.getConfig()
+config = cspace.getConfig(path.join(settings.BASE_PARENT_DIR, 'config'), 'advsearch.cfg')
+AUTOSUGGESTURL = config.get('advsearch', 'AUTOSUGGESTURL')
 TITLE = 'Advanced Search'
+
 
 @login_required()
 def search(request):
@@ -77,7 +79,7 @@ def search(request):
                 items = []
             results = []
             hostname = 'pahma-dev.cspace.berkeley.edu'
-            tenant   = 'pahma'
+            tenant = 'pahma'
             for i in items:
                 r = []
                 csid = i.find('.//csid')
@@ -99,6 +101,7 @@ def search(request):
             zeroResults = True if len(results) == 0 else False
             return render_to_response('search.html',
                                       {'labels': 'Object Name|Taxonomic Name'.split('|'),
+                                       'AUTOSUGGESTURL': AUTOSUGGESTURL,
                                        'results': results, 'zeroResults': zeroResults,
                                        'form': search_form, 'url': url, 'title': TITLE},
                                       context_instance=RequestContext(request))
@@ -106,7 +109,8 @@ def search(request):
         search_form = forms.Form()
         for p in parms:
             if str(parms[p][1]) == 'false':
-                search_form.fields[p] = forms.CharField(initial=parms[p][0], widget=forms.widgets.HiddenInput(), required=True)
+                search_form.fields[p] = forms.CharField(initial=parms[p][0], widget=forms.widgets.HiddenInput(),
+                                                        required=True)
             else:
                 search_form.fields[p] = forms.CharField(initial=parms[p][0], help_text=parms[p][2], required=True)
 

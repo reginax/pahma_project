@@ -100,7 +100,7 @@ $('[id]').map(function() {
         $(this).autocomplete({
             source: function(request, response) {
                 $.ajax({
-                    url: "/autosuggest?connect_string=dev.cspace.berkeley.edu:nuxeo:reporter:csR2p4rt2r",
+                    url: "{{ AUTOSUGGESTURL }}",
                     dataType: "json",
                     data: {
                         q : request.term,

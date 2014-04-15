@@ -21,7 +21,8 @@ from appconfig import SOLRSERVER, SOLRCORE
 
 SEARCHRESULTS = {}
 
-# This just prints the search form
+
+@login_required()
 def publicsearch(request):
     if request.method == 'GET' and request.GET != {}:
         context = {'searchValues': request.GET}
