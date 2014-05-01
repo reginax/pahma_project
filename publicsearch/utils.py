@@ -396,7 +396,10 @@ def doSearch(solr_server, solr_core, context):
     #print 'items',len(context['items'])
     context['count'] = response._numFound
     m = {}
-    for p in PARMS: m[PARMS[p][3].replace('_txt', '_s')] = p
+    context['labels'] = {}
+    for p in PARMS:
+        m[PARMS[p][3].replace('_txt', '_s')] = p
+        context['labels'][p] = PARMS[p][0]
     context['fields'] = [m[f] for f in facetfields]
     context['facetflds'] = [[m[f], facetflds[f]] for f in facetfields]
     context['range'] = range(len(facetfields))
@@ -425,6 +428,7 @@ context = doSearch(SOLRSERVER, SOLRCORE, context)
 
 if 'errormsg' in context:
     solrIsUp = False
+    print 'Initial solr search failed. Concluding that Solr is down or unreachable... Will not be trying again! Please fix and restart!'
 else:
     for facet in context['facetflds']:
         #print 'facet',facet[0],len(facet[1])
