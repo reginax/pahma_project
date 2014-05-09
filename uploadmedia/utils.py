@@ -66,8 +66,9 @@ def getDropdowns():
     return {
         'creators':
             {
-                "Natasha Johnson": "urn:cspace:pahma.cspace.berkeley.edu:personauthorities:name(person):item:name(7652)'Natasha Johnson'",
                 "Alicja Egbert": "urn:cspace:pahma.cspace.berkeley.edu:personauthorities:name(person):item:name(8683)'Alicja Egbert'",
+                "Natasha Johnson": "urn:cspace:pahma.cspace.berkeley.edu:personauthorities:name(person):item:name(7652)'Natasha Johnson'",
+                "Jon Oligmueller": "urn:cspace:pahma.cspace.berkeley.edu:personauthorities:name(person):item:name(JonOligmueller1372192617217)'Jon Oligmueller'",
                 "Paolo Pellegatti": "urn:cspace:pahma.cspace.berkeley.edu:personauthorities:name(person):item:name(8020)'Paolo Pellegatti'"
             },
         'rightsholders':
