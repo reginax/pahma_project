@@ -1,0 +1,32 @@
+To make this webapp go:
+
+* Copy one of postblobviaFile.sh or postblobviaHttp.sh to postblob.sh in this directory.
+
+* (Use the first if this webapp is running on the same server as the CSpace deployment it
+  address -- and therefore can use the "direct file move" CSpace blob upload facility). Use
+  the latter if the blob must be POSTed over HTTP to the CSpace server.
+
+* Edit the parameters in the beginning of the script so that the script will run correctly
+  (i.e. passwords, servers, etc. etc.)
+
+* Ensure that the needed "CGI webapps" are installed in /var/www/cgi-bin, and that the
+  uploadmedia*.cfg files exist there and are readable by this webapp. (This webapp
+  uses cswaUtils and cswaDB.
+
+* Ensure that the temporary cache for images and intermediate files is present and properly configured
+  (i.e. usually is is /tmp/upload_cache, SELinux tags=???, ownership=apache:apache,
+  permissions=writable by Apache)
+
+* Alas, there is no way to test this webapp except to upload some media files.
+
+* There are some helper scripts: "runJob.sh" runs a single job from the command line. "runHelpers.sh"
+  attempts to find problem media and create jobs to re-load/re-link them.
+
+* The batch portion of the system is run via cron. And there is a script that reports on the status of uploads
+  that runs via cron as well. Here is the current crontab for apache on pahma-dev, where this
+  webapp runs:
+
+[jblowe@pahma-dev ~]$ sudo crontab -u apache -l
+
+10  5  * * * perl /usr/local/share/django/pahma_project/uploadmedia/checkRuns.pl jobs | expand -12 | mail -s "recent BMU jobs" pahma-cspace@berkeley.edu > /dev/null 2>&1
+59 10  * * * shopt -s nullglob; for f in /tmp/upload_cache/*.step1.csv; do f=$(echo $f | sed -e 's/\.step1.csv//'); echo  Starting `date` $f >> /tmp/upload_cache/batches.log ; time /usr/local/share/django/pahma_project/uploadmedia/postblob.sh $f >> /tmp/upload_cache/batches.log ; echo  Ending `date` $f >> /tmp/upload_cache/batches.log ; done > /dev/null 2>&1
