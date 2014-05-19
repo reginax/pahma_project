@@ -116,14 +116,24 @@ class CleanlinesFile(file):
 
 
 def getRecords(rawFile):
+    #csvfile = csv.reader(codecs.open(rawFile,'rb','utf-8'),delimiter="\t")
     try:
-        records = []
-        #csvfile = csv.reader(codecs.open(rawFile,'rb','utf-8'),delimiter="\t")
         f = CleanlinesFile(rawFile, 'rb')
         csvfile = csv.reader(f, delimiter="|")
+    except IOError:
+        message = 'Expected to be able to read %s, but it was not found or unreadable' % rawFile
+        return message,-1
+    except:
+        raise
+
+    try:
+        records = []
         for row, values in enumerate(csvfile):
             records.append(values)
         return records, len(values)
+    except IOError:
+        message = 'Could not read (or maybe parse) rows from %s' % rawFile
+        return message,-1
     except:
         raise
 
@@ -140,6 +150,10 @@ if __name__ == "__main__":
 
     #print 'config',config
     records, columns = getRecords(sys.argv[1])
+    if columns == -1:
+        print 'MEDIA: Error! %s' % records
+        sys.exit()
+        
     print 'MEDIA: %s columns and %s lines found in file %s' % (columns, len(records), sys.argv[1])
     outputFile = sys.argv[1].replace('.step2.csv', '.step3.csv')
     outputfh = csv.writer(open(outputFile, 'wb'), delimiter="\t")
