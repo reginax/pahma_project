@@ -1,10 +1,23 @@
 __author__ = 'jblowe'
 
-from django.contrib.auth.decorators import login_required
+# a django version of the autosuggest functionality implemented in the "legacy" CGI webapps"
+#
+# invoke as:
+#
+# http://localhost:8000/autosuggest/?q=1-200&elementID=ob.objno1
+#
+# returns json like:
+#
+# [{"value": "1-200"}, {"value": "1-20000"}, {"value": "1-200000"}, ...  {"value": "1-200025"}, {"s": "object"}]
+
+
 from django.http import HttpResponse
-from django.core.context_processors import csrf
-from django.shortcuts import render_to_response
-from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from os import path
+from common import cspace # we use the config file reading function
+from cspace_django_site import settings
+
+config = cspace.getConfig(path.join(settings.BASE_PARENT_DIR, 'config'), 'autosuggest')
+connect_string = config.get('connect', 'connect_string')
 
 import sys, json, re
 import cgi
@@ -95,8 +108,6 @@ def dbtransaction(q, elementID, connect_string):
 
         result.append({'s': srchindex})
 
-        #print 'Content-Type: application/json\n\n'
-        #prxnt 'debug autosuggest', srchindex,elementID
         return json.dumps(result)    # or "json.dump(result, sys.stdout)"
 
     except pgdb.DatabaseError, e:
@@ -108,8 +119,6 @@ def dbtransaction(q, elementID, connect_string):
 
 #@login_required()
 def autosuggest(request):
-    #data = '<h1>hi! %s</h1>' % (app2run)
-    connect_string = request.GET['connect_string']
     elementID = request.GET['elementID']
     q = request.GET['q']
     return HttpResponse(dbtransaction(q,elementID,connect_string), mimetype='text/json')

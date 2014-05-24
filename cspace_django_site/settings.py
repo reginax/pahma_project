@@ -148,6 +148,7 @@ INSTALLED_APPS = (
     'service',
     'landing',
     'service',
+    'autosuggest',
     'ireports',
     'imageserver',
     'imagebrowser',
