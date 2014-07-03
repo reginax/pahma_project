@@ -20,21 +20,10 @@
             <br/>&nbsp;[no image]
             </div>
         {% endif %}
-        <p><h4>{{ item.objectname }}</h4></p>
-        {% if item.collector %}
-        <p class="tiny">Collector: {{ item.collector }}</p>{% endif %}
-        {% if item.medium %}
-        <p class="tiny">Medium: {{ item.medium }}</p>{% endif %}
-        {% if item.culture %}
-        <p class="tiny">Culture: {{ item.culture }}</p>{% endif %}
-        {% if item.collectionnumber %}
-        <p class="tiny">Collection Number: {{ item.collectionnumber }}</p>{% endif %}
-        {% if item.earlycollectiondate %}
-            <p class="tiny">Collection date: {{ item.collectiondate }}</p>{% endif %}
-        {% if item.habitat %}
-            <p class="tiny">Habitat: {{ item.habitat }}</p>{% endif %}
-        {% if item.elevation %}
-            <p class="tiny">Elevation: {{ item.elevation }} {{ item.elevationunit }}</p>{% endif %}
+        <p><h4>{{ item.mainentry }}</h4></p>
+        {% for i in item.otherfields %}
+            {% if i.value %}<p class="tiny">{{ i.label }}: {{ i.value }}</p>{% endif %}
+        {% endfor %}
     </div>
 {% endfor %}
 </div>

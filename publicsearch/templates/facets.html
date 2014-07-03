@@ -6,7 +6,7 @@
             {% endfor %}
         </tr>
         <tr>
-            {% for facet in facetflds %}
+            {% for facet in facets %}
                 <td style="max-width: 220px;">
                     {% for f in facet.1 %}
                         <li class="facet"><a href="#" class="facet-item" data-facetType={{ facet.0 }}>{{ f.0 }}</a> {{ f.1 }}</li>

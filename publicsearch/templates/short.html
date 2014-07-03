@@ -2,30 +2,19 @@
     <thead>
     <tr>
         <th></th>
-        <th>Specimen ID</th>
-        <th>Scientific Name</th>
-        <th>Collector</th>
-        <th>Collection Date</th>
-        <th>Collection No.</th>
-        <th>County/Prov</th>
-        <th>State</th>
-        <th>Country</th>
-        <th>Locality</th>
+        {% for label in labels %}
+            <th>{{ label }}</th>
+        {% endfor %}
     </tr>
     </thead>
     <tbody>
     {% for item in items %}
         <tr>
             <td><input type="checkbox" name="item-{{ item.counter }}" value="{{ item.csid }}" checked></td>
-            <td><a href="?maxresults=1&accession={{ item.accession }}&displayType=full">{{ item.accession }}</a></td>
-            <td><a class="facet-item" data-facetType="determination">{{ item.determination }}</a></td>
-            <td><a class="facet-item" data-facetType="collector">{{ item.collector }}</a></td>
-            <td><a title="{{ item.earlycollectiondate }}" class="facet-item" data-facetType="collectiondate">{{ item.collectiondate }}</a></td>
-            <td><a class="facet-item" data-facetType="collectionnumber">{{ item.collectionnumber }}</a></td>
-            <td><a class="facet-item" data-facetType="county">{{ item.county }}</a></td>
-            <td><a class="facet-item" data-facetType="state">{{ item.state }}</a></td>
-            <td><a class="facet-item" data-facetType="country">{{ item.country }}</a></td>
-            <td><a class="facet-item" data-facetType="locality">{{ item.locality }}</a></td>
+            {% for i in item.otherfields %}
+                <td><a class="facet-item" data-facetType="i.name">{{ i.value }}</a></td>
+            {% endfor %}
+            <!-- td><a title="{{ item.earlycollectiondate }}" class="facet-item" data-facetType="collectiondate">{{ item.collectiondate }}</a></td -->
         </tr>
     {% endfor %}
     </tbody>
