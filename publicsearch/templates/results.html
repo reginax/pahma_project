@@ -8,9 +8,9 @@
     <input type="hidden" name="url" id="url" value="{{ url }}"/>
     </div>
     {% if displayType == 'list' %}
-        {% include "pahmashort.html" %}
+        {% include "short.html" %}
     {% elif displayType == 'full' %}
-        {% include "pahmacompact.html" %}
+        {% include "compact.html" %}
     {% elif displayType == 'grid' %}
         {% include "grid.html" %}
     {% endif %}

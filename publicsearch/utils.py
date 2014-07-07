@@ -11,10 +11,10 @@ from cspace_django_site.main import cspace_django_site
 
 # global variables
 
-from appconfig import PARMS, MAXMARKERS, MAXRESULTS, MAXLONGRESULTS, MAXFACETS, IMAGESERVER, BMAPPERSERVER, BMAPPERDIR
-from appconfig import BMAPPERCONFIGFILE, SOLRSERVER, SOLRCORE, LOCALDIR, DROPDOWNS, SEARCH_QUALIFIERS
+from appconfig import MAXMARKERS, MAXRESULTS, MAXLONGRESULTS, MAXFACETS, IMAGESERVER, BMAPPERSERVER, BMAPPERDIR
+from appconfig import BMAPPERCONFIGFILE, SOLRSERVER, SOLRCORE, LOCALDIR, DROPDOWNS, SEARCH_QUALIFIERS, PARMS, FIELDS, LOCATION, EMAILABLEURL
 
-SolrIsUp = True
+SolrIsUp = True # an initial guess! this is verified below...
 FACETS = {}
 
 # Get an instance of a logger, log some startup info
@@ -57,31 +57,17 @@ def deURN(urn):
 
 def getfields(fieldset):
     # for solr faceting
-    if fieldset == 'bmapperheader':
-        return ["Institution Code",
-                "Catalog Number",
-                "Scientific Name",
-                "Collector",
-                "Collector Num Prefix",
-                "Collector Num",
-                "Collector Num Suffix",
-                "early J date",
-                "late J date",
-                "Date Collected",
-                "County",
-                "Elevation",
-                "Locality",
-                "Latitude",
-                "Longitude",
-                "Datum"]
-    elif fieldset == 'bmapperdata':
-        return ["na", "accession", "objectname", "collector", "na", "collectionnumber", "na", "collectiondate",
-                "", "", "county", "elevation", "locality", "L1", "L2", "datum"]
-    elif fieldset == 'csvdata':
-        return ["ucjeps", "accession", "objectname", "collector", "", "collectionnumber", "", "collectiondate",
-                "", "", "county", "elevation", "locality", "L1", "L2", "datum"]
-    elif fieldset == 'facetfields':
-        return ['objectname_s','medium_s','culture_s']
+    if fieldset == 'inCSV':
+        pickField = 'name'
+    elif fieldset == 'Facet':
+        pickField = 'solrfield'
+    elif fieldset == 'FacetLabels':
+        pickField = 'label'
+        fieldset = 'Facet'
+    else:
+        pickField = 'solrfield'
+
+    return [ f[pickField] for f in FIELDS[fieldset] ]
 
 
 def getfacets(response):
@@ -106,30 +92,25 @@ def parseTerm(queryterm):
     return result
 
 
-def makeMarker(result):
-    if 'L1' in result and 'L2' in result:
-        #return 'color:green%%7Clabel:G%%7C%s,%s' % (result['L1'], result['L2'])
-        #return 'label:%s%%7C%s,%s' % (result['accession'],result['L1'], result['L2'])
-        return '%s,%s' % (result['L1'], result['L2'])
+def makeMarker(location):
+    if location:
+        return location
     else:
         return None
 
 
 def writeCsv(filehandle, items, writeheader):
-    fieldset = getfields('csvdata')
+    fieldset = getfields('inCSV')
     writer = csv.writer(filehandle, delimiter='\t')
     # write the berkeley mapper header as the header for the csv file, if asked...
     if writeheader:
-        writer.writerow(getfields('bmapperheader'))
+        writer.writerow(getfields('bMapper'))
     for item in items:
         # get the cells from the item dict in the order specified; make empty cells if key is not found.
         row = []
-        for x in fieldset:
-            if x in item.keys():
-                cell = item[x]
-            else:
-                cell = ''
-                # the following few lines are a hack to handle non-unicode data which appears to be present in the solr datasource
+        for x in item['otherfields']:
+            cell = x['value']
+            # the following few lines are a hack to handle non-unicode data which appears to be present in the solr datasource
             if isinstance(cell, unicode):
                 try:
                     cell = cell.translate({0xd7: u"x"})
@@ -152,7 +133,7 @@ def setupGoogleMap(requestObject, context):
     markerlist = []
     for item in context['items']:
         if item['csid'] in selected:
-            m = makeMarker(item)
+            m = makeMarker(item['location'])
             if len(mappableitems) >= MAXMARKERS: break
             if m is not None:
                 #print 'm= x%sx' % m
@@ -182,7 +163,7 @@ def setupBMapper(requestObject, context):
     mappableitems = []
     for item in context['items']:
         if item['csid'] in selected:
-            m = makeMarker(item)
+            m = makeMarker(item['location'])
             if m is not None:
                 mappableitems.append(item)
     context['mapmsg'] = []
@@ -218,10 +199,31 @@ def setDisplayType(requestObject):
 
     return displayType
 
+def extractValue(listItem,key):
+    # make all arrays into strings for display
+    if key in listItem:
+        if type(listItem[key]) == type([]):
+            temp = ', '.join(listItem[key])
+        else:
+            temp = listItem[key]
+    else:
+        temp = ''
+
+    # handle dates (convert them to collatable strings)
+    if isinstance(temp, datetime.date):
+        try:
+            #item[p] = item[p].toordinal()
+            temp = temp.isoformat().replace('T00:00:00+00:00', '')
+        except:
+            print 'date problem: ', temp
+
+    return temp
+
 
 def setConstants(context):
     if not SolrIsUp: context['errormsg'] = 'Solr is down!'
     context['imageserver'] = IMAGESERVER
+    context['emailableurl'] = EMAILABLEURL
     context['dropdowns'] = FACETS
     context['timestamp'] = time.strftime("%b %d %Y %H:%M:%S", time.localtime())
     context['qualifiers'] = SEARCH_QUALIFIERS
@@ -256,6 +258,10 @@ def setConstants(context):
         context['core'] = SOLRCORE
         context['maxresults'] = MAXRESULTS
 
+
+    context['PARMS'] = PARMS
+    context['FIELDS'] = FIELDS
+
     return context
 
 
@@ -268,7 +274,7 @@ def doSearch(solr_server, solr_core, context):
     s = solr.SolrConnection(url='%s/%s' % (solr_server, solr_core))
     queryterms = []
     urlterms = []
-    facetfields = getfields('facetfields')
+    facetfields = getfields('Facet')
     if 'map-google' in requestObject or 'csv' in requestObject or 'map-bmapper' in requestObject:
         querystring = requestObject['querystring']
         url = requestObject['url']
@@ -309,7 +315,8 @@ def doSearch(solr_server, solr_core, context):
                             t = ' +'.join(t)
                             t = '(+' + t + ')'
                             t = t.replace('+-', '-') # remove the plus if user entered a minus
-                            index = PARMS[p][3]
+                            index = PARMS[p][3].replace('_ss', '_txt')
+                            index = index.replace('_s', '_txt')
                     else:
                         t = t.split(' ')
                         t = ' +'.join(t)
@@ -340,7 +347,7 @@ def doSearch(solr_server, solr_core, context):
 
     try:
         locsonly = requestObject['locsonly']
-        querystring += " AND %s:[* TO *]" % PARMS['L1'][3]
+        querystring += " AND %s:[-90,-180 TO 90,180]" % LOCATION
         url += '&locsonly=True'
     except:
         locsonly = None
@@ -350,41 +357,43 @@ def doSearch(solr_server, solr_core, context):
                            rows=context['maxresults'], facet_limit=MAXFACETS,
                            facet_mincount=1)
     except:
+        #raise
         context['errormsg'] = 'Solr4 query failed'
         return context
 
-    facetflds = getfacets(response)
+    facets = getfacets(response)
     results = response.results
 
     context['items'] = []
     imageCount = 0
+    displayFields = context['displayType'] + 'Display'
     for i, listItem in enumerate(results):
         item = {}
         item['counter'] = i
-        for p in PARMS:
-            try:
-                # make all arrays into strings for display
-                if type(listItem[PARMS[p][3]]) == type([]):
-                    item[p] = ', '.join(listItem[PARMS[p][3]])
-                else:
-                    item[p] = listItem[PARMS[p][3]]
+        otherfields = []
 
-                # handle dates (convert them to collatable strings)
-                if isinstance(item[p], datetime.date):
-                    try:
-                        #item[p] = item[p].toordinal()
-                        item[p] = item[p].isoformat().replace('T00:00:00+00:00', '')
-                    except:
-                        print 'date problem: ', item[p]
+        for p in PARMS:
+            if 'mainentry' in PARMS[p][1]:
+                item['mainentry'] = extractValue(listItem,PARMS[p][3])
+            elif 'accession' in PARMS[p][1]:
+                item['accession'] = extractValue(listItem,PARMS[p][3])
+
+        for p in FIELDS[displayFields]:
+            try:
+                otherfields.append({'label':p['label'],'name':p['name'],'value': extractValue(listItem,p['solrfield'])})
 
             except:
-                #raise
                 pass
+                #raise
+                #otherfields.append({'label':p['label'],'value': ''})
+        item['otherfields'] = otherfields
         # the list of blob csids need to remain an array, so restore it from psql result
-        if 'blobs' in item.keys():
-            item['blobs'] = item['blobs'].replace(', ',',').split(',')
+        if 'blob_ss' in listItem.keys():
+            item['blobs'] = listItem['blob_ss']
             imageCount += len(item['blobs'])
-        item['marker'] = makeMarker(item)
+        if LOCATION in  listItem.keys():
+            item['marker'] = makeMarker(listItem[LOCATION])
+            item['location'] = listItem[LOCATION]
         context['items'].append(item)
 
     if context['displayType'] in ['full', 'grid'] and response._numFound > MAXLONGRESULTS:
@@ -395,13 +404,20 @@ def doSearch(solr_server, solr_core, context):
 
     #print 'items',len(context['items'])
     context['count'] = response._numFound
+    context['labels'] = []
+    context['fields'] = []
+
     m = {}
-    context['labels'] = {}
+    #for p in FIELDS[displayFields]:
+    #    context['labels'].append(p['label'])
     for p in PARMS:
-        m[PARMS[p][3].replace('_txt', '_s')] = p
-        context['labels'][p] = PARMS[p][0]
-    context['fields'] = [m[f] for f in facetfields]
-    context['facetflds'] = [[m[f], facetflds[f]] for f in facetfields]
+        m[PARMS[p][3]] = PARMS[p][4]
+    #    if PARMS[p][3] in facetfields:
+    #        context['fields'].append(PARMS[p][0])
+
+    context['labels'] = [p['label'] for p in FIELDS[displayFields]]
+    context['facets'] = [[m[f], facets[f]] for f in facetfields]
+    context['fields'] = getfields('FacetLabels')
     context['range'] = range(len(facetfields))
     context['pixonly'] = pixonly
     context['locsonly'] = locsonly
@@ -430,10 +446,15 @@ if 'errormsg' in context:
     solrIsUp = False
     print 'Initial solr search failed. Concluding that Solr is down or unreachable... Will not be trying again! Please fix and restart!'
 else:
-    for facet in context['facetflds']:
-        #print 'facet',facet[0],len(facet[1])
-        if facet[0] in DROPDOWNS:
-            FACETS[facet[0]] = sorted(facet[1])
+    for facet in context['facets']:
+        print 'facet',facet[0],len(facet[1])
+        FACETS[facet[0]] = sorted(facet[1])
+        #if facet[0] in DROPDOWNS:
+        #    FACETS[facet[0]] = sorted(facet[1])
         # if the facet is not in a dropdown, save the memory for something better
-        else:
-            FACETS[facet[0]] = []
+        #else:
+        #    FACETS[facet[0]] = []
+        # build dropdowns for searching
+        for f in FIELDS['Search']:
+            if f['name'] == facet[0] and f['fieldtype'] == 'dropdown':
+                f['dropdowns'] = facet[1]
