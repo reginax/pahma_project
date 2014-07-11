@@ -64,6 +64,8 @@ def dbtransaction(q, elementID, connect_string):
         srchindex = 'concept'
     elif srchindex in ['px']:
         srchindex = 'longplace2'
+    elif srchindex in ['na']:
+        srchindex = 'name'
     else:
         srchindex = 'concept'
 
@@ -94,6 +96,8 @@ def dbtransaction(q, elementID, connect_string):
             template = makeTemplate('placetermgroup', 'termdisplayname',"like '%s%%'")
         elif srchindex == 'taxon':
             template = makeTemplate('taxontermgroup', 'termdisplayname',"like '%s%%'")
+        elif srchindex == 'name':
+            template = makeTemplate('objectnamegroup', 'objectname',"ilike '%%%s%%'")
 
         #sys.stderr.write('template %s' % template)
 
