@@ -16,7 +16,7 @@ from os import path
 from common import cspace # we use the config file reading function
 from cspace_django_site import settings
 
-config = cspace.getConfig(path.join(settings.BASE_PARENT_DIR, 'config'), 'autosuggest')
+config = cspace.getConfig(path.join(settings.BASE_PARENT_DIR, 'config'), 'suggestpostgres')
 connect_string = config.get('connect', 'connect_string')
 
 import sys, json, re
@@ -64,6 +64,8 @@ def dbtransaction(q, elementID, connect_string):
         srchindex = 'concept'
     elif srchindex in ['px']:
         srchindex = 'longplace2'
+    elif srchindex in ['pe']:
+        srchindex = 'person'
     elif srchindex in ['na']:
         srchindex = 'name'
     else:
@@ -96,6 +98,8 @@ def dbtransaction(q, elementID, connect_string):
             template = makeTemplate('placetermgroup', 'termdisplayname',"like '%s%%'")
         elif srchindex == 'taxon':
             template = makeTemplate('taxontermgroup', 'termdisplayname',"like '%s%%'")
+        elif srchindex == 'person':
+            template = makeTemplate('persontermgroup', 'termname',"ilike '%%%s%%'")
         elif srchindex == 'name':
             template = makeTemplate('objectnamegroup', 'objectname',"ilike '%%%s%%'")
 
@@ -122,7 +126,7 @@ def dbtransaction(q, elementID, connect_string):
         return None
 
 #@login_required()
-def autosuggest(request):
+def postgresrequest(request):
     elementID = request.GET['elementID']
     q = request.GET['q']
     return HttpResponse(dbtransaction(q,elementID,connect_string), mimetype='text/json')

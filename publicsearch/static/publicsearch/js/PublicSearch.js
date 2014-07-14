@@ -66,16 +66,18 @@ $(document).ready(function () {
 
     $('[name]').map(function () {
         var elementID = $(this).attr('name');
+        var source = $(this).attr('source');
         if (elementID.indexOf('.') == 2) {
             // console.log(elementID);
             $(this).autocomplete({
                 source: function (request, response) {
                     $.ajax({
-                        url: "../../autosuggest/?",
+                        url: "../../suggest/?",
                         dataType: "json",
                         data: {
                             q: request.term,
-                            elementID: elementID
+                            elementID: elementID,
+                            source: source
                         },
                         success: function (data) {
                             response(data);
