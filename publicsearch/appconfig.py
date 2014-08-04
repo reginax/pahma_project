@@ -6,7 +6,7 @@ from cspace_django_site import settings
 import csv
 
 
-def getParms(parmFile):
+def getParms(parmFile, SUGGESTIONS):
 
     try:
         f = open(parmFile, 'rb')
@@ -22,7 +22,7 @@ def getParms(parmFile):
         for row, values in enumerate(csvfile):
             rows.append(values)
 
-        return parseRows(rows)
+        return parseRows(rows, SUGGESTIONS)
 
     except IOError:
         message = 'Could not read (or maybe parse) rows from %s' % parmFile
@@ -31,7 +31,7 @@ def getParms(parmFile):
         raise
 
 
-def parseRows(rows):
+def parseRows(rows, SUGGESTIONS):
     PARMS = {}
     HEADER = {}
     labels = {}
@@ -40,7 +40,7 @@ def parseRows(rows):
     for function in functions:
         FIELDS[function] = []
 
-    fieldkeys = 'label fieldtype X solrfield name order'.split(' ')
+    fieldkeys = 'label fieldtype suggestions solrfield name order'.split(' ')
 
     for rowid,row in enumerate(rows):
         rowtype = row[0]
@@ -49,12 +49,17 @@ def parseRows(rows):
             for i,r in enumerate(row):
                 HEADER[i] = r
                 labels[r] = i
-                #pd[r] = []
 
         elif rowtype == 'field':
-            needed = [row[labels[i]] for i in 'Label Role X SolrField Name'.split(' ')]
+            needed = [row[labels[i]] for i in 'Label Role Suggestions SolrField Name'.split(' ')]
+            if row[labels['Suggestions']] != '':
+                suggestname =  '%s.%s' % (row[labels['Suggestions']],row[labels['Name']])
+            else:
+                suggestname = row[labels['Name']]
+            needed[4] = suggestname
+            PARMS[suggestname] = needed
             needed.append(rowid)
-            PARMS[row[labels['Name']]] = needed
+            
             for function in functions:
                 if len(row) > labels[function] and row[labels[function]] != '':
                     fieldhash = {}
@@ -67,28 +72,35 @@ def parseRows(rows):
 
 config = cspace.getConfig(path.join(settings.BASE_PARENT_DIR, 'config'), 'search')
 
-MAXMARKERS = int(config.get('search', 'MAXMARKERS'))
-MAXRESULTS = int(config.get('search', 'MAXRESULTS'))
-MAXLONGRESULTS = int(config.get('search', 'MAXLONGRESULTS'))
-MAXFACETS = int(config.get('search', 'MAXFACETS'))
-EMAILABLEURL = config.get('search', 'EMAILABLEURL')
-IMAGESERVER = config.get('search', 'IMAGESERVER')
-BMAPPERSERVER = config.get('search', 'BMAPPERSERVER')
-BMAPPERDIR = config.get('search', 'BMAPPERDIR')
-BMAPPERCONFIGFILE = config.get('search', 'BMAPPERCONFIGFILE')
-SOLRSERVER = config.get('search', 'SOLRSERVER')
-SOLRCORE = config.get('search', 'SOLRCORE')
-LOCALDIR = config.get('search', 'LOCALDIR')
-SEARCH_QUALIFIERS = config.get('search', 'SEARCH_QUALIFIERS').split(',')
-FIELDDEFINITIONS = config.get('search', 'FIELDDEFINITIONS')
-CSVPREFIX = config.get('search', 'CSVPREFIX')
-CSVEXTENSION = config.get('search', 'CSVEXTENSION')
+try:
+    MAXMARKERS = int(config.get('search', 'MAXMARKERS'))
+    MAXRESULTS = int(config.get('search', 'MAXRESULTS'))
+    MAXLONGRESULTS = int(config.get('search', 'MAXLONGRESULTS'))
+    MAXFACETS = int(config.get('search', 'MAXFACETS'))
+    EMAILABLEURL = config.get('search', 'EMAILABLEURL')
+    IMAGESERVER = config.get('search', 'IMAGESERVER')
+    BMAPPERSERVER = config.get('search', 'BMAPPERSERVER')
+    BMAPPERDIR = config.get('search', 'BMAPPERDIR')
+    BMAPPERCONFIGFILE = config.get('search', 'BMAPPERCONFIGFILE')
+    SOLRSERVER = config.get('search', 'SOLRSERVER')
+    SOLRCORE = config.get('search', 'SOLRCORE')
+    LOCALDIR = config.get('search', 'LOCALDIR')
+    SEARCH_QUALIFIERS = config.get('search', 'SEARCH_QUALIFIERS').split(',')
+    FIELDDEFINITIONS = config.get('search', 'FIELDDEFINITIONS')
+    CSVPREFIX = config.get('search', 'CSVPREFIX')
+    CSVEXTENSION = config.get('search', 'CSVEXTENSION')
+    TITLE = config.get('search','TITLE')
+    SUGGESTIONS = config.get('search','SUGGESTIONS')
+    LAYOUT = config.get('search','LAYOUT')
+except:
+    print 'error in configuration file %s' % path.join(settings.BASE_PARENT_DIR, 'config/' + FIELDDEFINITIONS)
+    print 'this webapp will probably not work'
 
 # get "frontend" configuration from the ... frontend configuaration file FIELDDEFINITIONS
 
 print 'reading field definitions from %s' % path.join(settings.BASE_PARENT_DIR, 'config/' + FIELDDEFINITIONS)
 
-FIELDS, PARMS = getParms(path.join(settings.BASE_PARENT_DIR, 'config/' + FIELDDEFINITIONS))
+FIELDS, PARMS = getParms(path.join(settings.BASE_PARENT_DIR, 'config/' + FIELDDEFINITIONS), SUGGESTIONS)
 
 LOCATION = ''
 

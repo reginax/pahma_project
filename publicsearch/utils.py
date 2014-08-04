@@ -11,8 +11,9 @@ from cspace_django_site.main import cspace_django_site
 
 # global variables
 
-from appconfig import MAXMARKERS, MAXRESULTS, MAXLONGRESULTS, MAXFACETS, IMAGESERVER, BMAPPERSERVER, BMAPPERDIR
-from appconfig import BMAPPERCONFIGFILE, SOLRSERVER, SOLRCORE, LOCALDIR, DROPDOWNS, SEARCH_QUALIFIERS, PARMS, FIELDS, LOCATION, EMAILABLEURL
+from appconfig import MAXMARKERS, MAXRESULTS, MAXLONGRESULTS, MAXFACETS, IMAGESERVER, BMAPPERSERVER, BMAPPERDIR, TITLE
+from appconfig import BMAPPERCONFIGFILE, SOLRSERVER, SOLRCORE, LOCALDIR, DROPDOWNS, SEARCH_QUALIFIERS, PARMS, FIELDS
+from appconfig import LOCATION, EMAILABLEURL, SUGGESTIONS, LAYOUT
 
 SolrIsUp = True # an initial guess! this is verified below...
 FACETS = {}
@@ -222,6 +223,7 @@ def extractValue(listItem,key):
 
 def setConstants(context):
     if not SolrIsUp: context['errormsg'] = 'Solr is down!'
+    context['title'] = TITLE
     context['imageserver'] = IMAGESERVER
     context['emailableurl'] = EMAILABLEURL
     context['dropdowns'] = FACETS
@@ -387,8 +389,8 @@ def doSearch(solr_server, solr_core, context):
                 #raise
                 #otherfields.append({'label':p['label'],'value': ''})
         item['otherfields'] = otherfields
-        if 'objcsid_s' in listItem.keys():
-            item['csid'] = listItem['objcsid_s']
+        if 'csid_s' in listItem.keys():
+            item['csid'] = listItem['csid_s']
         # the list of blob csids need to remain an array, so restore it from psql result
         if 'blob_ss' in listItem.keys():
             item['blobs'] = listItem['blob_ss']
