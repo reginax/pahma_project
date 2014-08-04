@@ -70,7 +70,7 @@ def parseRows(rows, SUGGESTIONS):
 
     return FIELDS,PARMS
 
-config = cspace.getConfig(path.join(settings.BASE_PARENT_DIR, 'config'), 'search')
+config = cspace.getConfig(path.join(settings.BASE_PARENT_DIR, 'config'), 'publicsearch')
 
 try:
     MAXMARKERS = int(config.get('search', 'MAXMARKERS'))

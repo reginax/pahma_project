@@ -223,6 +223,7 @@ def extractValue(listItem,key):
 
 def setConstants(context):
     if not SolrIsUp: context['errormsg'] = 'Solr is down!'
+    context['suggestsource'] = SUGGESTIONS
     context['title'] = TITLE
     context['imageserver'] = IMAGESERVER
     context['emailableurl'] = EMAILABLEURL
