@@ -6,13 +6,8 @@ import time
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, render_to_response
-from django.template import RequestContext
-from django.http import HttpResponse, HttpResponseRedirect
-from django import forms
 
-from operator import itemgetter
-
-from publicsearch.utils import writeCsv, doSearch, setupGoogleMap, setupBMapper, setDisplayType, setConstants, loginfo
+from publicsearch.utils import doSearch, setConstants, loginfo
 
 MAXMARKERS = 65
 MAXRESULTS = 1000
@@ -56,19 +51,17 @@ def images(request):
         context = {'searchValues': request.GET}
 
         context = setConstants(context)
-        loginfo('start search', context, request)
 
-        maxresults = request.GET['maxresults']
-        # do search
-        context = doSearch(SOLRSERVER, SOLRCORE, context)
-        context['imageserver'] = IMAGESERVER
-        context['keyword'] = request.GET['keyword']
+        context['text'] = request.GET['text']
         #context['pgNum'] = pgNum if 'pgNum' in context else '1'
         #context['url'] = url
-        context['maxresults'] = maxresults
         context['displayType'] = 'list'
         context['pixonly'] = 'true'
         context['title'] = TITLE
+
+        # do search
+        loginfo('start search', context, request)
+        context = doSearch(SOLRSERVER, SOLRCORE, context)
 
         return render(request, 'showImages.html', context)
 

@@ -22,10 +22,9 @@
         <p style="color: red;">Please submit a search term.</p>
     {% endif %}
     <form action="" method="get">
-        <input type="text" name="keyword" value="{{ keyword }}"> keywords<br/>
+        <input type="text" name="text" value="{{ text }}"> keywords<br/>
         <input type="text" name="maxresults" value="{{ maxresults }}"> maximum number of objects to retrieve<br/>
-        <input type="hidden" name="displayType" value="{{ displayType }}">
-        <input type="hidden" name="pixonly" value="{{ displayType }}">
+        <input type="hidden" name="pixonly" value="{{ pixonly }}">
         <input type="submit" value="Search">
         {% for field in form.hidden_fields %}
             <div style="display:none;">{{ field }}</div>
