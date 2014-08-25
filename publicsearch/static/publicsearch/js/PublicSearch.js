@@ -67,7 +67,7 @@ $(document).ready(function () {
     $('[name]').map(function () {
         var elementID = $(this).attr('name');
         var source = $(this).attr('source');
-        if (elementID.indexOf('.') == 2) {
+        if (source) {
             // console.log(elementID);
             $(this).autocomplete({
                 source: function (request, response) {
@@ -165,6 +165,7 @@ $(document).ready(function () {
         var value = ($(this).text());
 
         if (key != '') {
+            console.log(key + ': ' + value);
             var keyElement = $('#' + key);
             var keyElQual = $('#' + key + '_qualifier');
             if (keyElement != null) {

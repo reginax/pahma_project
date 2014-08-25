@@ -30,6 +30,8 @@ def suggest(request):
             response = solrrequest(request)
         elif source == 'postgres':
             response = postgresrequest(request)
+        else:
+            pass
     except:
         pass
     return HttpResponse(response, mimetype='text/json')
