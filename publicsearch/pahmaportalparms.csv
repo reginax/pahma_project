@@ -1,7 +1,7 @@
 # Possible parameter specification spreadsheet for a django portal app.  Caveat lector!
 #
-date			08/25/14
-revision			1.11
+date			08/26/14
+revision			1.12
 title		UCB Cspace Portals	PAHMA
 #
 #		Fields
@@ -13,36 +13,36 @@ field	3	sortnum	Sortable Museum Number	objsortnum_s			string,sortkey							1
 field	4	musno	Museum Number	objmusno_s	x		objectno,accession	1			1			2
 field	5	dept	Department	objdept_s	x		keyword							3
 field	6	type	Object Type	objtype_s	x		dropdown	2	1			3		4
-field	7	count	Object Count	objcount_s	x		keyword					4		5
-field	8	countnote	Count Note	objcountnote_s	x		keyword					5		7
-field	9	keelingser	Keeling Serial Number	objkeelingser_s	x		keyword					7		8
-field	10	fcpverbatim	Field Collection Place (verbatim)	objfcpverbatim_s	x	pl	keyword		2			8	1	9
+field	7	count	Object Count	objcount_s	x		keyword	30				4		5
+field	8	countnote	Count Note	objcountnote_s	x		keyword	31				5		7
+field	9	keelingser	Keeling Serial Number	objkeelingser_s	x		keyword	28				7		8
+field	10	fcpverbatim	Field Collection Place (verbatim)	objfcpverbatim_s	x	pl	keyword	29	2			8	1	9
 field	11	name	Object Name	objname_s	x	na	keyword,mainentry	3	3		2			10
-field	12	altnum	Alternate Number	objaltnum_ss	x		keyword					10		11
+field	12	altnum	Alternate Number	objaltnum_ss	x		keyword	27				10		11
 field	13	filecode	Ethnographic File Code	objfilecode_ss	x	fc	dropdown	4	4		5	11	2	12
-field	14	inventory	Inventory	objinventory_s	x		keyword					12		13
+field	14	inventory	Inventory	objinventory_s	x		keyword	26				12		13
 field	15	descr	Description	objdescr_txt	x		keyword	5				13		14
 field	16	contextuse	Context of Use	objcontextuse_s	x		keyword	6				14		15
 field	17	dimensions	Dimensions	objdimensions_ss	x		keyword	7				15	3	16
 field	18	materials	Materials	objmaterials_ss	x		keyword	8	5			16	4	17
-field	19	inscrtext	Inscription Text	objinscrtext_ss	x		keyword					17		18
-field	20	comment	Comment	objcomment_s	x		keyword					18		19
-field	21	title	Title	objtitle_s	x		keyword					19		20
-field	22	colldate	Collection Date	objcolldate_s	x		keyword		8		7	20		21
-field	23	colldate_begin	Collection Date	objcolldate_begin_dt	x		date
-field	24	colldate_end	Collection Date	objcolldate_end_dt	x		date
-field	25	proddate	Production Date	objproddate_s	x		keyword					21		22
-field	26	proddate_begin	Production Date	objproddate_begin_dt	x		date
-field	27	proddate_end	Production Date	objproddate_end_dt	x		date
-field	28	collector	Collector	objcollector_ss	x	pe	keyword				6	22		23
-field	29	accno	Accession Number	objaccno_ss	x		keyword					23		24
-field	30	accdate	Accession Date	objaccdate_ss	x		date					24		25
-field	31	acqdate	Acquisition Date	objacqdate_ss	x		date					25		26
-field	32	assoccult	Culture	objassoccult_ss	x	xx	keyword	9	6		3	26	5	27
-field	33	culturetree	Culture Tree	objculturetree_ss	x	xx	keyword	10				32		28
-field	34	fcp	Field Collection Place	objfcp_s	x	pl	keyword		7			28		29
-field	35	fcpgeoloc	LatLong	objfcpgeoloc_p	x		location							30
-field	36	fcpelevation	Collection Place Elevation	objfcpelevation_s	x		keyword					30		31
-field	37	fcptree	Collection Place Tree	objfcptree_s	x		keyword	11				31		32
+field	19	inscrtext	Inscription Text	objinscrtext_ss	x		keyword	23				17		18
+field	20	comment	Comment	objcomment_s	x		keyword	24				18		19
+field	21	title	Title	objtitle_s	x		keyword	25				19		20
+field	22	colldate	Collection Date	objcolldate_s	x		keyword	9	8		7	20		21
+field	23	colldate_begin	Collection Date (earliest)	objcolldate_begin_dt	x		date	10				21
+field	24	colldate_end	Collection Date (latest)	objcolldate_end_dt	x		date	11				22
+field	25	proddate	Production Date	objproddate_s	x		keyword	12				23		22
+field	26	proddate_begin	Production Date (earliest)	objproddate_begin_dt	x		date	13				25
+field	27	proddate_end	Production Date (latest)	objproddate_end_dt	x		date	14				26
+field	28	collector	Collector	objcollector_ss	x	pe	keyword	15			6	27		23
+field	29	accno	Accession Number	objaccno_ss	x		keyword	16				28		24
+field	30	accdate	Accession Date	objaccdate_ss	x		date	17				29		25
+field	31	acqdate	Acquisition Date	objacqdate_ss	x		date	18				30		26
+field	32	assoccult	Culture	objassoccult_ss	x	xx	keyword	19	6		3	31	5	27
+field	33	culturetree	Culture Tree	objculturetree_ss	x	xx	keyword	20				32		28
+field	34	fcp	Field Collection Place	objfcp_s	x	pl	keyword	21	7			33		29
+field	35	fcpgeoloc	LatLong	objfcpgeoloc_p	x		location					34		30
+field	36	fcpelevation	Collection Place Elevation	objfcpelevation_s	x		keyword	22				35		31
+field	37	fcptree	Collection Place Tree	objfcptree_s	x		keyword	11				36		32
 field	38	blobs	Blob	blob_ss			blob
 field	39	text	Keyword	text	x		keyword	12
