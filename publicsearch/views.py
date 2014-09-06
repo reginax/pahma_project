@@ -14,7 +14,7 @@ from appconfig import CSVPREFIX,CSVEXTENSION
 
 
 # global variables (at least to this module...)
-config = cspace_django_site.getConfig()
+#config = cspace_django_site.getConfig()
 
 from appconfig import SOLRSERVER, SOLRCORE, PARMS, FIELDS
 

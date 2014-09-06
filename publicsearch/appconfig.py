@@ -66,6 +66,7 @@ def parseRows(rows, SUGGESTIONS):
                     for n, v in enumerate(needed):
                         fieldhash[fieldkeys[n]] = v
                     fieldhash['style'] = 'width:200px' # temporary hack!
+                    fieldhash['type'] = 'text' # temporary hack!
                     FIELDS[function].append(fieldhash)
 
     return FIELDS, PARMS
