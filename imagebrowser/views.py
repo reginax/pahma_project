@@ -7,7 +7,7 @@ import time
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, render_to_response
 
-from publicsearch.utils import doSearch, setConstants, loginfo
+from search.utils import doSearch, setConstants, loginfo
 
 MAXMARKERS = 65
 MAXRESULTS = 1000

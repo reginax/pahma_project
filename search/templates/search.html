@@ -3,16 +3,16 @@
 {% load staticfiles %}
 
 {% block extrastyle %}
-    <link rel="stylesheet" type="text/css" href="{% static "publicsearch/css/tablesorter.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "search/css/tablesorter.css" %}"/>
     <link rel="stylesheet" type="text/css" href="{% static "cspace_django_site/css/smoothness/jquery-ui-1.10.3.custom.min.css" %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static "publicsearch/css/PublicSearch.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "search/css/PublicSearch.css" %}"/>
 {% endblock %}
 
 {% block scripts %}
     <script type="text/javascript" src="{% static "cspace_django_site/js/jquery-1.10.0.min.js" %}"></script>
     <script type="text/javascript" src="{% static "cspace_django_site/js/jquery-ui-1.10.3.custom.min.js" %}"></script>
-    <script type="text/javascript" src="{% static "publicsearch/js/PublicSearch.js" %}"></script>
-    <script type="text/javascript" src="{% static "publicsearch/js/jquery.tablesorter.js" %}"></script>
+    <script type="text/javascript" src="{% static "search/js/PublicSearch.js" %}"></script>
+    <script type="text/javascript" src="{% static "search/js/jquery.tablesorter.js" %}"></script>
 {% endblock %}
 
 {% block loginBtn %}

@@ -1,78 +1,100 @@
-__author__ = 'jblowe'
+__author__ = 'jblowe, amywieliczka'
 
-import re
+import time, datetime
+from os import path
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-
-# alas, there are many ways the XML parsing functionality might be installed.
-# the following code attempts to find and import the best...
-try:
-    from xml.etree.ElementTree import tostring, parse, Element, fromstring
-
-    print("running with xml.etree.ElementTree")
-except ImportError:
-    try:
-        from lxml import etree
-
-        print("running with lxml.etree")
-    except ImportError:
-        try:
-            # normal cElementTree install
-            import cElementTree as etree
-
-            print("running with cElementTree")
-        except ImportError:
-            try:
-                # normal ElementTree install
-                import elementtree.ElementTree as etree
-
-                print("running with ElementTree")
-            except ImportError:
-                print("Failed to import ElementTree from any known place")
-
-from common import cspace
+from django.shortcuts import render, render_to_response
+from django.template.loader import render_to_string
+from django.http import HttpResponse, HttpResponseRedirect
+from django import forms
 from cspace_django_site.main import cspace_django_site
+from utils import writeCsv, doSearch, setupGoogleMap, setupBMapper, setDisplayType, setConstants, loginfo
+from appconfig import CSVPREFIX,CSVEXTENSION
 
-config = cspace_django_site.getConfig()
-TITLE = 'Keyword Search'
+
+# global variables (at least to this module...)
+
+from appconfig import SOLRSERVER, SOLRCORE, PARMS, FIELDS
+
+SEARCHRESULTS = {}
 
 
 @login_required()
 def search(request):
-    if 'kw' in request.GET and request.GET['kw']:
-        kw = request.GET['kw']
-        # do search
-        connection = cspace.connection.create_connection(config, request.user)
-        (url, data, statusCode) = connection.make_get_request(
-            'cspace-services/%s?kw=%s&&wf_deleted=false' % ('collectionobjects', kw))
-        #...collectionobjects?kw=%27orchid%27&wf_deleted=false
-        cspaceXML = fromstring(data)
-        items = cspaceXML.findall('.//list-item')
-        results = []
-        for i in items:
-            r = []
-            csid = i.find('.//csid')
-            csid = csid.text
-            objectNumber = i.find('.//objectNumber')
-            objectNumber = objectNumber.text
-            # hardcoded here for now, should eventually get these from the authentication backend
-            # but tenant is not even stored there...
-            hostname = 'pahma.cspace.berkeley.edu'
-            tenant = 'pahma'
-            link = 'http://%s:8180/collectionspace/ui/%s/html/cataloging.html?csid=%s' % (hostname, tenant, csid)
-            r.append(link)
-            r.append(objectNumber)
-            r2 = []
-            for field in ['taxon', 'objectName']:
-                e = i.find('.//%s' % field)
-                e = '' if e is None else e.text
-                e = re.sub(r"^.*\)'(.*)'$", "\\1", e)
-                r2.append(e)
-            r.append(r2)
-            results.append(r)
-        return render(request, 'simplesearch.html',
-                      {'results': results, 'kw': kw, 'labels': 'Object Number|Taxonomic Name'.split('|')})
+    if request.method == 'GET' and request.GET != {}:
+        context = {'searchValues': request.GET}
+        context = doSearch(SOLRSERVER, SOLRCORE, context)
 
+        global SEARCHRESULTS
+        SEARCHRESULTS = context
     else:
-        return render(request, 'simplesearch.html', {'title': TITLE})
+        context = {}
+
+    context = setConstants(context)
+    loginfo('start search', context, request)
+    return render(request, 'search.html', context)
+
+
+def retrieveResults(request):
+    if request.method == 'POST' and request.POST != {}:
+        requestObject = request.POST
+        form = forms.Form(requestObject)
+
+        if form.is_valid():
+            context = {'searchValues': requestObject}
+            context = doSearch(SOLRSERVER, SOLRCORE, context)
+
+            global SEARCHRESULTS
+            SEARCHRESULTS = context
+
+            context = setConstants(context)
+
+        loginfo('results.%s' % context['displayType'], context, request)
+        return render(request, 'searchResults.html', context)
+
+
+def bmapper(request):
+    if request.method == 'POST' and request.POST != {}:
+        requestObject = request.POST
+        form = forms.Form(requestObject)
+
+        if form.is_valid():
+            context = SEARCHRESULTS
+            context = setupBMapper(requestObject, context)
+
+            loginfo('bmapper', context, request)
+            return HttpResponse(context['bmapperurl'])
+
+
+def gmapper(request):
+    if request.method == 'POST' and request.POST != {}:
+        requestObject = request.POST
+        form = forms.Form(requestObject)
+
+        if form.is_valid():
+            context = SEARCHRESULTS
+            context = setupGoogleMap(requestObject, context)
+
+            loginfo('gmapper', context, request)
+            return render(request, 'maps.html', context)
+
+
+def csv(request):
+    if request.method == 'POST' and request.POST != {}:
+        requestObject = request.POST
+        form = forms.Form(requestObject)
+
+        if form.is_valid():
+            # context = {'searchValues': requestObject}
+            # context = doSearch(SOLRSERVER, SOLRCORE, context)
+            context = SEARCHRESULTS
+
+            # Create the HttpResponse object with the appropriate CSV header.
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="%s-%s.%s"' % (CSVPREFIX,datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S"),CSVEXTENSION)
+            #response.write(u'\ufeff'.encode('utf8'))
+            writeCsv(response, context['items'], writeheader=True)
+
+            loginfo('csv', context, request)
+            return response

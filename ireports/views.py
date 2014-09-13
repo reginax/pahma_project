@@ -39,10 +39,6 @@ except ImportError:
             except ImportError:
                 print("Failed to import ElementTree from any known place")
 
-from common import cspace
-from cspace_django_site.main import cspace_django_site
-
-config = cspace_django_site.getConfig()
 TITLE = 'iReports Available'
 
 @login_required()

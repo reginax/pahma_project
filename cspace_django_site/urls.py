@@ -21,17 +21,22 @@ urlpatterns = patterns('',
                        #  Uncomment the admin/doc line below to enable admin documentation:
                        #  url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-                       url(r'^admin/', include(admin.site.urls)),
+                       # this is a test webapp. you may remove it if you like.
                        url(r'^$', 'hello.views.home', name='home'),
-                       url(r'^service/', include('service.urls')),
+                       # these are django builtin webapps
+                       url(r'^admin/', include(admin.site.urls)),
                        url(r'^accounts/login/$', views.login, name='login'),
                        url(r'^accounts/logout/$', views.logout_then_login, name='logout'),
+                       # these are "internal webapps", used by other webapps -- not user-facing
+                       url(r'^service/', include('service.urls')),
                        url(r'^suggestpostgres/', include('suggestpostgres.urls', namespace='suggestpostgres')),
                        url(r'^suggestsolr/', include('suggestsolr.urls', namespace='suggestsolr')),
                        url(r'^suggest/', include('suggest.urls', namespace='suggest')),
-                       url(r'^search/', include('publicsearch.urls', namespace='publicsearch')),
-                       url(r'^ireports/', include('ireports.urls', namespace='ireports')),
                        url(r'^imageserver/', include('imageserver.urls', namespace='imageserver')),
-                       url(r'^imagebrowser/', include('imagebrowser.urls', namespace='imagebrowser')),
-                       url(r'^uploadmedia/', include('uploadmedia.urls', namespace='uploadmedia')),
+                       # these are user-facing (i.e. present a UI to the caller)
+                       url(r'^search/?', include('search.urls', namespace='search')),
+                       url(r'^ireports/?', include('ireports.urls', namespace='ireports')),
+                       url(r'^imagebrowser/?', include('imagebrowser.urls', namespace='imagebrowser')),
+                       url(r'^landing/?', include('landing.urls', namespace='landing')),
+                       url(r'^uploadmedia/?', include('uploadmedia.urls', namespace='uploadmedia')),
                        )

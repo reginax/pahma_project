@@ -3,6 +3,7 @@
 
 {% block content %}
     <div id="content-main">
+        <h1>{{ title }}</h1>
         {% if appList %}
             <table>
                 <tr>
@@ -10,9 +11,16 @@
                 </tr>
                 {% for app in appList %}
                     <tr>
-                        <td><a href="../{{ app }}">{{ app }}</a></td>
+                        <td><a href="./{{ app }}">{{ app }}</a></td>
                     </tr>
                 {% endfor %}
+            </table>
+            <hr/>
+            <table>
+                <tr>
+                    <td><a target="_new" href="https://{{ hostname }}">CollectionSpace UI ({{ hostname }})</a>
+                    </td>
+                </tr>
             </table>
         {% else %}
             <p>{% trans "No apps" %}</p>

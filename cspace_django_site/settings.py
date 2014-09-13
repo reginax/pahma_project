@@ -5,6 +5,8 @@ import logging
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_PARENT_DIR = os.path.dirname(BASE_DIR)
 LOGS_DIR = BASE_PARENT_DIR + os.sep + 'logs'
+PROJECT_NAME = os.path.basename(BASE_PARENT_DIR)
+
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -82,7 +84,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, '../static_root')
 
 # URL prefix for static files.
 # Example: "http://intakes.com/static/", "http://static.intakes.com/"
-STATIC_URL = '/static_root/'
+STATIC_URL = '/' + PROJECT_NAME + '_static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (

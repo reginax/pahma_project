@@ -39,7 +39,7 @@ def parseRows(rows, SUGGESTIONS):
     for function in functions:
         FIELDS[function] = []
 
-    fieldkeys = 'label fieldtype suggestions solrfield name order'.split(' ')
+    fieldkeys = 'label fieldtype suggestions solrfield name X order'.split(' ')
 
     for rowid, row in enumerate(rows):
         rowtype = row[0]
@@ -50,7 +50,7 @@ def parseRows(rows, SUGGESTIONS):
                 labels[r] = i
 
         elif rowtype == 'field':
-            needed = [row[labels[i]] for i in 'Label Role Suggestions SolrField Name'.split(' ')]
+            needed = [row[labels[i]] for i in 'Label Role Suggestions SolrField Name Search'.split(' ')]
             if row[labels['Suggestions']] != '':
                 #suggestname = '%s.%s' % (row[labels['Suggestions']], row[labels['Name']])
                 suggestname = row[labels['Name']]
@@ -60,11 +60,19 @@ def parseRows(rows, SUGGESTIONS):
             PARMS[suggestname] = needed
             needed.append(rowid)
 
+
             for function in functions:
                 if len(row) > labels[function] and row[labels[function]] != '':
                     fieldhash = {}
                     for n, v in enumerate(needed):
-                        fieldhash[fieldkeys[n]] = v
+                        if n == 5 and function == 'Search': # 5th item in needed is search field x,y coord for layout
+                            if v == '':
+                                continue
+                            searchlayout = (v+',0').split(',')
+                            fieldhash['column'] = int('0'+searchlayout[0])
+                            fieldhash['row'] = int('0'+searchlayout[1])
+                        else:
+                            fieldhash[fieldkeys[n]] = v
                     fieldhash['style'] = 'width:200px' # temporary hack!
                     fieldhash['type'] = 'text' # temporary hack!
                     FIELDS[function].append(fieldhash)
@@ -146,4 +154,4 @@ def loadConfiguration(configFileName):
         print "LOCATION not set, please specify a variable as 'location'"
 
 
-loadConfiguration('publicsearch')
+loadConfiguration('search')
