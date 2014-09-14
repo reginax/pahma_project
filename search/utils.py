@@ -233,7 +233,7 @@ def setConstants(context):
     context['layout'] = LAYOUT
     context['dropdowns'] = FACETS
     context['timestamp'] = time.strftime("%b %d %Y %H:%M:%S", time.localtime())
-    context['qualifiers'] = [ { 'val': s, 'dis': s[:1] } for s in SEARCH_QUALIFIERS ]
+    context['qualifiers'] = [ { 'val': s, 'dis': s } for s in SEARCH_QUALIFIERS ]
     context['resultoptions'] = [100, 500, 1000, 2000]
 
     context['searchrows'] = range(9+1)[1:]
