@@ -1,6 +1,6 @@
 # set global variables
 
-from os import path
+from os import path, popen
 from common import cspace # we use the config file reading function
 from cspace_django_site import settings
 import csv
@@ -35,6 +35,10 @@ def parseRows(rows, SUGGESTIONS):
     HEADER = {}
     labels = {}
     FIELDS = {}
+
+    SEARCHCOLUMNS = 0
+    SEARCHROWS = 0
+
     functions = 'Search,Facet,bMapper,listDisplay,fullDisplay,gridDisplay,inCSV'.split(',')
     for function in functions:
         FIELDS[function] = []
@@ -60,7 +64,6 @@ def parseRows(rows, SUGGESTIONS):
             PARMS[suggestname] = needed
             needed.append(rowid)
 
-
             for function in functions:
                 if len(row) > labels[function] and row[labels[function]] != '':
                     fieldhash = {}
@@ -68,16 +71,21 @@ def parseRows(rows, SUGGESTIONS):
                         if n == 5 and function == 'Search': # 5th item in needed is search field x,y coord for layout
                             if v == '':
                                 continue
-                            searchlayout = (v+',0').split(',')
-                            fieldhash['column'] = int('0'+searchlayout[0])
-                            fieldhash['row'] = int('0'+searchlayout[1])
+                            searchlayout = (v+',1').split(',')
+                            fieldhash['column'] = int('0'+searchlayout[1])
+                            fieldhash['row'] = int('0'+searchlayout[0])
+                            SEARCHCOLUMNS = max(SEARCHCOLUMNS, int('0'+searchlayout[1]))
+                            SEARCHROWS = max(SEARCHROWS, int('0'+searchlayout[0]))
                         else:
                             fieldhash[fieldkeys[n]] = v
                     fieldhash['style'] = 'width:200px' # temporary hack!
                     fieldhash['type'] = 'text' # temporary hack!
                     FIELDS[function].append(fieldhash)
 
-    return FIELDS, PARMS
+    if SEARCHROWS == 0 : SEARCHROWS = 1
+    if SEARCHCOLUMNS == 0 : SEARCHCOLUMNS = 1
+
+    return FIELDS, PARMS, SEARCHCOLUMNS, SEARCHROWS
 
 
 def loadConfiguration(configFileName):
@@ -108,6 +116,9 @@ def loadConfiguration(configFileName):
     global DROPDOWNS
     global FIELDS
     global PARMS
+    global SEARCHROWS
+    global SEARCHCOLUMNS
+    global VERSION
 
     try:
         MAXMARKERS = int(config.get('search', 'MAXMARKERS'))
@@ -131,6 +142,12 @@ def loadConfiguration(configFileName):
         TITLE = config.get('search', 'TITLE')
         SUGGESTIONS = config.get('search', 'SUGGESTIONS')
         LAYOUT = config.get('search', 'LAYOUT')
+
+        try:
+            VERSION = popen("git describe --always").read().strip()
+        except:
+            VERSION = 'Unknown'
+
     except:
         print 'error in configuration file %s' % path.join(settings.BASE_PARENT_DIR, 'config/' + FIELDDEFINITIONS)
         print 'this webapp will probably not work'
@@ -139,7 +156,7 @@ def loadConfiguration(configFileName):
 
     print 'reading field definitions from %s' % path.join(settings.BASE_PARENT_DIR, 'config/' + FIELDDEFINITIONS)
 
-    FIELDS, PARMS = getParms(path.join(settings.BASE_PARENT_DIR, 'config/' + FIELDDEFINITIONS), SUGGESTIONS)
+    FIELDS, PARMS, SEARCHCOLUMNS, SEARCHROWS = getParms(path.join(settings.BASE_PARENT_DIR, 'config/' + FIELDDEFINITIONS), SUGGESTIONS)
 
     LOCATION = ''
 
