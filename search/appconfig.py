@@ -144,7 +144,7 @@ def loadConfiguration(configFileName):
         LAYOUT = config.get('search', 'LAYOUT')
 
         try:
-            VERSION = popen("git describe --always").read().strip()
+            VERSION = popen("/usr/bin/git describe --always").read().strip()
         except:
             VERSION = 'Unknown'
 
