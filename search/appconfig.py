@@ -144,7 +144,9 @@ def loadConfiguration(configFileName):
         LAYOUT = config.get('search', 'LAYOUT')
 
         try:
-            VERSION = popen("/usr/bin/git describe --always").read().strip()
+            VERSION = popen("cd " + settings.BASE_PARENT_DIR + " ; /usr/bin/git describe --always").read().strip()
+            if VERSION == '': # try alternate location for git (this is the usual Mac location)
+                VERSION = popen("/usr/local/bin/git describe --always").read().strip()
         except:
             VERSION = 'Unknown'
 
@@ -172,3 +174,4 @@ def loadConfiguration(configFileName):
 
 
 loadConfiguration('search')
+print 'Configuration successfully read'
