@@ -244,7 +244,7 @@ else:
 
 logging.debug('WSGI_BASE =' + WSGI_BASE)
 LOGIN_URL = WSGI_BASE + '/accounts/login'
-LOGIN_REDIRECT_URL = WSGI_BASE + '/search/search'
+LOGIN_REDIRECT_URL = WSGI_BASE + '/landing'
 
 #
 # AuthN backends
