@@ -134,7 +134,8 @@ def setupGoogleMap(requestObject, context):
     mappableitems = []
     markerlist = []
     for item in context['items']:
-        if item['csid'] in selected:
+        #if item['csid'] in selected:
+        if True:
             m = makeMarker(item['location'])
             if len(mappableitems) >= MAXMARKERS: break
             if m is not None:
@@ -164,7 +165,8 @@ def setupBMapper(requestObject, context):
             selected.append(requestObject[p])
     mappableitems = []
     for item in context['items']:
-        if item['csid'] in selected:
+        #if item['csid'] in selected:
+        if True:
             m = makeMarker(item['location'])
             if m is not None:
                 mappableitems.append(item)
@@ -236,7 +238,7 @@ def setConstants(context):
     context['dropdowns'] = FACETS
     context['timestamp'] = time.strftime("%b %d %Y %H:%M:%S", time.localtime())
     context['qualifiers'] = [ { 'val': s, 'dis': s } for s in SEARCH_QUALIFIERS ]
-    context['resultoptions'] = [100, 500, 1000, 2000]
+    context['resultoptions'] = [100, 500, 1000, 2000, 10000]
 
     context['searchrows'] = range(SEARCHROWS+1)[1:]
     context['searchcolumns'] = range(SEARCHCOLUMNS+1)[1:]

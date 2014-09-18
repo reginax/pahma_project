@@ -37,6 +37,7 @@ urlpatterns = patterns('',
                        url(r'^search/?', include('search.urls', namespace='search')),
                        url(r'^ireports/?', include('ireports.urls', namespace='ireports')),
                        url(r'^imagebrowser/?', include('imagebrowser.urls', namespace='imagebrowser')),
+                       url(r'^imaginator/?', include('imaginator.urls', namespace='imaginator')),
                        url(r'^landing/?', include('landing.urls', namespace='landing')),
                        url(r'^uploadmedia/?', include('uploadmedia.urls', namespace='uploadmedia')),
                        )

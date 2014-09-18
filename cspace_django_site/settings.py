@@ -156,6 +156,7 @@ INSTALLED_APPS = (
     'ireports',
     'imageserver',
     'imagebrowser',
+    'imaginator',
     'search',
     'uploadmedia'
 )

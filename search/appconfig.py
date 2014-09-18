@@ -156,7 +156,7 @@ def loadConfiguration(configFileName):
 
     # get "frontend" configuration from the ... frontend configuaration file FIELDDEFINITIONS
 
-    print 'reading field definitions from %s' % path.join(settings.BASE_PARENT_DIR, 'config/' + FIELDDEFINITIONS)
+    print 'Reading field definitions from %s' % path.join(settings.BASE_PARENT_DIR, 'config/' + FIELDDEFINITIONS)
 
     FIELDS, PARMS, SEARCHCOLUMNS, SEARCHROWS = getParms(path.join(settings.BASE_PARENT_DIR, 'config/' + FIELDDEFINITIONS), SUGGESTIONS)
 
