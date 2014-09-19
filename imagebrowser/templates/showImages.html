@@ -36,7 +36,7 @@
             <span style="color: red">{{ errormsg }}</span>
         {% endif %}
         {% if url %}
-            <i><a href="{{ url }}">{{ url }}</a></i>
+            <i><a href="imagebrowser?{{ url }}">{{ url }}</a></i>
             <hr/>
         {% endif %}
         {% if count > 0 %}
@@ -61,7 +61,7 @@
                         </a>
                     {% endfor %}
                     <br/><a target="cspace"
-                            href="./search/search?displayType=full&maxresults=1&text=%22{{ item.accession }}%22">{{ item.accession }}</a>
+                            href="search/search?displayType=full&maxresults=1&text=%22{{ item.accession }}%22">{{ item.accession }}</a>
                     <br/><b>{{ item.mainentry }}</b>
                 {% endif %}
             </div>
