@@ -8,25 +8,22 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, render_to_response
 
 from search.utils import doSearch, setConstants, loginfo
-
-MAXMARKERS = 65
-MAXRESULTS = 1000
-MAXLONGRESULTS = 50
-IMAGESERVER = 'https://pahma-dev.cspace.berkeley.edu/pahma_project/imageserver' # no final slash
-SOLRSERVER = 'http://localhost:8983/solr'
-SOLRCORE = 'pahma-metadata'
-
-from os import path
 from common import cspace # we use the config file reading function
 from cspace_django_site import settings
+from os import path
 
 config = cspace.getConfig(path.join(settings.BASE_PARENT_DIR, 'config'), 'imagebrowser')
 
-MAXMARKERS = config.get('imagebrowser', 'MAXMARKERS')
-MAXRESULTS = config.get('imagebrowser', 'MAXRESULTS')
-MAXLONGRESULTS = config.get('imagebrowser', 'MAXLONGRESULTS')
+MAXMARKERS = int(config.get('imagebrowser', 'MAXMARKERS'))
+MAXRESULTS = int(config.get('imagebrowser', 'MAXRESULTS'))
+MAXLONGRESULTS = int(config.get('imagebrowser', 'MAXLONGRESULTS'))
 IMAGESERVER = config.get('imagebrowser', 'IMAGESERVER')
-
+#CSPACESERVER = config.get('imagebrowser', 'CSPACESERVER')
+SOLRSERVER = config.get('imagebrowser', 'SOLRSERVER')
+SOLRCORE = config.get('imagebrowser', 'SOLRCORE')
+TITLE = config.get('imagebrowser', 'TITLE')
+#SUGGESTIONS = config.get('imagebrowser', 'SUGGESTIONS')
+#LAYOUT = config.get('imagebrowser', 'LAYOUT')
 
 from common import cspace
 from cspace_django_site.main import cspace_django_site
@@ -66,4 +63,6 @@ def images(request):
         return render(request, 'showImages.html', context)
 
     else:
-        return render(request, 'showImages.html', {'title': TITLE, 'pgNum': 10, 'maxresults': 20})
+        return render(request, 'showImages.html',
+                      {'title': TITLE, 'pgNum': 10, 'maxresults': 20,
+                       'imageserver': IMAGESERVER})
