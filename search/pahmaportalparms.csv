@@ -11,7 +11,7 @@ field	1	id	id	id			id								x
 field	2	csid	Object CSID	csid_s			csid								x
 field	3	musno	Museum Number	objmusno_s	x		keyword,objectno,accession	1,1			1	1		2	x
 field	4	sortnum	Sortable Museum Number	objsortnum_s			string,sortkey							1	x
-field	5	name	Object Name	objname_s	x	na	keyword,mainentry	3,1			2	2		10	x
+field	5	name	Object Name	objname_s	x	na	keyword,mainentry	3,1	2		2	2		10	x
 field	6	altnum	Alternate Number	objaltnum_ss	x		keyword	2,1				3		11	x
 field	7	type	Object Type	objtype_s	x		dropdown	5,1	1			4		4	x
 field	8	count	Object Count	objcount_s	x		string	4,1				5		5	x
@@ -20,7 +20,7 @@ field	10	dept	Department	objdept_s	x		keyword					7		3	x
 field	11	keelingser	Keeling Serial Number	objkeelingser_s	x		keyword	4,3				8		8	x
 field	12	fcp	Field Collection Place	objfcp_s	x	pl	keyword		6			9		29	x
 field	13	fcptree	Field Collection Place	objfcptree_s	x		keyword	9,1						32	x
-field	14	fcpverbatim	Field Collection Place (verbatim)	objfcpverbatim_s	x	pl	keyword		2			10	1	9	x
+field	14	fcpverbatim	Field Collection Place (verbatim)	objfcpverbatim_s	x	pl	keyword					10	1	9	x
 field	15	filecode	Ethnographic File Code	objfilecode_ss	x	fc	dropdown	1,3	3		4	11	2	12	x
 field	16	assoccult	Culture (triple)	objassoccult_ss	x	cu	keyword		5		3	12	5	27	x
 field	17	culturetree	Culture	objculturetree_ss	x	cu	keyword	8,1						28	x
