@@ -28,16 +28,7 @@ LAYOUT = config.get('imaginator', 'LAYOUT')
 
 #@login_required()
 def images(request):
-    """
-    takes two parameters pgNum and pgSz, retrieves XML via service call, parses the XML to get
-    blob and other info, builds a page to retrieve thumbnails of all images in the set.
 
-    NB: currently the target server for the links is hardcoded here and in the showImages.html template.
-
-    :param request: two parameters to pass to CSpace: pgNum and pgSz
-    :return: page of images
-    """
-    #if 'keyword' in request.GET and request.GET['keyword']:
     if request.method == 'GET' and request.GET != {}:
         context = {'searchValues': request.GET}
 

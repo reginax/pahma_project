@@ -2,7 +2,7 @@
 {% load i18n admin_static %}
 
 {% block branding %}
-    <h2><img style="text-align:center; background: #fff" src="../pahma_project_static/cspace_django_site/images/HearstLogoGoogley.png"/></h2>
+    <h2 style="text-align:center; margin: 0px"><img style="height: 120px;" src="../pahma_project_static/cspace_django_site/images/HearstLogoGoogley.png"/></h2>
     <style>
     h1 {
     height: 130px; /* The height of the tallest image referenced above in background-image */
@@ -35,33 +35,31 @@
         <input type="text" name="text" size="60" value="{{ text }}"><br/>
         <input type="hidden" name="maxresults" value="{{ maxresults }}">
         <input type="hidden" name="pixonly" value="{{ pixonly }}">
-        <input type="submit" value="I'm feeling lucky">
-        <input type="submit" value="Search">
+        <input type="submit" value="I'm feeling lucky" style="margin: 20px;">
+        <input type="submit" value="Search the Hearst Metadata" style="margin: 20px;">
+        <input type="submit" value="Search the Hearst Images" style="margin: 20px;">
     </div>
         {% for field in form.hidden_fields %}
             <div style="display:none;">{{ field }}</div>
         {% endfor %}
 
+        <div style="margin: 0px 80px 0px">
         <hr/>
-
         {% if errormsg %}
             <span style="color: red">{{ errormsg }}</span>
         {% endif %}
-        {% if url %}
-            <i><a href="{{ url }}">{{ url }}</a></i>
-            <hr/>
-        {% endif %}
         {% if count > 0 %}
-            {{ count }} items in total;  {{ imagecount }} images displayed for {{ maxresults }} objects;
+            About {{ count }} results ({{ imagecount }} images)
         {% endif %}
         {% if time %}
-            solr query took {{ time }} seconds
+            ({{ time }} seconds)
             <hr/>
         {% endif %}
-        {% for field in form.hidden_fields %}
-            <div style="display:none;">{{ field }}</div>
-        {% endfor %}
+        <div>
     </form>
+    {% if 1 %}
+        {% include "compact.html" %}
+    {% else %}
     <div id="masonrycontainer">
         {% for item in items %}
             <div class="item" style="background-color: #f0f0f0; padding: 3px; min-width: 170px;">
@@ -80,6 +78,7 @@
         {% endfor %}
 
     </div><!-- #masonrycontainer -->
+    {% endif %}
     <script>
         var $container = $('#masonrycontainer');
         $container.imagesLoaded(function () {
