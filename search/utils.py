@@ -296,7 +296,7 @@ def doSearch(solr_server, solr_core, context):
     else:
         for p in requestObject:
             if p in ['csrfmiddlewaretoken', 'displayType', 'resultsOnly', 'maxresults', 'url', 'querystring', 'pane',
-                     'pixonly', 'locsonly', 'acceptterms']: continue
+                     'pixonly', 'locsonly', 'acceptterms', 'submit']: continue
             if '_qualifier' in p: continue
             if 'select-' in p: continue # skip select control for map markers
             if not requestObject[p]: continue # uh...looks like we can have empty items...let's skip 'em

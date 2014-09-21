@@ -35,6 +35,14 @@ def images(request):
         context = setConstants(context)
 
         context['text'] = request.GET['text']
+        context['resultType'] = 'metadata'
+        if "Metadata" in request.GET['submit']:
+            context['resultType'] = 'metadata'
+        elif "Images" in request.GET['submit']:
+            context['resultType'] = 'images'
+        elif "Metadata" in request.GET['submit']:
+            #context['maxresults'] = 1
+            context['resultType'] = 'metadata'
         #context['pgNum'] = pgNum if 'pgNum' in context else '1'
         #context['url'] = url
         context['displayType'] = 'list'
