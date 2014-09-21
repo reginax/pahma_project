@@ -54,7 +54,7 @@ def images(request):
         loginfo('start search', context, request)
         context = doSearch(SOLRSERVER, SOLRCORE, context)
 
-        return render(request, 'showImages.html', context)
+        return render(request, 'imagineImages.html', context)
 
     else:
-        return render(request, 'showImages.html', {'title': TITLE, 'pgNum': 10, 'maxresults': 20})
+        return render(request, 'imagineImages.html', {'title': TITLE, 'pgNum': 10, 'maxresults': 20})

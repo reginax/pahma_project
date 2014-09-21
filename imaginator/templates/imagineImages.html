@@ -1,6 +1,15 @@
 {% extends "cspace_django_site/base_site.html" %}
 {% load i18n admin_static %}
 
+{% block branding %}
+    <h2><img style="text-align:center; background: #fff" src="../pahma_project_static/cspace_django_site/images/HearstLogoGoogley.png"/></h2>
+    <style>
+    h1 {
+    height: 130px; /* The height of the tallest image referenced above in background-image */
+    }
+    </style>
+{% endblock %}
+
 {% block content %}
     <!-- uses jQuery masonry -->
     <script src="{% static "js/jquery-1.7.1.min.js" %}"></script>
@@ -22,10 +31,13 @@
         <p style="color: red;">Please submit a search term.</p>
     {% endif %}
     <form action="" method="get">
-        <input type="text" name="text" value="{{ text }}"> keywords<br/>
-        <input type="text" name="maxresults" value="{{ maxresults }}"> maximum number of objects to retrieve<br/>
+    <div style="text-align: center">
+        <input type="text" name="text" size="60" value="{{ text }}"><br/>
+        <input type="hidden" name="maxresults" value="{{ maxresults }}">
         <input type="hidden" name="pixonly" value="{{ pixonly }}">
+        <input type="submit" value="I'm feeling lucky">
         <input type="submit" value="Search">
+    </div>
         {% for field in form.hidden_fields %}
             <div style="display:none;">{{ field }}</div>
         {% endfor %}
