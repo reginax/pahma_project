@@ -32,8 +32,8 @@ DATABASES = {
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': '/tmp/image_cache',
-        'CULL_FREQUENCY': 1000,
+        'LOCATION': '/usr/local/share/image_cache',
+        'CULL_FREQUENCY': 100000,
         'OPTIONS': {
             'MAX_ENTRIES': 1000000
         }
@@ -149,7 +149,6 @@ INSTALLED_APPS = (
     'hello',
     'service',
     'landing',
-    'service',
     'suggestpostgres',
     'suggestsolr',
     'suggest',

@@ -151,8 +151,8 @@ def loadConfiguration(configFileName):
             VERSION = 'Unknown'
 
     except:
-        print 'error in configuration file %s' % path.join(settings.BASE_PARENT_DIR, 'config/' + FIELDDEFINITIONS)
-        print 'this webapp will probably not work'
+        print 'error in configuration file %s' % path.join(settings.BASE_PARENT_DIR, 'config/' + configFileName)
+        print 'this webapp will probably not work.'
 
     # get "frontend" configuration from the ... frontend configuaration file FIELDDEFINITIONS
 
