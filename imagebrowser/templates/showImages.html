@@ -40,7 +40,7 @@
             <hr/>
         {% endif %}
         {% if count > 0 %}
-            {{ count }} items in total;  {{ imagecount }} images displayed for {{ maxresults }} objects;
+            {{ imagecount }} images displayed for {{ maxresults }} objects out of {{ count }} altogether.
         {% endif %}
         {% if time %}
             solr query took {{ time }} seconds
@@ -61,7 +61,7 @@
                         </a>
                     {% endfor %}
                     <br/><a target="cspace"
-                            href="search/search?displayType=full&maxresults=1&text=%22{{ item.accession }}%22">{{ item.accession }}</a>
+                            href="../search/search?displayType=full&maxresults=1&resultsOnly=True&text=%22{{ item.accession }}%22">{{ item.accession }}</a>
                     <br/><b>{{ item.mainentry }}</b>
                 {% endif %}
             </div>

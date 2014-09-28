@@ -284,6 +284,12 @@ def doSearch(solr_server, solr_core, context):
     context = setConstants(context)
     requestObject = context['searchValues']
 
+    for searchfield in FIELDS['Search']:
+        if searchfield['name'] in requestObject.keys():
+            searchfield['value'] = requestObject[searchfield['name']]
+        else:
+            searchfield['value'] = ''
+
     # create a connection to a solr server
     s = solr.SolrConnection(url='%s/%s' % (solr_server, solr_core))
     queryterms = []
@@ -402,7 +408,6 @@ def doSearch(solr_server, solr_core, context):
         for p in FIELDS[displayFields]:
             try:
                 otherfields.append({'label':p['label'],'name':p['name'],'value': extractValue(listItem,p['solrfield'])})
-
             except:
                 pass
                 #raise

@@ -27,25 +27,30 @@ LAYOUT = config.get('imaginator', 'LAYOUT')
 
 
 #@login_required()
-def images(request):
+def index(request):
 
     if request.method == 'GET' and request.GET != {}:
         context = {'searchValues': request.GET}
 
         context = setConstants(context)
 
-        context['text'] = request.GET['text']
-        context['resultType'] = 'metadata'
-        if "Metadata" in request.GET['submit']:
+        if 'text' in request.GET:
+            context['text'] = request.GET['text']
+        if 'musno' in request.GET:
+            context['musno'] = request.GET['musno']
+            context['maxresults'] = 1
+        if 'submit' in request.GET:
+            context['maxresults'] = 20
+            if "Metadata" in request.GET['submit']:
+                context['resultType'] = 'metadata'
+            elif "Images" in request.GET['submit']:
+                context['resultType'] = 'images'
+            elif "Lucky" in request.GET['submit']:
+                context['resultType'] = 'metadata'
+                context['maxresults'] = 1
+        else:
             context['resultType'] = 'metadata'
-        elif "Images" in request.GET['submit']:
-            context['resultType'] = 'images'
-        elif "Metadata" in request.GET['submit']:
-            #context['maxresults'] = 1
-            context['resultType'] = 'metadata'
-        #context['pgNum'] = pgNum if 'pgNum' in context else '1'
-        #context['url'] = url
-        context['displayType'] = 'list'
+        context['displayType'] = 'full'
         context['pixonly'] = 'true'
         context['title'] = TITLE
 

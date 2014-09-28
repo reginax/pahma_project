@@ -2,6 +2,16 @@
 
 {% for item in items %}
     <div>
+        <div style="float:right;">
+            {% if item.blobs %}
+                {% for t in item.blobs %}
+                    <a target="image"
+                       href="{{ imageserver }}/blobs/{{ t }}/derivatives/OriginalJpeg/content"><img height="100px"
+                                                                                                    src="{{ imageserver }}/blobs/{{ t }}/derivatives/Thumbnail/content"/>
+                    </a>
+                {% endfor %}
+            {% endif %}
+        </div>
         <div class="result-title">
             <b><a href="?maxresults=1&displayType=full&{{ item.accessionfield }}={{ item.accession }}">{{ item.accession }}</a></b>
         </div>
@@ -40,12 +50,6 @@
                 {% if i.value %}<div>{{ i.label }}: <a class="facet-item" data-facetType="{{ i.name }}">{{ i.value }}</a></div>{% endif %}
             {% endfor %}
 
-             {% if item.associatedtaxa %}
-                <h4>{{ labels.associatedtaxa }}</h4>
-                {% for t in item.associatedtaxa %}
-                    <li>{{ t }}</li>
-                {% endfor %}
-            {% endif %}
         </div>
     </div>
     <hr/>
