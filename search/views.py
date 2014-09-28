@@ -20,8 +20,9 @@ from appconfig import SOLRSERVER, SOLRCORE, PARMS, FIELDS
 SEARCHRESULTS = {}
 
 
-def redirect(request):
+def direct(request):
     return redirect('search/search/')
+
 
 @login_required()
 def search(request):
