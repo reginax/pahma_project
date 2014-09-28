@@ -1,15 +1,6 @@
 {% extends "cspace_django_site/base_site.html" %}
 {% load i18n admin_static %}
 
-{% block branding %}
-    <h2 style="text-align:center; margin: 0px"><img alt="mainheader" style="height: 120px;" src="../pahma_project_static/cspace_django_site/images/HearstLogoGoogley.png"/></h2>
-    <style>
-    h1 {
-    height: 130px; /* The height of the tallest image referenced above in background-image */
-    }
-    </style>
-{% endblock %}
-
 {% block content %}
     <!-- uses jQuery masonry -->
     <script src="{% static "js/jquery-1.7.1.min.js" %}"></script>
