@@ -20,6 +20,9 @@ from appconfig import SOLRSERVER, SOLRCORE, PARMS, FIELDS
 SEARCHRESULTS = {}
 
 
+def redirect(request):
+    return redirect('search/search')
+
 @login_required()
 def search(request):
     if request.method == 'GET' and request.GET != {}:

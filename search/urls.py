@@ -4,7 +4,7 @@ from django.conf.urls import patterns, url
 from search import views
 
 urlpatterns = patterns('',
-                       url(r'^/?$', views.search, name='search'),
+                       url(r'^/?$', views.redirect, name='redirect'),
                        url(r'^search/$', views.search, name='search'),
                        url(r'^results/$', views.retrieveResults, name='retrieveResults'),
                        url(r'^bmapper/$', views.bmapper, name='bmapper'),
