@@ -12,10 +12,14 @@ from operator import itemgetter
 
 from common import cspace # we use the config file reading function
 from cspace_django_site import settings
+from cspace_django_site.main import cspace_django_site
+
+mainConfig = cspace_django_site.getConfig()
 
 from os import path
 
 config = cspace.getConfig(path.join(settings.BASE_PARENT_DIR, 'config'), 'ireports')
+
 JRXMLDIRPATTERN = config.get('connect', 'JRXMLDIRPATTERN')
 # alas, there are many ways the XML parsing functionality might be installed.
 # the following code attempts to find and import the best...
@@ -113,7 +117,7 @@ def fileNamereplace(param, param1):
 
 @login_required()
 def index(request):
-    connection = cspace.connection.create_connection(config, request.user)
+    connection = cspace.connection.create_connection(mainConfig, request.user)
     (url, data, statusCode) = connection.make_get_request('cspace-services/reports')
     reportXML = fromstring(data)
     reportCsids = [csidElement.text for csidElement in reportXML.findall('.//csid')]
@@ -139,7 +143,7 @@ def index(request):
 def ireport(request, report_csid):
 
     # get the report metadata for this report
-    connection = cspace.connection.create_connection(config, request.user)
+    connection = cspace.connection.create_connection(mainConfig, request.user)
     (url, data, statusCode) = connection.make_get_request('cspace-services/reports/%s' % report_csid)
     reportXML = fromstring(data)
     fileName = reportXML.find('.//filename')
