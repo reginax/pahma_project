@@ -16,7 +16,7 @@ sub checkJobs {
   print join "\t",@columnheaders;
   print "\n";
 
-  foreach my $job (sort keys %jobs) {
+  foreach my $job (reverse sort keys %jobs) {
     print $job."\t";
     my %steps = %{$jobs{$job}};
 
