@@ -34,10 +34,10 @@ urlpatterns = patterns('',
                        url(r'^suggest/', include('suggest.urls', namespace='suggest')),
                        url(r'^imageserver/', include('imageserver.urls', namespace='imageserver')),
                        # these are user-facing (i.e. present a UI to the caller)
-                       url(r'^search/?', include('search.urls', namespace='search')),
-                       url(r'^ireports/?', include('ireports.urls', namespace='ireports')),
+                       url(r'^search/', include('search.urls', namespace='search')),
+                       url(r'^ireports/', include('ireports.urls', namespace='ireports')),
                        url(r'^imagebrowser/?', include('imagebrowser.urls', namespace='imagebrowser')),
                        url(r'^imaginator/?', include('imaginator.urls', namespace='imaginator')),
                        url(r'^landing/?', include('landing.urls', namespace='landing')),
-                       url(r'^uploadmedia/?', include('uploadmedia.urls', namespace='uploadmedia')),
+                       url(r'^uploadmedia/', include('uploadmedia.urls', namespace='uploadmedia')),
                        )
