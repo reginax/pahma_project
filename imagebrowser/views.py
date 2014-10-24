@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, render_to_response
 
 from search.utils import doSearch, setConstants, loginfo
-from common import cspace # we use the config file reading function
+from common import cspace  # we use the config file reading function
 from cspace_django_site import settings
 from os import path
 
@@ -18,7 +18,7 @@ MAXMARKERS = int(config.get('imagebrowser', 'MAXMARKERS'))
 MAXRESULTS = int(config.get('imagebrowser', 'MAXRESULTS'))
 MAXLONGRESULTS = int(config.get('imagebrowser', 'MAXLONGRESULTS'))
 IMAGESERVER = config.get('imagebrowser', 'IMAGESERVER')
-#CSPACESERVER = config.get('imagebrowser', 'CSPACESERVER')
+# CSPACESERVER = config.get('imagebrowser', 'CSPACESERVER')
 SOLRSERVER = config.get('imagebrowser', 'SOLRSERVER')
 SOLRCORE = config.get('imagebrowser', 'SOLRCORE')
 TITLE = config.get('imagebrowser', 'TITLE')
@@ -29,21 +29,10 @@ from common import cspace
 from cspace_django_site.main import cspace_django_site
 
 config = cspace_django_site.getConfig()
-TITLE = 'Image Browser'
 
 
 @login_required()
 def images(request):
-    """
-    takes two parameters pgNum and pgSz, retrieves XML via service call, parses the XML to get
-    blob and other info, builds a page to retrieve thumbnails of all images in the set.
-
-    NB: currently the target server for the links is hardcoded here and in the showImages.html template.
-
-    :param request: two parameters to pass to CSpace: pgNum and pgSz
-    :return: page of images
-    """
-    #if 'keyword' in request.GET and request.GET['keyword']:
     if request.method == 'GET' and request.GET != {}:
         context = {'searchValues': request.GET}
 

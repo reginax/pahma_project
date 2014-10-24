@@ -10,6 +10,7 @@ from xml.sax.saxutils import escape
 # Get an instance of a logger, log some startup info
 logger = logging.getLogger(__name__)
 
+# these should go into a config file!
 tempimagedir = "/tmp/upload_cache/%s"
 jobdir = "/tmp/upload_cache/%s"
 
@@ -63,6 +64,8 @@ def getQueue(jobtypes):
 
 
 def getDropdowns():
+
+    # these should to into a config file. Or someother place... :-(
     return {
         'creators':
             {
@@ -148,7 +151,7 @@ def assignValue(defaultValue, override, imageData, exifvalue, refnameList):
     else:
         return '', ''
 
-# this function not currently in use
+# this function not currently in use. Copied from another script, it's not Django-compatible
 def viewFile(logfilename,numtodisplay):
 
     print '<table width="100%">\n'

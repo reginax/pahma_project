@@ -3,6 +3,15 @@ import sys
 import codecs
 import time
 
+# NB: the BMU facility uses methods from the "legacy" CGI webapps, imported below.
+# Therefore, it must either be run from the directory where these modules live,
+# or these modules must be copied to where the batch system (i.e. cron job) runs the script
+#
+# at the moment, the whole shebang expects to be run in /var/www/cgi-bin, and there are
+# a couple of hardcoded dependencies below
+
+CONFIGDIRECTORY = '/var/www/cgi-bin/'
+
 from cswaUtils import postxml, relationsPayload, getConfig
 from cswaDB import getCSID
 
@@ -142,7 +151,7 @@ if __name__ == "__main__":
 
 
     try:
-        form = {'webapp': '/var/www/cgi-bin/' + sys.argv[2]}
+        form = {'webapp': CONFIGDIRECTORY + sys.argv[2]}
         config = getConfig(form)
     except:
         print "MEDIA: could not get configuration"

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# modify these for each deployment...
 PROTO="https://"
 HOST="pahma-dev.cspace.berkeley.edu"
 SRVC="cspace-services/blobs"

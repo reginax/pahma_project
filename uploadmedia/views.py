@@ -6,7 +6,7 @@ from django.core.servers.basehttp import FileWrapper
 from django.conf import settings
 from django import forms
 import time, datetime
-from utils import getDropdowns, handle_uploaded_file, assignValue, getCSID, getNumber, get_exif, writeCsv, getJobfile, viewFile, getJoblist, loginfo, getQueue
+from utils import getDropdowns, handle_uploaded_file, assignValue, getCSID, getNumber, get_exif, writeCsv, getJobfile, getJoblist, loginfo, getQueue
 import subprocess
 import os,sys
 
