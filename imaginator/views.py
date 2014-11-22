@@ -43,20 +43,21 @@ def index(request):
             context['maxresults'] = 20
             if "Metadata" in request.GET['submit']:
                 context['resultType'] = 'metadata'
+                context['displayType'] = 'full'
             elif "Images" in request.GET['submit']:
                 context['resultType'] = 'images'
+                context['pixonly'] = 'true'
+                context['displayType'] = 'grid'
             elif "Lucky" in request.GET['submit']:
                 context['resultType'] = 'metadata'
                 context['maxresults'] = 1
         else:
             context['resultType'] = 'metadata'
-        context['displayType'] = 'full'
-        context['pixonly'] = 'true'
         context['title'] = TITLE
 
         # do search
         loginfo('start search', context, request)
-        context = doSearch(SOLRSERVER, SOLRCORE, context)
+        context = doSearch(context)
 
         return render(request, 'imagineImages.html', context)
 
