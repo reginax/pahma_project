@@ -47,7 +47,7 @@ def images(request):
 
         # do search
         loginfo('start search', context, request)
-        context = doSearch(SOLRSERVER, SOLRCORE, context)
+        context = doSearch(context)
 
         return render(request, 'showImages.html', context)
 
