@@ -11,7 +11,7 @@
 
 {% block loginBtn %}
     <div id="user-tools">
-        <a href="{% url 'login' %}?next=/pahma_project/uploadmedia" id="login"
+        <a href="{% url 'login' %}?next=/bampfa_project/uploadmedia" id="login"
            class="prettyBtn">{% trans 'Sign in' %}</a>
     </div>
 {% endblock %}
@@ -19,7 +19,8 @@
 
 {% block content %}
     <div id="content-main">
-        <h2>1. Select Files to Upload</h2>
+        <ol>
+        <h2><li>Select Files to Upload</li></h2>
 
         <form enctype="multipart/form-data" action="{% url 'uploadmedia:uploadfiles' %}" method="post">
             {% csrf_token %}
@@ -28,7 +29,8 @@
             {% else %}
                 <input type="file" name="imagefiles" multiple>
                 <hr/>
-                <h2>2. Override values in image files, if desired</h2>
+                {% if dropdowns.allowintervention == 'True' %}
+                <h2><li>Override values in image files, if desired</li></h2>
                 <table>
                     <tr>
                         <th>Field</th>
@@ -87,21 +89,24 @@
                             </select>
                         </td>
                     </tr>
-                <tr><td colspan="3"><h2>3. Select action to perform</h2></td></tr>
-
-                    <tr>
-                        <td><input type="submit" name="createmedia"
-                                   value="Upload to CSpace and Create Media Records NOW (100 media files max)">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="submit" name="uploadmedia"
-                                   value="Upload to CSpace and Queue for LATER CSpace Ingestion"></td>
-                    <!-- tr>
-                        <td><input type="submit" name="deletemedia"
-                                   value="DELETE CSpace Blob and Media records associated with these images"></td>
-                    </tr -->
                 </table>
+                    {% else %}
+                            <input type="hidden"  id="creator" name="creator" value="">
+                            <input type="hidden"  id="overridecreator" name="overridecreator" value="always">
+                            <input type="hidden"  id="rightsholder" name="rightsholder" value="">
+                            <input type="hidden"  id="overriderightsholder" name="overriderightsholder" value="always">
+                            <input type="hidden"  id="contributor" name="contributor" value="">
+                            <input type="hidden"  id="overridecontributor" name="overridecontributor" value="always">
+                {% endif %}
+                <h2><li>Select action to perform</li></h2>
+                    <input type="submit" name="createmedia"
+                                   value="Upload to CSpace and Create Media Records NOW (100 media files max)">
+                    <br/><br/>
+                    <input type="submit" name="uploadmedia"
+                                   value="Upload to CSpace and Queue for LATER CSpace Ingestion"></td>
+                    <!-- <input type="submit" name="deletemedia"
+                                   value="DELETE CSpace Blob and Media records associated with these images">
+                    -->
 
                 {% if images %}
                     {% include "images.html" %}
@@ -110,8 +115,9 @@
                 {% if jobinfo %}
                     <hr/>
                     {% if jobinfo.status == 'uploadmedia' %}
-                        <h2>Job {{ jobinfo.jobnumber }} enqueued. Estimated time to
-                            completion: {{ jobinfo.estimatedtime }} minutes. Please check back then.</h2>
+                        <h2>Job {{ jobinfo.jobnumber }} enqueued; {{ count }} images.</h2>
+                        <!-- h2>Job {{ jobinfo.jobnumber }} enqueued. Estimated time to
+                            run: {{ jobinfo.estimatedtime }} minutes.</h2 -->
                     {% endif %}
                     {% if jobinfo.status == 'createmedia' %}
                         <h2>Job {{ jobinfo.jobnumber }} completed. Time required: {{ elapsedtime }} seconds.</h2>
@@ -121,10 +127,11 @@
         </form>
         <form action="{% url 'uploadmedia:showqueue' %}" method="post">
             {% csrf_token %}
-            <h2>4. Check on jobs and uploads</h2>
+            <h2><li>Check on jobs and uploads</li></h2>
             <input type="submit" name="checkjobs" value="View the Job Queue">
             {% include "showqueue.html" %}
         </form>
+        </ol>
     </div>
 {% endblock %}
 
@@ -132,7 +139,7 @@
     <table width="100%">
         <tbody>
         <tr>
-            <td style="vertical-align: middle">Current time: {{ timestamp }}. This is the <span style="color:red">PRODUCTION</span> version.</td>
+            <td style="vertical-align: middle">Current time: {{ timestamp }}. This is the <span style="color:{{ serverinfo.serverlabelcolor }}">{{ serverinfo.serverlabel }}</span> version.</td>
             <td style="vertical-align: middle;width: 70px;">powered by</td>
             <td style="text-align: right; width: 160px;"><img src="{% static "cspace_django_site/images/header-logo-cspace.png" %}" height="30px"></td>
         </tr>

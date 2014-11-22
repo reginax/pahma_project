@@ -10,34 +10,41 @@ import time
 # at the moment, the whole shebang expects to be run in /var/www/cgi-bin, and there are
 # a couple of hardcoded dependencies below
 
-CONFIGDIRECTORY = '/var/www/cgi-bin/'
+CONFIGDIRECTORY = '/var/www/cfgs/'
 
 from cswaUtils import postxml, relationsPayload, getConfig
 from cswaDB import getCSID
 
 
-def mediaPayload(f):
+def mediaPayload(f,institution):
     payload = """<?xml version="1.0" encoding="UTF-8"?>
 <document name="media">
 <ns2:media_common xmlns:ns2="http://collectionspace.org/services/media" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <blobCsid>%s</blobCsid>
 <rightsHolder>%s</rightsHolder>
 <creator>%s</creator>
-<title>Media record</title>
-<description>Contributors: %s</description>
+<title>%s</title>
+<description>%s</description>
 <languageList>
-<language>urn:cspace:pahma.cspace.berkeley.edu:vocabularies:name(languages):item:name(eng)'English'</language>
+<language>urn:cspace:INSTITUTION.cspace.berkeley.edu:vocabularies:name(languages):item:name(eng)'English'</language>
 </languageList>
 <identificationNumber>%s</identificationNumber>
 </ns2:media_common>
-<ns2:media_pahma xmlns:ns2="http://collectionspace.org/services/media/local/pahma" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ns2:media_INSTITUTION xmlns:ns2="http://collectionspace.org/services/media/local/INSTITUTION" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <approvedForWeb>true</approvedForWeb>
 <primaryDisplay>false</primaryDisplay>
-</ns2:media_pahma>
+IMAGENUMBERELEMENT
+</ns2:media_INSTITUTION>
 </document>
 """
+    if institution == 'bampfa':
+        payload = payload.replace('IMAGENUMBERELEMENT','<imageNumber>%s</imageNumber>' % f['imageNumber'])
+    else:
+        payload = payload.replace('IMAGENUMBERELEMENT','')
+    payload = payload.replace('INSTITUTION',institution)
     payload = payload % (
-        f['blobCsid'], f['rightsHolderRefname'], f['creator'], f['contributor'], f['objectNumber'])
+        f['blobCsid'], f['rightsHolderRefname'], f['creator'], f['name'], f['contributor'], f['objectNumber'])
+    # print payload
     return payload
 
 
@@ -47,15 +54,17 @@ def uploadmedia(mediaElements, config):
         hostname = config.get('connect', 'hostname')
         username = config.get('connect', 'username')
         password = config.get('connect', 'password')
+        INSTITUTION = config.get('info', 'institution')
     except:
-        print "could not get config."
+        print "could not get at least one of realm, hostname, username, password or institution from config file."
+        #print "can't continue, exiting..."
         raise
 
     objectCSID = getCSID('objectnumber', mediaElements['objectnumber'], config)
     if objectCSID == [] or objectCSID is None:
-        print "could not get objectnumber's csid: %s." % mediaElements['objectnumber']
-        raise
+        print "could not get (i.e. find) objectnumber's csid: %s." % mediaElements['objectnumber']
         #raise Exception("<span style='color:red'>Object Number not found: %s!</span>" % mediaElements['objectnumber'])
+        raise
     else:
         objectCSID = objectCSID[0]
         mediaElements['objectCSID'] = objectCSID
@@ -64,7 +73,9 @@ def uploadmedia(mediaElements, config):
                        'subjectCsid': '',
                        'objectCsid': mediaElements['objectCSID'],
                        'objectNumber': mediaElements['objectnumber'],
+                       'imageNumber': mediaElements['imagenumber'],
                        'blobCsid': mediaElements['blobCSID'],
+                       'name': mediaElements['name'],
                        'rightsHolderRefname': mediaElements['rightsholder'],
                        'contributor': mediaElements['contributor'],
                        'creator': mediaElements['creator'],
@@ -73,23 +84,27 @@ def uploadmedia(mediaElements, config):
 
         uri = 'media'
 
-        #print "<br>posting to media REST API..."
-        payload = mediaPayload(updateItems)
+        messages = []
+        messages.append("posting to media REST API...")
+        #print updateItems
+        payload = mediaPayload(updateItems,INSTITUTION)
+        messages.append(payload)
+        messages.append(payload)
         (url, data, mediaCSID, elapsedtime) = postxml('POST', uri, realm, hostname, username, password, payload)
         #elapsedtimetotal += elapsedtime
-        #print 'got mediacsid', mediaCSID, '. elapsedtime', elapsedtime
+        messages.append('got mediacsid %s elapsedtime %s ' % (mediaCSID,elapsedtime))
         mediaElements['mediaCSID'] = mediaCSID
-        #print "media REST API post succeeded..."
+        messages.append("media REST API post succeeded...")
 
         # now relate media record to collection object
 
         uri = 'relations'
 
-        #print "<br>posting media2obj to relations REST API..."
+        messages.append("posting media2obj to relations REST API...")
 
         updateItems['objectCsid'] = objectCSID
         updateItems['subjectCsid'] = mediaCSID
-        # "urn:cspace:pahma.cspace.berkeley.edu:media:id(%s)" % mediaCSID
+        # "urn:cspace:INSTITUTION.cspace.berkeley.edu:media:id(%s)" % mediaCSID
 
         updateItems['objectDocumentType'] = 'CollectionObject'
         updateItems['subjectDocumentType'] = 'Media'
@@ -97,12 +112,12 @@ def uploadmedia(mediaElements, config):
         payload = relationsPayload(updateItems)
         (url, data, csid, elapsedtime) = postxml('POST', uri, realm, hostname, username, password, payload)
         #elapsedtimetotal += elapsedtime
-        #print 'got relation csid', csid, '. elapsedtime', elapsedtime
+        messages.append('got relation csid %s elapsedtime %s ' % (csid,elapsedtime))
         mediaElements['media2objCSID'] = csid
-        #print "relations REST API post succeeded..."
+        messages.append("relations REST API post succeeded...")
 
         # reverse the roles
-        #print "<br>posting obj2media to relations REST API..."
+        messages.append("posting obj2media to relations REST API...")
         temp = updateItems['objectCsid']
         updateItems['objectCsid'] = updateItems['subjectCsid']
         updateItems['subjectCsid'] = temp
@@ -111,9 +126,9 @@ def uploadmedia(mediaElements, config):
         payload = relationsPayload(updateItems)
         (url, data, csid, elapsedtime) = postxml('POST', uri, realm, hostname, username, password, payload)
         #elapsedtimetotal += elapsedtime
-        #print 'got relation csid', csid, '. elapsedtime', elapsedtime
+        messages.append('got relation csid %s elapsedtime %s ' % (csid,elapsedtime))
         mediaElements['obj2mediaCSID'] = csid
-        #print "relations REST API post succeeded..."
+        messages.append("relations REST API post succeeded...")
 
     return mediaElements
 
@@ -172,11 +187,9 @@ if __name__ == "__main__":
         elapsedtimetotal = time.time()
         mediaElements = {}
         for v1, v2 in enumerate(
-                'name size objectnumber blobCSID date creator contributor rightsholder fullpathtofile'.split(' ')):
+                'name size objectnumber blobCSID date creator contributor rightsholder imagenumber filenamewithpath'.split(' ')):
             mediaElements[v2] = r[v1]
         #print mediaElements
-        if 'objectnumber' in mediaElements:
-            mediaElements['objectnumber'] = mediaElements['objectnumber'].replace('.JPG','').replace('.jpg','')
         print 'objectnumber %s' % mediaElements['objectnumber']
         try:
             mediaElements = uploadmedia(mediaElements, config)
@@ -188,7 +201,5 @@ if __name__ == "__main__":
         except:
             print "MEDIA: create failed for objectnumber %s, %8.2f" % (
                 mediaElements['objectnumber'], (time.time() - elapsedtimetotal))
-
-
-
+            # raise
 

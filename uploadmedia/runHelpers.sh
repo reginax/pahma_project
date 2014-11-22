@@ -5,7 +5,7 @@
 # webapp. 
 #
 # These scripts expect the dev/prod deployment of the
-# BMU webapp on pahma-dev to operate correctly.
+# BMU webapp on bampfa-dev to operate correctly.
 #
 # this shell script, while it will run, is mostly
 # a demonstration of the operation of these helpers.
@@ -25,7 +25,7 @@
 # jblowe 2/2/2014
 #
 ####################################################
-cp /home/developers/pahma/4solr.pahma.media.csv media.csv
+cp /home/developers/bampfa/4solr.bampfa.media.csv media.csv
 perl checkRuns.pl csids > csids.csv
 perl checkObj.pl > MediaNBlobs.txt
 grep OK MediaNBlobs.txt > OK.txt

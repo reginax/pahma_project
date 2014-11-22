@@ -4,7 +4,7 @@ SELECT objectNumber,
 cp.sortableobjectnumber AS sortableobjectnumber,
 ong.objectName AS objectname
 FROM collectionobjects_common cc
-left outer join collectionobjects_pahma cp on (cp.id=cc.id)
+left outer join collectionobjects_bampfa cp on (cp.id=cc.id)
 left outer join hierarchy h4 on (cc.id = h4.parentid and h4.name =
 'collectionobjects_common:objectNameList' and (h4.pos=0 or h4.pos is null))
 left outer join objectnamegroup ong on (ong.id=h4.id)
@@ -22,7 +22,7 @@ do
   #SQL2=$(echo $SQL| sed -e 's/xxobjnoxx/$1/g')
   SQL2="${SQL}'$objectnumber'"
   #echo "${SQL2}"
-  results=`psql -A  -t -U reporter -d "host=pahma.cspace.berkeley.edu dbname=nuxeo password=xxxxxx" -c "$SQL2"`
+  results=`psql -A  -t -U reporter -d "host=bampfa.cspace.berkeley.edu dbname=nuxeo password=xxxxxx" -c "$SQL2"`
   echo "$imagefile|$objectnumber|$results"|tr '\n' ' '
   echo
 done

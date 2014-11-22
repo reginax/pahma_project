@@ -2,11 +2,11 @@
 
 # modify these for each deployment...
 PROTO="https"
-HOST="dev.cspace.berkeley.edu"
+HOST="xxx.cspace.berkeley.edu"
 SRVC="cspace-services/blobs"
 URL="${PROTO}${HOST}/$SRVC"
 TYPE="Content-Type: application/xml"
-USER="admin@pahma.cspace.berkeley.edu:xxxxxxx"
+USER="admin@bampfa.cspace.berkeley.edu:xxxxxxx"
 MEDIACONFIG="uploadmediaDev"
 BASEURL="${PROTO}://${HOST}/${SRVC}"
 
@@ -48,7 +48,7 @@ else
     trace "input file: $2"
 fi
 
-while IFS=$'\t' read FILENAME size objectnumber digitizedDate creator contributor rightsholder
+while IFS='|' read -r FILENAME size objectnumber digitizedDate creator contributor rightsholder imagenumber
 do
   FILEPATH="$IMGDIR/$FILENAME"
   trace ">>>>>>>>>>>>>>> Starting: $objectnumber | $digitizedDate | $FILENAME"
@@ -85,8 +85,8 @@ do
   #trace "CSID $CSID"
 
   cat $CURLOUT >> $CURLLOG
-  rh=${rightsholder//$'\r'}
-  echo "$FILENAME|$size|$objectnumber|$CSID|$digitizedDate|$creator|$contributor|$rh|$FILEPATH" >>  $OUTPUTFILE
+  imagenumber=${imagenumber//$'\r'}
+  echo "$FILENAME|$size|$objectnumber|$CSID|$digitizedDate|$creator|$contributor|$rightsholder|$imagenumber|$FILEPATH" >>  $OUTPUTFILE
 done < $INPUTFILE
 
 trace ">>>>>>>>>>>>>>> End of Blob Creation, starting Media and Relation record creation process: `date` "

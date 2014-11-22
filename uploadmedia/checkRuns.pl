@@ -100,7 +100,7 @@ sub checkSteps {
 }
 
 ########## Main ##############
-my $DIR = '/tmp/upload_cache';
+my $DIR = $ARGV[1];
 my %images;
 my %jobs;
 my %missing;
@@ -113,6 +113,7 @@ my $JOB;
 if ($ARGV[1] =~ /^[\d\-]+$/) { #if we have a single job, just do stats for it..
   $JOB = $ARGV[1];
 }
+
 
 foreach my $filename ( <$DIR/$JOB*.csv>) { # nb: no slash between dir and file...
    open FH,"<$filename";
@@ -170,6 +171,7 @@ foreach my $filename ( <$DIR/$JOB*.trace.log>) { # nb: no slash between dir and 
 
 
 if ($ARGV[0] eq 'jobs') {
+  print "Directory: $DIR\n\n";
   checkJobs(\%jobs,\%joberrors);
 }
 
