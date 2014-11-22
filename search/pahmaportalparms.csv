@@ -1,8 +1,8 @@
 # Possible parameter specification spreadsheet for a django portal app.  Caveat lector!															x
 #															x
-date			09/18/14												x
-revision			1.3												x
-title		UCB Cspace Portals	PAHMA												x
+date			11/21/14												x
+revision			1.4												x
+title		Collections Browser													x
 #															x
 server	http://localhost:8983/solr
 core	pahma-metadata

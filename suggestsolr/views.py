@@ -54,7 +54,8 @@ def solrtransaction(q, elementID):
         # 1. the _s version, suggestfield, is the string field to display
         # 2. the _txt version, searchfield, is the field to search on (i.e. keywords)
         suggestfield = solrField
-        searchfield = solrField.replace('_s','_txt')
+        searchfield = solrField.replace('_ss','_txt')
+        searchfield = searchfield.replace('_s','_txt')
         # yes, case is a terrible thing to have to deal with!
         q2 = q.lower().split(' ')
         # make every token a left prefix...
