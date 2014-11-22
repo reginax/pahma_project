@@ -4,6 +4,9 @@ date			09/18/14												x
 revision			1.3												x
 title		UCB Cspace Portals	PAHMA												x
 #															x
+server	http://localhost:8983/solr
+core	pahma-metadata
+#
 #		Fields						row,[column]	row,[column]	row,[column]	row,[column]	row,[column]	row,[column]	row,[column]	x
 #															x
 header		Name	Label	SolrField	Searchable	Suggestions	Role	Search	Facet	bMapper	listDisplay	fullDisplay	gridDisplay	inCSV	x
