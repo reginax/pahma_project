@@ -60,8 +60,7 @@
                             <img src="{{ imageserver }}/blobs/{{ t }}/derivatives/Thumbnail/content">
                         </a>
                     {% endfor %}
-                    <br/><a target="cspace"
-                            href="../search/search?displayType=full&maxresults=1&resultsOnly=True&text=%22{{ item.accession }}%22">{{ item.accession }}</a>
+                    <br/><a target="cspace" href="./search/search?displayType=full&maxresults=1&resultsOnly=True&text=%22{{ item.accession }}%22">{{ item.accession }}</a>
                     <br/><b>{{ item.mainentry }}</b>
                 {% endif %}
             </div>
