@@ -16,7 +16,7 @@ from cswaUtils import postxml, relationsPayload, getConfig
 from cswaDB import getCSID
 
 
-def mediaPayload(f,institution):
+def mediaPayload(f, institution):
     payload = """<?xml version="1.0" encoding="UTF-8"?>
 <document name="media">
 <ns2:media_common xmlns:ns2="http://collectionspace.org/services/media" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -38,10 +38,10 @@ IMAGENUMBERELEMENT
 </document>
 """
     if institution == 'bampfa':
-        payload = payload.replace('IMAGENUMBERELEMENT','<imageNumber>%s</imageNumber>' % f['imageNumber'])
+        payload = payload.replace('IMAGENUMBERELEMENT', '<imageNumber>%s</imageNumber>' % f['imageNumber'])
     else:
-        payload = payload.replace('IMAGENUMBERELEMENT','')
-    payload = payload.replace('INSTITUTION',institution)
+        payload = payload.replace('IMAGENUMBERELEMENT', '')
+    payload = payload.replace('INSTITUTION', institution)
     payload = payload % (
         f['blobCsid'], f['rightsHolderRefname'], f['creator'], f['name'], f['contributor'], f['objectNumber'])
     # print payload
@@ -57,13 +57,13 @@ def uploadmedia(mediaElements, config):
         INSTITUTION = config.get('info', 'institution')
     except:
         print "could not get at least one of realm, hostname, username, password or institution from config file."
-        #print "can't continue, exiting..."
+        # print "can't continue, exiting..."
         raise
 
     objectCSID = getCSID('objectnumber', mediaElements['objectnumber'], config)
     if objectCSID == [] or objectCSID is None:
         print "could not get (i.e. find) objectnumber's csid: %s." % mediaElements['objectnumber']
-        #raise Exception("<span style='color:red'>Object Number not found: %s!</span>" % mediaElements['objectnumber'])
+        # raise Exception("<span style='color:red'>Object Number not found: %s!</span>" % mediaElements['objectnumber'])
         raise
     else:
         objectCSID = objectCSID[0]
@@ -86,13 +86,13 @@ def uploadmedia(mediaElements, config):
 
         messages = []
         messages.append("posting to media REST API...")
-        #print updateItems
-        payload = mediaPayload(updateItems,INSTITUTION)
+        # print updateItems
+        payload = mediaPayload(updateItems, INSTITUTION)
         messages.append(payload)
         messages.append(payload)
         (url, data, mediaCSID, elapsedtime) = postxml('POST', uri, realm, hostname, username, password, payload)
         #elapsedtimetotal += elapsedtime
-        messages.append('got mediacsid %s elapsedtime %s ' % (mediaCSID,elapsedtime))
+        messages.append('got mediacsid %s elapsedtime %s ' % (mediaCSID, elapsedtime))
         mediaElements['mediaCSID'] = mediaCSID
         messages.append("media REST API post succeeded...")
 
@@ -112,7 +112,7 @@ def uploadmedia(mediaElements, config):
         payload = relationsPayload(updateItems)
         (url, data, csid, elapsedtime) = postxml('POST', uri, realm, hostname, username, password, payload)
         #elapsedtimetotal += elapsedtime
-        messages.append('got relation csid %s elapsedtime %s ' % (csid,elapsedtime))
+        messages.append('got relation csid %s elapsedtime %s ' % (csid, elapsedtime))
         mediaElements['media2objCSID'] = csid
         messages.append("relations REST API post succeeded...")
 
@@ -126,7 +126,7 @@ def uploadmedia(mediaElements, config):
         payload = relationsPayload(updateItems)
         (url, data, csid, elapsedtime) = postxml('POST', uri, realm, hostname, username, password, payload)
         #elapsedtimetotal += elapsedtime
-        messages.append('got relation csid %s elapsedtime %s ' % (csid,elapsedtime))
+        messages.append('got relation csid %s elapsedtime %s ' % (csid, elapsedtime))
         mediaElements['obj2mediaCSID'] = csid
         messages.append("relations REST API post succeeded...")
 
@@ -140,13 +140,13 @@ class CleanlinesFile(file):
 
 
 def getRecords(rawFile):
-    #csvfile = csv.reader(codecs.open(rawFile,'rb','utf-8'),delimiter="\t")
+    # csvfile = csv.reader(codecs.open(rawFile,'rb','utf-8'),delimiter="\t")
     try:
         f = CleanlinesFile(rawFile, 'rb')
         csvfile = csv.reader(f, delimiter="|")
     except IOError:
         message = 'Expected to be able to read %s, but it was not found or unreadable' % rawFile
-        return message,-1
+        return message, -1
     except:
         raise
 
@@ -157,13 +157,15 @@ def getRecords(rawFile):
         return records, len(values)
     except IOError:
         message = 'Could not read (or maybe parse) rows from %s' % rawFile
-        return message,-1
+        return message, -1
     except:
         raise
 
 
 if __name__ == "__main__":
 
+    print "MEDIA: config file: %s" % sys.argv[2]
+    print "MEDIA: input  file: %s" % sys.argv[1]
 
     try:
         form = {'webapp': CONFIGDIRECTORY + sys.argv[2]}
@@ -172,12 +174,12 @@ if __name__ == "__main__":
         print "MEDIA: could not get configuration"
         sys.exit()
 
-    #print 'config',config
+    # print 'config',config
     records, columns = getRecords(sys.argv[1])
     if columns == -1:
         print 'MEDIA: Error! %s' % records
         sys.exit()
-        
+
     print 'MEDIA: %s columns and %s lines found in file %s' % (columns, len(records), sys.argv[1])
     outputFile = sys.argv[1].replace('.step2.csv', '.step3.csv')
     outputfh = csv.writer(open(outputFile, 'wb'), delimiter="\t")
