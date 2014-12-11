@@ -78,9 +78,17 @@ $(document).ready(function () {
         chooseSlideDirection('#aboutTarget');
         $('#helpTarget').slideUp();
         $('#creditsTarget').slideUp();
+        $('#termsTarget').slideUp();
     });
     $('#help').click(function() {
         chooseSlideDirection('#helpTarget');
+        $('#aboutTarget').slideUp();
+        $('#creditsTarget').slideUp();
+        $('#termsTarget').slideUp();
+    });
+    $('#terms').click(function() {
+        chooseSlideDirection('#termsTarget');
+        $('#helpTarget').slideUp();
         $('#aboutTarget').slideUp();
         $('#creditsTarget').slideUp();
     });
@@ -88,6 +96,7 @@ $(document).ready(function () {
         chooseSlideDirection('#creditsTarget');
         $('#helpTarget').slideUp();
         $('#aboutTarget').slideUp();
+        $('#termsTarget').slideUp();
     });
     
     $("#acceptterms").click(function () {
