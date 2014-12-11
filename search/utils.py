@@ -254,6 +254,8 @@ def setConstants(context):
         if 'querystring' in requestObject: context['querystring'] = requestObject['querystring']
         if 'core' in requestObject: context['core'] = requestObject['core']
         if 'maxresults' in requestObject: context['maxresults'] = int(requestObject['maxresults'])
+        if 'start' in requestObject: context['start'] = int(requestObject['start'])
+        else: context['start'] = 0
 
         if 'maxfacets' in requestObject:
             context['maxfacets'] = int(requestObject['maxfacets'])
@@ -267,6 +269,7 @@ def setConstants(context):
         context['querystring'] = ''
         context['core'] = SOLRCORE
         context['maxresults'] = MAXRESULTS
+        context['start'] = 0
 
 
     context['PARMS'] = PARMS
@@ -300,7 +303,7 @@ def doSearch(context):
     else:
         for p in requestObject:
             if p in ['csrfmiddlewaretoken', 'displayType', 'resultsOnly', 'maxresults', 'url', 'querystring', 'pane',
-                     'pixonly', 'locsonly', 'acceptterms', 'submit']: continue
+                     'pixonly', 'locsonly', 'acceptterms', 'submit', 'start']: continue
             if '_qualifier' in p: continue
             if 'select-' in p: continue # skip select control for map markers
             if not requestObject[p]: continue # uh...looks like we can have empty items...let's skip 'em
@@ -357,6 +360,7 @@ def doSearch(context):
         if urlterms != []:
             urlterms.append('displayType=%s' % context['displayType'])
             urlterms.append('maxresults=%s' % context['maxresults'])
+            urlterms.append('start=%s' % requestObject['start'])
         url = '&'.join(urlterms)
 
     if 'pixonly' in requestObject:
@@ -378,7 +382,7 @@ def doSearch(context):
     try:
         response = s.query(querystring, facet='true', facet_field=facetfields, fq={},
                            rows=context['maxresults'], facet_limit=MAXFACETS,
-                           facet_mincount=1)
+                           facet_mincount=1, start=context['start'])
         print 'solr search succeeded, %s results' % response.numFound
     except:
         #raise
