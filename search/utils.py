@@ -405,6 +405,8 @@ def doSearch(context):
                 x = PARMS[p]
                 item['accession'] = extractValue(listItem,PARMS[p][3])
                 item['accessionfield'] = PARMS[p][4]
+            if 'sortkey' in PARMS[p][1]:
+                item['sortkey'] = extractValue(listItem, PARMS[p][3])
 
         for p in FIELDS[displayFields]:
             try:
