@@ -398,7 +398,7 @@ def doSearch(context):
         if urlterms != []:
             urlterms.append('displayType=%s' % context['displayType'])
             urlterms.append('maxresults=%s' % context['maxresults'])
-            urlterms.append('start=%s' % requestObject['start'])
+            urlterms.append('start=%s' % context['start'])
         url = '&'.join(urlterms)
 
     if 'pixonly' in requestObject:
