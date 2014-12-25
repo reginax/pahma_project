@@ -64,7 +64,7 @@ def uploadmedia(mediaElements, config):
     if objectCSID == [] or objectCSID is None:
         print "could not get (i.e. find) objectnumber's csid: %s." % mediaElements['objectnumber']
         # raise Exception("<span style='color:red'>Object Number not found: %s!</span>" % mediaElements['objectnumber'])
-        raise
+        #raise
     else:
         objectCSID = objectCSID[0]
         mediaElements['objectCSID'] = objectCSID
