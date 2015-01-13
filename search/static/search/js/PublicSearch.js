@@ -274,7 +274,7 @@ $(document).ready(function () {
 
     $(document).on('click', '#map-bmapper, #map-google', function () {
         var formData = getFormData('#selectedItems');
-        // formData[$(this).attr('name')] = '';
+        formData[$(this).attr('name')] = '';
 
         if ($(this).attr('id') == 'map-bmapper') {
             $.post("../bmapper/", formData).done(function (data) {
