@@ -5,6 +5,7 @@
     <!-- uses jQuery masonry -->
     <script src="{% static "js/jquery-1.7.1.min.js" %}"></script>
     <script src="{% static "js/jquery.masonry.min.js" %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static "css/" %}{{ device }}.css" />
     <style>
         .item {
             width: 105px;
@@ -20,7 +21,6 @@
     {% if error %}
         <p style="color: red;">Please submit a search term.</p>
     {% endif %}
-    <h3>{{ device }}</h3>
     <form action="" method="get">
     <div style="text-align: center">
         <label for="text-input">&nbsp;</label>
