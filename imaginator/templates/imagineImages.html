@@ -12,10 +12,7 @@
             margin: 5px;
             float: left;
         }
-
         #container {
-            width: inherit;
-            margin: 15px;
         }
     </style>
     {% if error %}
@@ -24,12 +21,12 @@
     <form action="" method="get">
     <div style="text-align: center">
         <label for="text-input">&nbsp;</label>
-        <input aria-labelledby="text-input" type="text" name="text" size="60" id="text" value="{{ text }}"><br/>
+        <input aria-labelledby="text-input" type="text" name="text" size="40" id="text" value="{{ text }}"><br/>
         <input type="hidden" name="maxresults" value="{{ maxresults }}">
         <input type="hidden" name="pixonly" value="{{ pixonly }}">
-        <input type="submit" name="submit" value="I'm feeling lucky" style="margin: 20px;">
-        <input type="submit" name="submit" value="Search the Hearst Metadata" style="margin: 20px;">
-        <input type="submit" name="submit" value="Search the Hearst Images" style="margin: 20px;">
+        <!-- input type="submit" name="submit" value="I'm feeling lucky" style="margin: 20px;" -->
+        <input type="submit" name="submit" value="Search the Metadata" style="margin: 20px;">
+        <input type="submit" name="submit" value="Search for Images" style="margin: 20px;">
     </div>
         {% for field in form.hidden_fields %}
             <div style="display:none;">{{ field }}</div>

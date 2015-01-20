@@ -1,11 +1,14 @@
-h1, h2, h3, h4, h5, h6, p, blockquote, pre, em, img, ins, kbd, q, samp, small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, form, label, table {
+h1, h2, h3, h4, h5, h6, p {
     margin: 0;
     padding: 0;
     border: 0;
-    font-size: 120%;
+    font-size: 180%;
     vertical-align: baseline;
     background: transparent;
 }
 input {
-    font-size: 120%;
+    font-size: 180%;
+}
+#container {
+    width: 600px;
 }
