@@ -118,6 +118,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'mobileesp.middleware.MobileDetectionMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -157,7 +158,8 @@ INSTALLED_APPS = (
     'imagebrowser',
     'imaginator',
     'search',
-    'uploadmedia'
+    'uploadmedia',
+    'locviewer'
 )
 
 # A sample logging configuration. The only tangible logging

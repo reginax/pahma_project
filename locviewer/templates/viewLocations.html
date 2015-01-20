@@ -1,0 +1,117 @@
+{% extends "cspace_django_site/base_site.html" %}
+{% load i18n admin_static %}
+
+{% block content %}
+    <!-- uses jQuery masonry -->
+    <script src="{% static "js/jquery-1.7.1.min.js" %}"></script>
+    <style>
+
+        table { width: 100%; }
+
+
+        .num   { margin: 0px 5px 0px 5px; background-color: WhiteSmoke; font-size: 80%}
+        .bottom   { float: left; margin: 5px; background-color: WhiteSmoke; min-height: 30px; padding: 5px; width: 140px;}
+        .bottom2  { background-color: LightBlue;}
+
+        .x {
+            width: 240px;
+            margin: 5px;
+            float: left;
+        }
+
+        .item {
+            width: 240px;
+            margin: 5px;
+            float: left;
+        }
+
+        #container {
+            width: inherit;
+            margin: 15px;
+        }
+    </style>
+
+    <script type="text/javascript">
+    function textToggle(divName) {
+    var ele = document.getElementById(divName);
+    var ele_toggle = document.getElementById(divName+'_toggle');
+    if (ele.style.display == 'none') {
+         ele.style.display='block';
+         console.log(ele_toggle.class);
+         if ($(ele_toggle).hasClass('col1')) {
+             $(ele_toggle).attr('class','box col3 colx');
+         }
+    }
+    else {
+        ele.style.display='none';
+         if ($(ele_toggle).hasClass('colx')) {
+             $(ele_toggle).attr('class','box col1');
+         }
+    }
+    return false;
+}
+</script>
+    {% if error %}
+        <p style="color: red;">Please submit a search term.</p>
+    {% endif %}
+    <form action="" method="get">
+        <input type="hidden" name="currentlocation" value="*">
+        <input type="hidden" name="maxresults" value="2000">
+        <input type="hidden" name="pixonly" value="{{ pixonly }}">
+        <input type="submit" value="Search">
+        {% for field in form.hidden_fields %}
+            <div style="display:none;">{{ field }}</div>
+        {% endfor %}
+
+        <hr/>
+
+        {% if errormsg %}
+            <span style="color: red">{{ errormsg }}</span>
+        {% endif %}
+        {% if url %}
+            <i>Emailable version of this search: <a href="?{{ url }}">{{ url }}</a></i>
+            <hr/>
+        {% endif %}
+        {% if count > 0 %}
+            {{ imagecount }} images displayed for {{ maxresults }} objects out of {{ count }} altogether.
+        {% endif %}
+        {% if time %}
+            solr query took {{ time }} seconds
+            <hr/>
+        {% endif %}
+        {% for field in form.hidden_fields %}
+            <div style="display:none;">{{ field }}</div>
+        {% endfor %}
+    </form>
+    <div id="masonrycontainer">
+        {% for mainlocation,contents,numlocs in locations %}
+
+            <div class="bottom" id="{{ mainlocation }}_toggle"><a href="" onclick="textToggle('{{ mainlocation }}'); return false;">{{ mainlocation }}</a>
+            {% if numlocs > 1 %}
+                <div class="num"><i>{{ numlocs }} sublocations</i></div>
+            {% endif %}
+            <div class="bottom2" id="{{ mainlocation }}" style="display:none;">
+                    <table>
+                        {% for c in contents %}
+                            <tr>
+                            <td>{{ c.0 }}</td>
+                            <td>{{ c.1 }}</td>
+                            <td>{{ c.2 }}</td>
+                            {% if item.blobs %}
+                                {% for t in item.blobs %}
+                                    <a target="image"
+                                       href="{{ imageserver }}/blobs/{{ t }}/derivatives/OriginalJpeg/content">
+                                        <img src="{{ imageserver }}/blobs/{{ t }}/derivatives/Thumbnail/content">
+                                    </a>
+                                {% endfor %}
+                                <br/><a target="cspace"
+                                        href="../search/search?displayType=full&maxresults=1&resultsOnly=True&text=%22{{ item.accession }}%22">{{ item.accession }}</a>
+                                <br/><b>{{ item.mainentry }}</b>
+                            {% endif %}
+                        {% endfor %}
+                    </table>
+                    </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

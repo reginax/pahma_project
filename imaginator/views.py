@@ -55,6 +55,15 @@ def index(request):
             context['resultType'] = 'metadata'
         context['title'] = TITLE
 
+        # http://blog.mobileesp.com/
+        # the middleware must be installed for the following to work...
+        if request.is_phone:
+            context['device'] = 'phone'
+        elif request.is_tablet:
+            context['device'] = 'tablet'
+        else:
+            context['device'] = 'other'
+
         # do search
         loginfo('start search', context, request)
         context = doSearch(context)

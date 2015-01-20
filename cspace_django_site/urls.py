@@ -14,7 +14,7 @@ from main import cspace_django_site
 cspace_django_site.initialize()
 
 urlpatterns = patterns('',
-                       #  Examples:
+                       # Examples:
                        #  url(r'^$', 'cspace_django_site.views.home', name='home'),
                        #  url(r'^cspace_django_site/', include('cspace_django_site.foo.urls')),
 
@@ -40,4 +40,6 @@ urlpatterns = patterns('',
                        url(r'^imaginator/?', include('imaginator.urls', namespace='imaginator')),
                        url(r'^landing/?', include('landing.urls', namespace='landing')),
                        url(r'^uploadmedia/', include('uploadmedia.urls', namespace='uploadmedia')),
-                       )
+                       url(r'^locviewer/', include('locviewer.urls', namespace='locviewer')),
+
+)
