@@ -397,7 +397,7 @@ def doSearch(context):
                             index = PARMS[p][3].replace('_ss', '_txt')
                             index = index.replace('_s', '_txt')
                     elif '_dt' in PARMS[p][3]:
-                        querypattern = '%s %s'
+                        querypattern = '%s: "%sZ"'
                         index = PARMS[p][3]
                     else:
                         t = t.split(' ')
