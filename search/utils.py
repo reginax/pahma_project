@@ -128,8 +128,8 @@ def writeCsv(filehandle, items, writeheader, bmapper=False):
                 if x['name'] not in fieldset:
                     continue
                 r.append(x['value'])
-            location = item['location'] #How does location differ from marker?
-            l = location.split(', ')
+            location = item['location']
+            l = location.split(',')
             r.append(l[0])
             r.append(l[1])
             for cell in r:
