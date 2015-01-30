@@ -98,7 +98,11 @@ def parseTerm(queryterm):
 
 def makeMarker(location):
     if location:
-        return location.replace(' ','')
+        location = location.replace(' ','')
+        latitude,longitude = location.split(',')
+        latitude = float(latitude)
+        longitude = float(longitude)
+        return "%0.2f,%0.2f" % (latitude,longitude)
     else:
         return None
 
@@ -163,16 +167,19 @@ def setupGoogleMap(requestObject, context):
             selected.append(requestObject[p])
     mappableitems = []
     markerlist = []
+    markerlength = 200
     for item in context['items']:
         if item['csid'] in selected:
         #if True:
             try:
                 m = makeMarker(item['location'])
-                if len(mappableitems) >= MAXMARKERS: break
+                if markerlength > 2048: break
+                #if len(mappableitems) >= MAXMARKERS: break
                 if m is not None:
                     #print 'm= x%sx' % m
                     markerlist.append(m)
                     mappableitems.append(item)
+                    markerlength += len(m) + 8 # 8 is the length of '&markers='
             except KeyError:
                 pass
     context['mapmsg'] = []
@@ -183,10 +190,13 @@ def setupGoogleMap(requestObject, context):
         context['mapmsg'].append(
             '%s points plotted. all %s selected objects in result set examined.' % (len(markerlist), len(selected)))
     context['items'] = mappableitems
-    context['markerlist'] = '&markers='.join(markerlist[:MAXMARKERS])
-    if len(markerlist) >= MAXMARKERS:
-        context['mapmsg'].append(
-            '%s points is the limit. Only first %s accessions (with latlongs) plotted!' % (MAXMARKERS, len(markerlist)))
+    context['markerlist'] = '&markers='.join(markerlist)
+    #context['markerlist'] = '&markers='.join(markerlist[:MAXMARKERS])
+
+    #if len(markerlist) >= MAXMARKERS:
+    #    context['mapmsg'].append(
+    #        '%s points is the limit. Only first %s accessions (with latlongs) plotted!' % (MAXMARKERS, len(markerlist)))
+
     return context
 
 
