@@ -161,6 +161,9 @@ def writeCsv(filehandle, items, writeheader, bmapper=False):
 
 
 def setupGoogleMap(requestObject, context):
+
+    context['maxresults'] = 200 # google static api can't handle any more than this anyway...
+    context = doSearch(context)
     selected = []
     for p in requestObject:
         if 'item-' in p:
@@ -206,6 +209,8 @@ def setupBMapper(requestObject, context):
     for p in requestObject:
         if 'item-' in p:
             selected.append(requestObject[p])
+    context['maxresults'] = min(len(selected), MAXRESULTS)
+    context = doSearch(context)
     mappableitems = []
     for item in context['items']:
         #if item['csid'] in selected:
@@ -340,15 +345,10 @@ def setConstants(context):
         if 'url' in requestObject: context['url'] = requestObject['url']
         if 'querystring' in requestObject: context['querystring'] = requestObject['querystring']
         if 'core' in requestObject: context['core'] = requestObject['core']
-        if 'maxresults' in requestObject: context['maxresults'] = int(requestObject['maxresults'])
         if 'pixonly' in requestObject: context['pixonly'] = requestObject['pixonly']
-        if 'start' in requestObject: context['start'] = int(requestObject['start'])
-        else: context['start'] = 0
-
-        if 'maxfacets' in requestObject:
-            context['maxfacets'] = int(requestObject['maxfacets'])
-        else:
-            context['maxfacets'] = MAXFACETS
+        if 'maxresults' in requestObject: context['maxresults'] = int(requestObject['maxresults'])
+        context['start'] = int(requestObject['start']) if 'start' in requestObject else 0
+        context['maxfacets'] = int(requestObject['maxfacets']) if 'maxfacets' in requestObject else MAXFACETS
 
     except:
         print "no searchValues set"
@@ -356,7 +356,7 @@ def setConstants(context):
         context['url'] = ''
         context['querystring'] = ''
         context['core'] = SOLRCORE
-        context['maxresults'] = MAXRESULTS
+        context['maxresults'] = 0
         context['start'] = 0
 
 
@@ -392,7 +392,6 @@ def doSearch(context):
     if 'map-google' in requestObject or 'csv' in requestObject or 'map-bmapper' in requestObject:
         querystring = requestObject['querystring']
         url = requestObject['url']
-        context['maxresults'] = MAXRESULTS
     else:
         for p in requestObject:
             if p in ['csrfmiddlewaretoken', 'displayType', 'resultsOnly', 'maxresults', 'url', 'querystring', 'pane',
@@ -477,9 +476,9 @@ def doSearch(context):
     print querystring
     try:
         response = s.query(querystring, facet='true', facet_field=facetfields, fq={},
-                           rows=context['maxresults'], facet_limit=MAXFACETS,
+                           rows=context['maxresults'], facet_limit=MAXFACETS, sort='objsortnum_s',
                            facet_mincount=1, start=context['start'])
-        print 'solr search succeeded, %s results' % response.numFound
+        print 'solr search succeeded, %s results, %s rows requested' % (response.numFound, context['maxresults'])
     except:
         #raise
         print 'solr search failed: %s' % ''
