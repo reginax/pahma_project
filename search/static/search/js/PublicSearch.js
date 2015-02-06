@@ -77,6 +77,20 @@ $(document).ready(function () {
     //     chooseSlideDirection('#searchfieldsTarget');
     // });
 
+
+    $('#next').click(function() {
+        var $n = $("#start");
+        $n.val( Number($n.val())+1 );
+        submitForm('search-list');
+    });
+
+    $('#prev').click(function() {
+        var $n = $("#start");
+        $n.val( Number($n.val())-1 );
+        submitForm('search-list');
+    });
+
+
     $('#about').click(function() {
         chooseSlideDirection('#aboutTarget');
         $('#helpTarget').slideUp();

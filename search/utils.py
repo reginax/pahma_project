@@ -241,6 +241,7 @@ def setupBMapper(requestObject, context):
 
 
 def setupCSV(requestObject, context):
+    context = doSearch(context)
     selected = []
     # check to see if 'select all' is clicked...if so, skip checking individual items
     if 'select-item' in requestObject:
@@ -347,7 +348,7 @@ def setConstants(context):
         if 'core' in requestObject: context['core'] = requestObject['core']
         if 'pixonly' in requestObject: context['pixonly'] = requestObject['pixonly']
         if 'maxresults' in requestObject: context['maxresults'] = int(requestObject['maxresults'])
-        context['start'] = int(requestObject['start']) if 'start' in requestObject else 0
+        context['start'] = int(requestObject['start']) if 'start' in requestObject else 1
         context['maxfacets'] = int(requestObject['maxfacets']) if 'maxfacets' in requestObject else MAXFACETS
 
     except:
@@ -357,7 +358,9 @@ def setConstants(context):
         context['querystring'] = ''
         context['core'] = SOLRCORE
         context['maxresults'] = 0
-        context['start'] = 0
+        context['start'] = 1
+
+    if context['start'] < 1: context['start'] = 1
 
 
     context['PARMS'] = PARMS
@@ -475,9 +478,14 @@ def doSearch(context):
 
     print querystring
     try:
+        startpage = context['maxresults'] * (context['start'] - 1)
+    except:
+        startpage = 0
+        context['start'] = 1
+    try:
         response = s.query(querystring, facet='true', facet_field=facetfields, fq={},
                            rows=context['maxresults'], facet_limit=MAXFACETS, sort='objsortnum_s',
-                           facet_mincount=1, start=context['start'])
+                           facet_mincount=1, start=startpage)
         print 'solr search succeeded, %s results, %s rows requested' % (response.numFound, context['maxresults'])
     except:
         #raise

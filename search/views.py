@@ -85,7 +85,6 @@ def csv(request):
 
         if form.is_valid():
             context = {'searchValues': requestObject}
-            context = doSearch(context)
             csvitems = setupCSV(requestObject, context)
 
             # Create the HttpResponse object with the appropriate CSV header.
