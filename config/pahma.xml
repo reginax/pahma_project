@@ -20,7 +20,7 @@
 <datumshift value="true"></datumshift>
 </settings>
 <recordlinkback>
-<linkback method="root" linkurl="https://havrc.cspace.berkeley.edu/pahma_project/search/search/?displayType=full&amp;maxresults=1&amp;start=0" text="View Details" fieldname="Link Back" key1="musno" value1="char120:1" />
+<linkback method="root" linkurl="https://dev.cspace.berkeley.edu/pahma_project/search/search/?displayType=full&amp;maxresults=1&amp;start=0" text="View Details" fieldname="Link Back" key1="musno" value1="char120:1" />
 </recordlinkback>
 <concepts xlmns:darwin="http://digir.net/schema/conceptual/darwin/2003/1.0">
 <concept viewlist="1" datatype="char120:1" alias="Museum Number" />
