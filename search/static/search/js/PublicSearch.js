@@ -39,7 +39,7 @@ function clearForm(oForm) {
 
             case "text":
                 if (elements[i].name == "start"){
-                    elements[i].value = 0;
+                    elements[i].value = 1;
                     break;
                 }
                 elements[i].value = "";
@@ -125,7 +125,6 @@ $(document).ready(function () {
 
     $('#search-reset').click(function () {
         clearForm($('#search')[0]);
-        // $('#search')[0].reset();
         $('#resultsPanel').html('');
     });
 
@@ -236,6 +235,10 @@ $(document).ready(function () {
         }
     });
 
+    $(document).on('click', '.sel-item', function () {
+        $('#select-items').prop('checked', false);
+    });
+
     $(document).on('click', '.map-item', function () {
         var Elem = $(this).siblings('.small-map');
         if ($(Elem).css("display") == "none") {
@@ -257,6 +260,9 @@ $(document).ready(function () {
     $(document).on('click', '.facet-item', function () {
         var key = ($(this).attr('data-facetType'));
         var value = ($(this).text());
+
+        // reset page number to 1 -- this is a new search!
+        $("#start").val( 1 );
 
         if (key != '') {
             console.log(key + ': ' + value);
