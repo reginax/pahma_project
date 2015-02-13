@@ -21,11 +21,11 @@ field	8	count	Object Count	objcount_s	x		string					5		5	x
 field	9	countnote	Count Note	objcountnote_s	x		keyword					6		7	x
 field	10	dept	Department	objdept_s	x		keyword					7		3	x
 field	11	keelingser	Keeling Serial Number	objkeelingser_s	x		keyword					8		8	x
-field	12	fcp	Collection Place	objfcp_s	x	pl	keyword		6			9		29	x
+field	12	fcp	Collection Place	objfcp_s	x	pl	keyword		6	1		9		29	x
 field	13	fcptree	Collection Place	objfcptree_s	x		keyword	1,2						32	x
 field	14	fcpverbatim	Collection Place (verbatim)	objfcpverbatim_s	x	pl	keyword					10	1	9	x
 field	15	filecode	Ethnographic File Code	objfilecode_ss	x	fc	dropdown	7,2	3		4	11	2	12	x
-field	16	assoccult	Culture	objassoccult_ss	x	cu	keyword		5		3	12	5	27	x
+field	16	assoccult	Culture	objassoccult_ss	x	cu	keyword		5	2	3	12	5	27	x
 field	17	culturetree	Culture	objculturetree_ss	x	cu	keyword	2,2						28	x
 field	18	inventory	Inventory	objinventory_s	x		keyword								x
 field	19	collector	Collector	objcollector_ss	x	pe	keyword	5,2			5	12		23	x
