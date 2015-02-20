@@ -510,7 +510,10 @@ def doSearch(context):
 
     context['items'] = []
     imageCount = 0
-    displayFields = context['displayType'] + 'Display'
+    if 'berkeleymapper' in context:
+        displayFields = 'bMapper'
+    else:
+        displayFields = context['displayType'] + 'Display'
     for i, listItem in enumerate(results):
         item = {}
         item['counter'] = i
