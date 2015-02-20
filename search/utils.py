@@ -122,8 +122,6 @@ def writeCsv(filehandle, items, writeheader, bmapper=False):
         row = []
         if bmapper:
             r = []
-            r.append(item['accession'])
-            r.append(item['mainentry'])
             for x in item['otherfields']:
                 if x['name'] not in fieldset:
                     continue
