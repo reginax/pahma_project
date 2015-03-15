@@ -1,0 +1,105 @@
+{% extends "cspace_django_site/base_site.html" %}
+{% load i18n admin_static %}
+{% load staticfiles %}
+{% load render_table from django_tables2 %}
+
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static "toolbox/css/tablesorter.css" %}"/>
+    <link rel="stylesheet" type="text/css"
+          href="{% static "cspace_django_site/css/smoothness/jquery-ui-1.10.3.custom.min.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "toolbox/css/toolbox.css" %}"/>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="{% static "cspace_django_site/js/jquery-1.10.0.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "cspace_django_site/js/jquery-ui-1.10.3.custom.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "toolbox/js/toolbox.js" %}"></script>
+    <script type="text/javascript" src="{% static "toolbox/js/jquery.tablesorter.js" %}"></script>
+{% endblock %}
+
+{% block loginBtn %}
+    <div id="user-tools">
+        <a href="{% url 'login' %}?next=../../toolbox" id="login" class="prettyBtn">{% trans 'Sign in' %}</a>
+    </div>
+{% endblock %}
+
+{% block branding %}
+    {% include "toolbox_info_strip.html" %}
+{% endblock %}
+
+{% block content %}
+    <div id="content-main">
+        <input type="hidden" value="{{ institution }}"/>
+        <div class="searchPanel">
+            {% if appname == 'listapps' %}
+                <table cellspace="1" id="resultsListing">
+                    {% for app in apps %}
+                        {% if app.0 != 'listapps' %}
+                            <tr><td><a class="facet-item" href="{{ app.0 }}">{{ app.1.0 }}</a></td></tr>
+                        {% endif %}
+                    {% endfor %}
+                </table>
+            {% else %}
+                <form class="searchForm" id="search" method="POST">
+                    {% csrf_token %}
+                    <div>
+                        {% include "toolbox_fields.html" %}
+                        {% include "toolbox_button_start.html" %}
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+        <div id="waitingImage" style="display: none">
+            <img src="{% static "cspace_django_site/images/timer-animated.gif" %}" alt="Searching..."/>
+        </div>
+        <div id="checkPanel">
+            <form class="reviewForm" id="review" method="POST">
+                {% csrf_token %}
+                {% if checkitems %}
+                    <table>
+                    {% for key,value in checkitems.items %}
+                        <tr><td>{{ value.3 }}</td><td><b>{{ value.2 }}</b></td><td>({{ value.0 }} {{ value.1 }} {{ value.4 }})</td></tr>
+                    {% endfor %}
+                    </table>
+                    <hr/>
+                    {% include "toolbox_button_action.html" %}
+                {% endif %}
+            </form>
+        </div>
+        <div id="reviewPanel">
+            <form class="reviewForm" id="review" method="POST">
+                {% csrf_token %}
+                {% if reviewitems %}
+                    {% render_table reviewitems %}
+                    <hr/>
+                    {{ numberofitems }} items listed.
+                    {% include "toolbox_button_action.html" %}
+                {% endif %}
+        </div>
+        <div id="resultsPanel">
+            <form class="resultsForm" id="results" method="POST">
+                {% csrf_token %}
+                {% if enumerateditems %}
+                    {% render_table enumerateditems %}
+                    <hr/>
+                    {{ numberofitems }} items listed.
+                    {% include "toolbox_button_action.html" %}
+                {% endif %}
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    <table width="100%">
+        <tbody>
+        <tr>
+          <td style="vertical-align: middle">Current time: {{ timestamp }}. This is version {{ version }}</td>
+          <td style="vertical-align: middle;width: 70px;">powered by </td>
+          <td style="text-align: right; width: 160px;"><img src="{% static "cspace_django_site/images/header-logo-cspace.png" %}" height="30px"></td>
+        </tr>
+        </tbody>
+    </table>
+{% endblock %}
+
+

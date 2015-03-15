@@ -1,6 +1,7 @@
 # Django settings for cspace_django_site project.
 import os
 import logging
+from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_PARENT_DIR = os.path.dirname(BASE_DIR)
@@ -103,7 +104,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = '4vzb=dif9s33-dz9y=*0t7se44cpp6fzxu(59b2_ke^yk0ke1%'
+SECRET_KEY = '4vzb=dxx9s33-xz9y=*0t7se44cpp6fzxu(59b2_ke^yk0ke1%'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -111,6 +112,8 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.app_directories.Loader',
     #'django.template.loaders.eggs.Loader',
 )
+
+TEMPLATE_CONTEXT_PROCESSORS += ('django.core.context_processors.request',)
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
@@ -143,6 +146,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_tables2',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -159,7 +163,8 @@ INSTALLED_APPS = (
     'imaginator',
     'search',
     'uploadmedia',
-    'locviewer'
+    'locviewer',
+    'toolbox'
 )
 
 # A sample logging configuration. The only tangible logging

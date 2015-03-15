@@ -1,0 +1,22 @@
+{% load i18n admin_static %}
+<h4 class="bannerLeft"></h4>
+<h4 class="bannerRight"></h4>
+<h1 class="bannerTitle" id="site-name">{% trans apptitle %}</h1>
+<div style="float:right; height: 30px;">
+    <a href="./">Switch Application</a>
+    <!-- a href="#" id="about">About</a>
+    <a href="#" id="help">Help</a>
+    <a href="#" id="terms">Terms</a>
+    <a href="#" id="credits">Credits</a -->
+</div>
+<div class="toggled">
+    <div id="aboutTarget" style="display:none">
+        {% include "toolbox_info_about.html" %}
+    </div>
+    <div id="helpTarget" style="display:none">
+        {% include "toolbox_info_help.html" %}
+    </div>
+    <div id="creditsTarget" style="display:none">
+        {% include "toolbox_info_credits.html" %}
+    </div>
+</div>
