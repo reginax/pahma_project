@@ -15,7 +15,7 @@ from cspace_django_site import settings
 # global variables
 
 from appconfig import MAXMARKERS, MAXRESULTS, MAXLONGRESULTS, MAXFACETS, IMAGESERVER, BMAPPERSERVER, BMAPPERDIR
-from appconfig import BMAPPERCONFIGFILE, LOCALDIR, SEARCH_QUALIFIERS
+from appconfig import BMAPPERURL, BMAPPERCONFIGFILE, LOCALDIR, SEARCH_QUALIFIERS
 from appconfig import EMAILABLEURL, SUGGESTIONS, LAYOUT, CSPACESERVER, INSTITUTION
 from appconfig import VERSION, FIELDDEFINITIONS, getParms
 
@@ -240,9 +240,7 @@ def setupBMapper(requestObject, context):
     context['items'] = mappableitems
     bmapperconfigfile = '%s/%s/%s' % (BMAPPERSERVER, BMAPPERDIR, BMAPPERCONFIGFILE)
     tabfile = '%s/%s/%s' % (BMAPPERSERVER, BMAPPERDIR, filename)
-    context[
-        'bmapperurl'] = "http://berkeleymapper.berkeley.edu/run.php?ViewResults=tab&tabfile=%s&configfile=%s&sourcename=PAHMA+result+set&maptype=Terrain" % (
-        tabfile, bmapperconfigfile)
+    context['bmapperurl'] = BMAPPERURL % (tabfile, bmapperconfigfile)
     return context
     # return HttpResponseRedirect(context['bmapperurl'])
 
