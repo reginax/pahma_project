@@ -352,20 +352,6 @@ if __name__ == '__main__':
         result += '<tr><td>%s</td><td>%s</td></tr>' % (k, t[k])
     result += '</table>'
 
-    result += '<h2>Headers</h2>'
-    for h in 'inventory movecrate packinglist packinglistbyculture moveobject bedlist bedlistnone keyinfoResult objinfoResult inventoryResult barcodeprint barcodeprintlocations upload'.split(' '):
-        result += '<h3>Header for %s</h3>' % h
-        header = getHeader(h, '')
-        result += header.replace('<table', '<table border="1" ')
-        result += '</table>'
-
-    result += '<h2>KIR/OIR/BOE Fieldset Headers</h2>'
-    for h in 'keyinfo namedesc hsrinfo registration'.split(' '):
-        result += '<h3>Header for %s</h3>' % h
-        header = infoHeaders(h)
-        result += header.replace('<table', '<table border="1" ')
-        result += '</table>'
-
     print '''Content-Type: text/html; charset=utf-8
 
     '''

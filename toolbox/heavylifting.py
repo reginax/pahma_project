@@ -1,4 +1,9 @@
 import django_tables2 as tables
+from constants import getAgencies, getHierarchies
+import connector
+from common import cspace
+import re
+
 
 
 def extractTerms(context, dict, requestedField):
@@ -15,7 +20,7 @@ def extractTerms(context, dict, requestedField):
     return [position, field, dict[requestedField], context['applayout'][requestedField]['label'], requestedField]
 
 
-def getFields(context, request):
+def getFields(request, context):
     search_terms = {}
     for formField in request.POST:
         if formField in ['csrfmiddlewaretoken', 'submit', 'start', 'enumerate', 'search', 'update', 'movecheck']: continue
@@ -44,7 +49,7 @@ def doQuery(query, fields):
 
 
 def doSearch(context, request):
-    context['checkitems'] = getFields(request)
+    context['checkitems'] = getFields(request, context)
 
     if 'items' in context: del context['items']
     context['action'] = 'enumerate'
@@ -94,7 +99,7 @@ def doReview(context, request):
 
         objmusno_s = tables.Column(verbose_name='museum number')
         objname_s = tables.TemplateColumn('<input type ="text" value="{{ record.objname_s }}"/>',
-                                          verbose_name='museum number')
+                                          verbose_name='object name')
         objcount_s = tables.TemplateColumn('<input type ="text" value="{{ record.objcount_s }}"/>',
                                            verbose_name='count')
         objfcpverbatim_s = tables.TemplateColumn('<input type ="text" value="{{ record.objfcpverbatim_s }}"/>',
@@ -135,7 +140,7 @@ def doUpdate(context, request):
 
 
 def doSave(context, request):
-    context['checkitems'] = getFields(request)
+    context['checkitems'] = getFields(request, context)
     context['enumerate'] = 'update'
 
     if 'items' in context: del context['items']
@@ -156,3 +161,31 @@ def doMovecheck(context, request):
     if 'items' in context: del context['items']
 
     return context
+
+def xxx(request,context,config):
+    hierarchies = getHierarchies()
+    context['hierarchies'] = hierarchies
+    if "hierarchy" in request.GET:
+        hierarchy = request.GET["hierarchy"]
+        context['selected_hierarchy'] = hierarchy
+        config_file_name = 'HierarchyViewer'
+        res = connector.gethierarchy(hierarchy, config)
+        hostname = config.get('connect', 'hostname')
+        institution = config.get('info', 'institution')
+        port = config.get('link', 'port')
+        protocol = config.get('link', 'protocol')
+        link = protocol + '://' + hostname + port + '/collectionspace/ui/' + institution
+        if hierarchy == 'taxonomy':
+            link += '/html/taxon.html?csid=%s'
+        elif hierarchy == 'places':
+            link += '/html/place.html?csid=%s'
+        else:
+            link += '/html/concept.html?csid=%s&vocab=' + hierarchy
+        for row in res:
+            pretty_name = row[0].replace('"', "'")
+            if len(pretty_name) > 0 and pretty_name[0] == '@':
+                pretty_name = '<' + pretty_name[1:] + '> '
+            pretty_name = pretty_name + '", url: "' + link % (row[2])
+        data = re.sub(r'\n { label: "(.*?)"},', r'''\n { label: "no parent >> \1"},''', res)
+        context['data'] = data
+        return context

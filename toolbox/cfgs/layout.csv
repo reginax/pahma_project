@@ -13,6 +13,7 @@
 9	barcodeprint	print	Enumerate	button	end			
 10	barcodeprint	start	Search	button	enumerate			
 11	barcodeprint	enumerate	Print	button	print			
+11	barcodeprint	printer	Printer	dropdown	printers		1	3
 #								
 12	bedlist	location.start	Garden Location	text	40	lo	1	1
 13	bedlist	dora	alive	radio	alive		1	2
@@ -45,8 +46,8 @@
 #								
 33	inventory	location.start	Start Location	text	40	lo	1	1
 34	inventory	location.end	End Location	text	40	lo	1	2
-35	inventory	handler	Handler	dropdown	handlerlist		2	1
-36	inventory	reason	Reason	dropdown	reasonlist		2	2
+35	inventory	handler	Handler	dropdown	handlers		2	1
+36	inventory	reason	Reason	dropdown	reasons		2	2
 37	inventory	enumerate	Enumerate	button	end			
 37	inventory	move	Enumerate	button	enumerate			
 38	inventory	start	Search	button	review			
@@ -67,8 +68,8 @@
 49	movecrate	location.end	To Location	text	40	lo	1	2
 49	movecrate			placeholder			2	1
 50	movecrate	crate	To Crate	text	40	lo	2	1
-51	movecrate	handler	Handler	dropdown	handlerlist		3	1
-52	movecrate	reason	Reason	dropdown	reasonlist		3	2
+51	movecrate	handler	Handler	dropdown	handlers		3	1
+52	movecrate	reason	Reason	dropdown	reasons		3	2
 53	movecrate	move	Enumerate	button	end			
 54	movecrate	start	Search	button	movecheck			
 55	movecrate	movecheck	Move crate	button	move			
@@ -77,8 +78,8 @@
 58	moveobject	object.end	End Object	text	40	ob	1	2
 56	moveobject	location.start	To Location	text	40	lo	2	1
 59	moveobject	crate	To Crate	text	40	lo	2	2
-60	moveobject	handler	Handler	dropdown	handlerlist		3	1
-61	moveobject	reason	Reason	dropdown	reasonlist		3	2
+60	moveobject	handler	Handler	dropdown	handlers		3	1
+61	moveobject	reason	Reason	dropdown	reasons		3	2
 62	moveobject	move	Enumerate	button	end			
 63	moveobject	start	Search	button	movecheck			
 64	moveobject	movecheck	Move objects	button	move			
@@ -108,8 +109,8 @@
 78	powermove	location.end	To Location	text	40	lo	1	2
 79	powermove	crate.start	From Crate	text	40	lo	2	1
 80	powermove	crate.end	To Crate	text	40	lo	2	2
-81	powermove	handler	Handler	dropdown	handlerlist		3	1
-82	powermove	reason	Reason	dropdown	reasonlist		3	2
+81	powermove	handler	Handler	dropdown	handlers		3	1
+82	powermove	reason	Reason	dropdown	reasons		3	2
 83	powermove	move	Enumerate	button	end			
 84	powermove	start	Search	button	movecheck			
 85	powermove	movecheck	Move objects	button	move			

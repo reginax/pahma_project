@@ -12,9 +12,8 @@
                                 <td>
                                     <select id="{{ field.name }}" name="{{ field.name }}">
                                         <option value="">Please select</option>
-                                        {% for value in field.dropdowns %}
-                                            <option value="{{ value.0 }}"{% if value.0 == field.value %}
-                                                    selected{% endif %}>{{ value.0|slice:":40" }} ({{ value.1 }})
+                                        {% for value in field.parameter.0 %}
+                                            <option value="{{ value.1 }}"{% if value.1 == field.value %} selected{% endif %}>{{ value.0|slice:":40" }}
                                             </option>
                                         {% endfor %}
                                     </select>

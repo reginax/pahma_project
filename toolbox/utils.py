@@ -15,6 +15,25 @@ logger = logging.getLogger(__name__)
 logger.info('%s :: %s :: %s' % ('toolbox startup', '-', '-'))
 
 
+def getDropdowns(dropdown):
+
+    form = {'institution': institution}
+    if dropdown == 'tricoderusers': return constants.tricoderUsers()
+    elif dropdown == 'handlers': return constants.getHandlers(form)
+    elif dropdown == 'reasons': return constants.getReasons(form)
+    elif dropdown == 'printers': return constants.getPrinters(form)
+    elif dropdown == 'fieldset': return constants.getFieldset(form)
+    elif dropdown == 'hierarchies': return constants.getHierarchies(form)
+    elif dropdown == 'altnumtypes': return constants.getAltNumTypes(form)
+    elif dropdown == 'objtype': return constants.getObjType(form)
+    elif dropdown == 'collman': return constants.getCollMan(form)
+    elif dropdown == 'agencies': return constants.getAgencies(form)
+
+    return '',''
+
+
+
+
 def convert2int(s):
     try:
         return int(s)
@@ -49,18 +68,6 @@ def setConstants(context, appname):
     context['suggestions'] = suggestions
     context['institution'] = institution
     context['version'] = VERSION
-
-    form = {'institution': institution}
-    Tricoderusers = constants.tricoderUsers()
-    Handlers = constants.getHandlers(form)
-    Reasons = constants.getReasons(form)
-    Printers = constants.getPrinters(form)
-    Fieldset = constants.getFieldset(form)
-    Hierarchies = constants.getHierarchies(form)
-    AltNumTypes = constants.getAltNumTypes(form)
-    ObjType = constants.getObjType(form)
-    CollMan = constants.getCollMan(form)
-    Agencies = constants.getAgencies(form)
 
     return context
 
@@ -146,6 +153,8 @@ def defineFields(parmFile, suggestions):
                 appLayout[app][varname] = {}
             for r, v in enumerate(row):
                 appLayout[app][varname][columns[r]] = convert2int(row[r])
+            if row[4] == 'dropdown':
+                appLayout[app][varname][columns[5]] = getDropdowns(row[5])
 
         f.close()
 
