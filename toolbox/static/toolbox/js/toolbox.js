@@ -72,7 +72,7 @@ $(document).ready(function () {
             $(this).autocomplete({
                 source: function (request, response) {
                     $.ajax({
-                        url: "../../suggest/?",
+                        url: "../suggest/?",
                         dataType: "json",
                         data: {
                             q: request.term,
