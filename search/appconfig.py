@@ -139,6 +139,7 @@ def loadConfiguration(configFileName):
         BMAPPERSERVER = config.get('search', 'BMAPPERSERVER')
         BMAPPERDIR = config.get('search', 'BMAPPERDIR')
         BMAPPERCONFIGFILE = config.get('search', 'BMAPPERCONFIGFILE')
+        BMAPPERURL = config.get('search', 'BMAPPERURL')
         # SOLRSERVER = config.get('search', 'SOLRSERVER')
         # SOLRCORE = config.get('search', 'SOLRCORE')
         LOCALDIR = config.get('search', 'LOCALDIR')
