@@ -5,6 +5,27 @@ from common import cspace  # we use the config file reading function
 from cspace_django_site import settings
 import csv
 
+global MAXMARKERS
+global MAXRESULTS
+global MAXLONGRESULTS
+global MAXFACETS
+global EMAILABLEURL
+global IMAGESERVER
+global CSPACESERVER
+global INSTITUTION
+global BMAPPERSERVER
+global BMAPPERDIR
+global BMAPPERCONFIGFILE
+global BMAPPERURL
+global LOCALDIR
+global SEARCH_QUALIFIERS
+global FIELDDEFINITIONS
+global CSVPREFIX
+global CSVEXTENSION
+global SUGGESTIONS
+global LAYOUT
+global VERSION
+
 
 def getParms(parmFile):
     try:
@@ -119,7 +140,7 @@ def loadConfiguration(configFileName):
         BMAPPERDIR = config.get('search', 'BMAPPERDIR')
         BMAPPERCONFIGFILE = config.get('search', 'BMAPPERCONFIGFILE')
         # SOLRSERVER = config.get('search', 'SOLRSERVER')
-        #SOLRCORE = config.get('search', 'SOLRCORE')
+        # SOLRCORE = config.get('search', 'SOLRCORE')
         LOCALDIR = config.get('search', 'LOCALDIR')
         SEARCH_QUALIFIERS = config.get('search', 'SEARCH_QUALIFIERS').split(',')
         SEARCH_QUALIFIERS = [unicode(x) for x in SEARCH_QUALIFIERS]
@@ -141,26 +162,6 @@ def loadConfiguration(configFileName):
         print 'error in configuration file %s' % path.join(settings.BASE_PARENT_DIR, 'config/' + configFileName)
         print 'this webapp will probably not work.'
 
-global MAXMARKERS
-global MAXRESULTS
-global MAXLONGRESULTS
-global MAXFACETS
-global EMAILABLEURL
-global IMAGESERVER
-global CSPACESERVER
-global INSTITUTION
-global BMAPPERSERVER
-global BMAPPERDIR
-global BMAPPERCONFIGFILE
-global BMAPPERURL
-global LOCALDIR
-global SEARCH_QUALIFIERS
-global FIELDDEFINITIONS
-global CSVPREFIX
-global CSVEXTENSION
-global SUGGESTIONS
-global LAYOUT
-global VERSION
 
 loadConfiguration('search')
 print 'Configuration successfully read'
