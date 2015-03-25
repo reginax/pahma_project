@@ -5,27 +5,6 @@ from common import cspace  # we use the config file reading function
 from cspace_django_site import settings
 import csv
 
-global MAXMARKERS
-global MAXRESULTS
-global MAXLONGRESULTS
-global MAXFACETS
-global EMAILABLEURL
-global IMAGESERVER
-global CSPACESERVER
-global INSTITUTION
-global BMAPPERSERVER
-global BMAPPERDIR
-global BMAPPERCONFIGFILE
-global BMAPPERURL
-global LOCALDIR
-global SEARCH_QUALIFIERS
-global FIELDDEFINITIONS
-global CSVPREFIX
-global CSVEXTENSION
-global SUGGESTIONS
-global LAYOUT
-global VERSION
-
 
 def getParms(parmFile):
     try:
@@ -127,6 +106,27 @@ def parseRows(rows):
 def loadConfiguration(configFileName):
     config = cspace.getConfig(path.join(settings.BASE_PARENT_DIR, 'config'), configFileName)
 
+    global MAXMARKERS
+    global MAXRESULTS
+    global MAXLONGRESULTS
+    global MAXFACETS
+    global EMAILABLEURL
+    global IMAGESERVER
+    global CSPACESERVER
+    global INSTITUTION
+    global BMAPPERSERVER
+    global BMAPPERDIR
+    global BMAPPERCONFIGFILE
+    global BMAPPERURL
+    global LOCALDIR
+    global SEARCH_QUALIFIERS
+    global FIELDDEFINITIONS
+    global CSVPREFIX
+    global CSVEXTENSION
+    global SUGGESTIONS
+    global LAYOUT
+    global VERSION
+
     try:
         MAXMARKERS = int(config.get('search', 'MAXMARKERS'))
         MAXRESULTS = int(config.get('search', 'MAXRESULTS'))
@@ -147,7 +147,7 @@ def loadConfiguration(configFileName):
         FIELDDEFINITIONS = config.get('search', 'FIELDDEFINITIONS')
         CSVPREFIX = config.get('search', 'CSVPREFIX')
         CSVEXTENSION = config.get('search', 'CSVEXTENSION')
-        #TITLE = config.get('search', 'TITLE')
+        # TITLE = config.get('search', 'TITLE')
         SUGGESTIONS = config.get('search', 'SUGGESTIONS')
         LAYOUT = config.get('search', 'LAYOUT')
 
