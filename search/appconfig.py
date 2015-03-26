@@ -139,6 +139,7 @@ def loadConfiguration(configFileName):
         BMAPPERSERVER = config.get('search', 'BMAPPERSERVER')
         BMAPPERDIR = config.get('search', 'BMAPPERDIR')
         BMAPPERCONFIGFILE = config.get('search', 'BMAPPERCONFIGFILE')
+        BMAPPERURL = config.get('search', 'BMAPPERURL')
         # SOLRSERVER = config.get('search', 'SOLRSERVER')
         # SOLRCORE = config.get('search', 'SOLRCORE')
         LOCALDIR = config.get('search', 'LOCALDIR')
@@ -161,7 +162,6 @@ def loadConfiguration(configFileName):
     except:
         print 'error in configuration file %s' % path.join(settings.BASE_PARENT_DIR, 'config/' + configFileName)
         print 'this webapp will probably not work.'
-
 
 loadConfiguration('search')
 print 'Configuration successfully read'
