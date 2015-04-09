@@ -4,6 +4,8 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.contrib.auth import views
 
+import landing
+
 admin.autodiscover()
 
 #
@@ -22,11 +24,11 @@ urlpatterns = patterns('',
                        #  url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
                        # this is a test webapp. you may remove it if you like.
-                       url(r'^$', 'hello.views.home', name='home'),
+                       url(r'^$', include('landing.urls', namespace='landing')),
                        # these are django builtin webapps
                        url(r'^admin/', include(admin.site.urls)),
                        url(r'^accounts/login/$', views.login, name='login'),
-                       url(r'^accounts/logout/$', views.logout_then_login, name='logout'),
+                       url(r'^accounts/logout/$', views.logout, name='logout'),
                        # these are "internal webapps", used by other webapps -- not user-facing
                        url(r'^service/', include('service.urls')),
                        url(r'^suggestpostgres/', include('suggestpostgres.urls', namespace='suggestpostgres')),
