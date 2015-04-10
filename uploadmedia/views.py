@@ -107,7 +107,7 @@ def uploadfiles(request):
                   {'title': TITLE, 'serverinfo': SERVERINFO, 'images': images, 'count': len(images),
                    'constants': constants, 'jobinfo': jobinfo,
                    'dropdowns': dropdowns, 'overrides': overrides, 'status': status, 'timestamp': timestamp,
-                   'elapsedtime': '%8.2f' % elapsedtime})
+                   'elapsedtime': '%8.2f' % elapsedtime, 'loginBtnNext': 'uploadmedia'})
 
 
 @login_required()
@@ -130,4 +130,4 @@ def showqueue(request):
     return render(request, 'uploadmedia.html',
                   {'dropdowns': dropdowns, 'overrides': overrides, 'timestamp': timestamp,
                    'elapsedtime': '%8.2f' % elapsedtime,
-                   'status': status, 'title': TITLE, 'serverinfo': SERVERINFO, 'jobs': jobs, 'count': count})
+                   'status': status, 'title': TITLE, 'serverinfo': SERVERINFO, 'jobs': jobs, 'count': count, 'loginBtnNext': 'uploadmedia'})

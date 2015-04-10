@@ -8,15 +8,6 @@
     <script type="text/javascript" src="{% static "search/js/jquery.tablesorter.js" %}"></script>
 {% endblock %}
 
-
-{% block loginBtn %}
-    <div id="user-tools">
-        <a href="{% url 'login' %}?next=/bampfa_project/uploadmedia" id="login"
-           class="prettyBtn">{% trans 'Sign in' %}</a>
-    </div>
-{% endblock %}
-
-
 {% block content %}
     <div id="content-main">
         <ol>
