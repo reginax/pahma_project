@@ -23,12 +23,13 @@ SOLRSERVER = config.get('imaginator', 'SOLRSERVER')
 SOLRCORE = config.get('imaginator', 'SOLRCORE')
 TITLE = config.get('imaginator', 'TITLE')
 SUGGESTIONS = config.get('imaginator', 'SUGGESTIONS')
+LAYOUT = config.get('imaginator', 'LAYOUT')
 
 
-@login_required()
+#@login_required()
 def index(request):
 
-    context = {}
+    context = setConstants({})
 
     # http://blog.mobileesp.com/
     # the middleware must be installed for the following to work...
@@ -41,6 +42,8 @@ def index(request):
 
     if request.method == 'GET' and request.GET != {}:
         context['searchValues'] = request.GET
+
+        context = setConstants(context)
 
         if 'text' in request.GET:
             context['text'] = request.GET['text']
@@ -66,8 +69,11 @@ def index(request):
         # do search
         loginfo('start search', context, request)
         context = doSearch(context)
+        context['loginBtnNext'] = 'imaginator/'
 
         return render(request, 'imagineImages.html', context)
 
     else:
+        context['loginBtnNext'] = 'imaginator/'
+        
         return render(request, 'imagineImages.html', context)
