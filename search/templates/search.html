@@ -15,6 +15,7 @@
     <script type="text/javascript" src="{% static "search/js/jquery.tablesorter.min.js" %}"></script>
 {% endblock %}
 
+<!-- Overwrite default placement of login button, included below in branding block -->
 {% block loginBtn %}{% endblock %}
 
 {% block branding %}
@@ -23,8 +24,8 @@
     <h1 class="bannerTitle" id="site-name">{{ apptitle }}</h1>
 
     <!-- div class="user-tools" -->
-    <div class="unit" style="float:right">
-      {% include "cspace_django_site/loginBtn.html" with loginBtnNext="search/" %}
+    <div class="unit" style="float:right;">
+        {% include "cspace_django_site/loginBtn.html" with loginBtnNext="search/" %}
     </div>
     <div style="float:right; margin-top: 6px;" class="unit">
         <a href="#" id="about">About</a>
