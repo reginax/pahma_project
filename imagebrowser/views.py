@@ -48,10 +48,10 @@ def images(request):
         # do search
         loginfo('start search', context, request)
         context = doSearch(context)
-
+        context['loginBtnNext'] = 'imagebrowser/'
         return render(request, 'showImages.html', context)
 
     else:
         return render(request, 'showImages.html',
                       {'title': TITLE, 'pgNum': 10, 'maxresults': 20,
-                       'imageserver': IMAGESERVER})
+                       'imageserver': IMAGESERVER, 'loginBtnNext': 'imagebrowser/'})

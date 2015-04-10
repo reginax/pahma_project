@@ -108,10 +108,11 @@ def locations(request):
 
         locations = getlocations(connect_string)
         context['locations'] = locations
+        context['loginBtnNext'] = 'locviewer/'
 
         return render(request, 'viewLocations.html', context)
 
     else:
         return render(request, 'viewLocations.html',
                       {'title': TITLE, 'pgNum': 10, 'maxresults': 20,
-                       'imageserver': IMAGESERVER})
+                       'imageserver': IMAGESERVER, 'loginBtnNext': 'locviewer/'})

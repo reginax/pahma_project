@@ -28,7 +28,7 @@ SUGGESTIONS = config.get('imaginator', 'SUGGESTIONS')
 @login_required()
 def index(request):
 
-    context = {}
+    context = {'loginBtnNext': 'imaginator/'}
 
     # http://blog.mobileesp.com/
     # the middleware must be installed for the following to work...
