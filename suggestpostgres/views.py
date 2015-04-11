@@ -21,7 +21,7 @@ connect_string = config.get('connect', 'connect_string')
 
 import sys, json, re
 import cgi
-import cgitb;
+import cgitb
 
 cgitb.enable()  # for troubleshooting
 import pgdb

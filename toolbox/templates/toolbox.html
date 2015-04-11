@@ -5,8 +5,7 @@
 
 {% block extrastyle %}
     <link rel="stylesheet" type="text/css" href="{% static "toolbox/css/tablesorter.css" %}"/>
-    <link rel="stylesheet" type="text/css"
-          href="{% static "cspace_django_site/css/smoothness/jquery-ui-1.10.3.custom.min.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "cspace_django_site/css/smoothness/jquery-ui-1.10.3.custom.min.css" %}"/>
     <link rel="stylesheet" type="text/css" href="{% static "toolbox/css/toolbox.css" %}"/>
 {% endblock %}
 
@@ -17,11 +16,8 @@
     <script type="text/javascript" src="{% static "toolbox/js/jquery.tablesorter.js" %}"></script>
 {% endblock %}
 
-{% block loginBtn %}
-    <div id="user-tools">
-        <a href="{% url 'login' %}?next=../../toolbox" id="login" class="prettyBtn">{% trans 'Sign in' %}</a>
-    </div>
-{% endblock %}
+<!-- Overwrite default placement of login button, included below in branding block -->
+{% block loginBtn %}{% endblock %}
 
 {% block branding %}
     {% include "toolbox_info_strip.html" %}
