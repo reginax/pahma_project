@@ -16,9 +16,9 @@
             <br/>&nbsp;[no image]
             </div>
         {% endif %}
-        <p><h4>{{ item.mainentry }}</h4></p>
+        <p><h4>{{ item.mainentry|safe }}</h4></p>
         {% for i in item.otherfields %}
-            {% if i.value %}<p class="tiny">{{ i.label }}: {{ i.value }}</p>{% endif %}
+            {% if i.value %}<p class="tiny">{{ i.label }}: {{ i.value|safe }}</p>{% endif %}
         {% endfor %}
     </div>
 {% endfor %}
