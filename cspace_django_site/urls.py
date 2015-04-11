@@ -14,19 +14,18 @@ from main import cspace_django_site
 cspace_django_site.initialize()
 
 urlpatterns = patterns('',
-                       # Examples:
+                       #  Examples:
                        #  url(r'^$', 'cspace_django_site.views.home', name='home'),
                        #  url(r'^cspace_django_site/', include('cspace_django_site.foo.urls')),
 
                        #  Uncomment the admin/doc line below to enable admin documentation:
                        #  url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-                       # this is a test webapp. you may remove it if you like.
-                       url(r'^$', 'hello.views.home', name='home'),
+                       url(r'^$', include('landing.urls', namespace='landing')),
                        # these are django builtin webapps
                        url(r'^admin/', include(admin.site.urls)),
                        url(r'^accounts/login/$', views.login, name='login'),
-                       url(r'^accounts/logout/$', views.logout_then_login, name='logout'),
+                       url(r'^accounts/logout/$', views.logout, name='logout'),
                        # these are "internal webapps", used by other webapps -- not user-facing
                        url(r'^service/', include('service.urls')),
                        url(r'^suggestpostgres/', include('suggestpostgres.urls', namespace='suggestpostgres')),
@@ -42,5 +41,4 @@ urlpatterns = patterns('',
                        url(r'^landing/?', include('landing.urls', namespace='landing')),
                        url(r'^uploadmedia/?', include('uploadmedia.urls', namespace='uploadmedia')),
                        url(r'^locviewer/?', include('locviewer.urls', namespace='locviewer')),
-
 )

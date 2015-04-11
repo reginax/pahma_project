@@ -1,7 +1,6 @@
 __author__ = 'jblowe, amywieliczka'
 
 import time, datetime
-from os import path
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, render_to_response, redirect
@@ -15,9 +14,7 @@ from appconfig import CSVPREFIX, CSVEXTENSION, MAXRESULTS
 
 # global variables (at least to this module...)
 
-from utils import loadFields
-
-# SEARCHRESULTS = {}
+from appconfig import loadFields
 
 
 def direct(request):
@@ -30,8 +27,6 @@ def search(request):
         context = {'searchValues': dict(request.GET.iteritems())}
         context = doSearch(context)
 
-        #global SEARCHRESULTS
-        #SEARCHRESULTS = context
     else:
         context = setConstants({})
 

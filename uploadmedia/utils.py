@@ -96,34 +96,44 @@ def getDropdowns():
     }
 
 
-# following function take from stackoverflow...thanks!
+# following function taken from stackoverflow and modified...thanks!
 def get_exif(fn):
     ret = {}
     i = Image.open(fn)
-    info = i._getexif()
-    for tag, value in info.items():
-        decoded = TAGS.get(tag, tag)
-        ret[decoded] = value
+    try:
+        info = i._getexif()
+        for tag, value in info.items():
+            decoded = TAGS.get(tag, tag)
+            ret[decoded] = value
+    except:
+        pass
     return ret
 
-objectnumberpattern = re.compile('([a-z])\.([a-z])')
+
+objectnumberpattern = re.compile('([a-z]+)\.([a-zA-Z0-9]+)')
 
 def getNumber(filename):
     imagenumber = ''
     # the following is only for bampfa filenames...
+    # input is something like: bampfa_1995-46-194-a-199.jpg, output should be: 1995.46.194.a-199
     if 'bampfa_' in filename:
         objectnumber = filename.replace('bampfa_', '')
-        objectnumber = objectnumber.replace('-', '.')
-        objectnumber = objectnumberpattern.sub(r'\1-\2',objectnumber)
         try:
-            objectnumber,imagenumber,imagetype = objectnumber.split('_')
+            objectnumber, imagenumber, imagetype = objectnumber.split('_')
         except:
             imagenumber = '1'
+        # these legacy statement retained, just in case...
+        #numHyphens = objectnumber.count("-") - 1
+        #objectnumber = objectnumber.replace('-', '.', numHyphens)
+        objectnumber = objectnumber.replace('-', '.')
+        objectnumber = objectnumberpattern.sub(r'\1-\2',objectnumber)
+    # for non-bampfa users (i.e. pahma, at the moment) it suffices to split on underscore...
     else:
         objectnumber = filename
         objectnumber = objectnumber.split('_')[0]
-    objectnumber = objectnumber.replace('.JPG', '').replace('.jpg', '')
-    return objectnumber,imagenumber
+    # the following is a last ditch attempt to get an object number from a filename...
+    objectnumber = objectnumber.replace('.JPG', '').replace('.jpg', '').replace('.TIF','').replace('.tif','')
+    return filename, objectnumber, imagenumber
 
 
 def getCSID(objectnumber):
@@ -183,7 +193,7 @@ def assignValue(defaultValue, override, imageData, exifvalue, refnameList):
 def viewFile(logfilename, numtodisplay):
     print '<table width="100%">\n'
     print ('<tr>' + (4 * '<th class="ncell">%s</td>') + '</tr>\n') % (
-    'locationDate,objectNumber,objectStatus,handler'.split(','))
+        'locationDate,objectNumber,objectStatus,handler'.split(','))
     try:
         file_handle = open(logfilename)
         file_size = file_handle.tell()
