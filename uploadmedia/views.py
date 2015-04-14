@@ -71,9 +71,8 @@ def uploadfiles(request):
                     handle_uploaded_file(afile, imageinfo)
                 images.append(imageinfo)
             except:
-                raise
                 if not validateonly:
-                    # we still upload the file, anyway...
+                    # we still upload the file, anyway...unless we are only validating...
                     handle_uploaded_file(afile, imageinfo)
                 images.append({'name': afile.name, 'size': afile.size,
                                'error': 'problem extracting image metadata, not processed'})
