@@ -7,6 +7,7 @@ class AdditionalInfo(models.Model):
     content = models.TextField()
     order = PositionField()
     contentType = models.CharField(max_length=4, choices=(('HTML', 'HTML'), ('TEXT', 'Plain Text')), default='HTML')
+    live = models.BooleanField(default=False)
     
     class Meta:
         ordering = ['order']

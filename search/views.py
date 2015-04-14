@@ -32,7 +32,7 @@ def search(request):
         context = setConstants({})
 
     loginfo('start search', context, request)
-    context['additionalInfo'] = AdditionalInfo.objects.all()
+    context['additionalInfo'] = AdditionalInfo.objects.filter(live=True)
     return render(request, 'search.html', context)
 
 
