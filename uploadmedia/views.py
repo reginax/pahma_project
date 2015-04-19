@@ -71,7 +71,6 @@ def uploadfiles(request):
                     handle_uploaded_file(afile, imageinfo)
                 images.append(imageinfo)
             except:
-                raise
                 if not validateonly:
                     # we still upload the file, anyway...
                     handle_uploaded_file(afile, imageinfo)

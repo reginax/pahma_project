@@ -57,7 +57,7 @@
                     {% for t in item.blobs %}
                         <a target="image"
                            href="{{ imageserver }}/blobs/{{ t }}/derivatives/OriginalJpeg/content">
-                            <img src="{{ imageserver }}/blobs/{{ t }}/derivatives/Thumbnail/content">
+                            <img src="{{ imageserver }}/blobs/{{ t }}/derivatives/Medium/content">
                         </a>
                     {% endfor %}
                     <br/><a target="cspace" href="./search/search?displayType=full&maxresults=1&resultsOnly=True&text=%22{{ item.accession }}%22">{{ item.accession }}</a>
