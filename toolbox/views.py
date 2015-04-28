@@ -7,12 +7,14 @@ from django.shortcuts import render, render_to_response
 from django import forms
 
 from utils import loginfo, Dispatch, appLayout, setConstants, APPS
+from .models import AdditionalInfo
 
 #@login_required()
 def index(request):
     # APPS is a dict of configured webapps, show the list sorted by "app title"
     sorted_apps = sorted(APPS.items(), key=operator.itemgetter(1))
     context = setConstants({'apps': sorted_apps}, 'listapps')
+    context['additionalInfo'] = AdditionalInfo.objects.filter(live=True)
     return render(request, 'toolbox.html', context)
 
 
@@ -32,4 +34,5 @@ def tool(request, appname):
     context['form'] = form
     context = setConstants(context, appname)
     loginfo(appname, context, request)
+    context['additionalInfo'] = AdditionalInfo.objects.filter(live=True)
     return render(request, 'toolbox.html', context)

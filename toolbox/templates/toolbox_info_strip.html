@@ -1,20 +1,17 @@
 {% load i18n admin_static %}
-<h4 class="bannerLeft"></h4>
-<h4 class="bannerRight"></h4>
-<h1 class="bannerTitle" id="site-name">{% trans apptitle %}</h1>
+{% block branding %}
+    <h4 class="bannerLeft"></h4>
+    <h4 class="bannerRight"></h4>
+    <h1 class="bannerTitle" id="site-name">{{ apptitle }}</h1>
+
     <!-- div class="user-tools" -->
     <div class="unit" style="float:right;">
         {% include "cspace_django_site/loginBtn.html" with loginBtnNext="search/" %}
     </div>
-<div style="float:right; height: 30px;">
-    <!-- a href="#" id="about">About</a>
-    <a href="#" id="terms">Terms</a>
-    <a href="#" id="credits">Credits</a -->
-    <a href="#" id="help">Help</a>
-    <a href="./">Switch Application</a>
-</div>
-<div class="toggled">
-    <div id="aboutTarget" style="display:none">{% include "toolbox_info_about.html" %}</div>
-    <div id="helpTarget" style="display:none">{% include "toolbox_info_help.html" %}</div>
-    <div id="creditsTarget" style="display:none">{% include "toolbox_info_credits.html" %}</div>
-</div>
+    <div style="float:right; margin-top: 6px;" class="unit">
+        {% for info in additionalInfo %}
+            <a href="#" id="{{ info.slug }}" class="expandInfo">{{ info.name }}</a>
+        {% endfor %}
+        <a href="./">Switch Application</a>
+    </div>
+{% endblock %}
