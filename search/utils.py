@@ -19,6 +19,7 @@ from appconfig import BMAPPERURL, BMAPPERCONFIGFILE, LOCALDIR, SEARCH_QUALIFIERS
 from appconfig import EMAILABLEURL, SUGGESTIONS, LAYOUT, CSPACESERVER, INSTITUTION
 from appconfig import VERSION, FIELDDEFINITIONS, getParms
 from appconfig import DROPDOWNS, FIELDS, FACETS, LOCATION, PARMS, SEARCHCOLUMNS, SEARCHROWS, SOLRSERVER, SOLRCORE, TITLE, DEFAULTSORTKEY
+from appconfig import DERIVATIVECOMPACT, DERIVATIVEGRID, SIZECOMPACT, SIZEGRID
 
 SolrIsUp = True  # an initial guess! this is verified below...
 
@@ -312,6 +313,10 @@ def setConstants(context):
     context['version'] = VERSION
     context['layout'] = LAYOUT
     context['dropdowns'] = FACETS
+    context['derivativecompact'] = DERIVATIVECOMPACT
+    context['derivativegrid'] = DERIVATIVEGRID
+    context['sizecompact'] = SIZECOMPACT
+    context['sizegrid'] = SIZEGRID
     context['timestamp'] = time.strftime("%b %d %Y %H:%M:%S", time.localtime())
     context['qualifiers'] = [{'val': s, 'dis': s} for s in SEARCH_QUALIFIERS]
     context['resultoptions'] = [100, 500, 1000, 2000, 10000]
