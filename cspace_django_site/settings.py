@@ -30,6 +30,14 @@ DATABASES = {
     }
 }
 
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
@@ -146,6 +154,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'django_tables2',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
@@ -164,7 +173,8 @@ INSTALLED_APPS = (
     'search',
     'uploadmedia',
     'locviewer',
-    'toolbox'
+    'toolbox',
+    'batchuploadimages'
 )
 
 # A sample logging configuration. The only tangible logging
