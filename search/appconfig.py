@@ -111,11 +111,12 @@ def loadConfiguration(configFileName):
 
 
     try:
-        DERIVATIVEGRID = int(config.get('search', 'DERIVATIVEGRID'))
-        DERIVATIVECOMPACT = int(config.get('search', 'DERIVATIVEGRID'))
-        SIZEGRID = int(config.get('search', 'DERIVATIVEGRID'))
-        SIZECOMPACT = int(config.get('search', 'DERIVATIVEGRID'))
+        DERIVATIVEGRID = config.get('search', 'DERIVATIVEGRID')
+        DERIVATIVECOMPACT = config.get('search', 'DERIVATIVECOMPACT')
+        SIZEGRID = config.get('search', 'SIZEGRID')
+        SIZECOMPACT = config.get('search', 'SIZECOMPACT')
     except:
+        print 'could not get image layout (size and derviative to use) from config file, using defaults'
         DERIVATIVEGRID     = "Thumbnail"
         DERIVATIVECOMPACT  = "Thumbnail"
         SIZEGRID           = "100px"
