@@ -141,12 +141,14 @@
                     {% endif %}
                 {% endif %}
             </form>
+            <h2>
+                <li>Check on jobs and uploads</li>
+            </h2>
             <form action="{% url 'uploadmedia:showqueue' %}" method="post">
                 {% csrf_token %}
-                <h2>
-                    <li>Check on jobs and uploads</li>
-                </h2>
                 <input type="submit" name="checkjobs" value="View the Job Queue">
+                <input type="submit" name="showerrors" value="List Images That Failed to Load">
+                {% include "showerrors.html" %}
                 {% include "showqueue.html" %}
             </form>
         </ol>

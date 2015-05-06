@@ -16,7 +16,7 @@ TITLE = 'Bulk Media Upload'
 overrides = [['ifblank', 'Overide only if blank'],
              ['always', 'Always Overide']]
 
-@login_required()
+# @login_required()
 def uploadfiles(request):
     jobinfo = {}
     constants = {}
@@ -83,7 +83,8 @@ def uploadfiles(request):
 
             if not validateonly:
                 writeCsv(getJobfile(jobnumber) + '.step1.csv', images,
-                         ['name', 'size', 'objectnumber', 'date', 'creator', 'contributor', 'rightsholder', 'imagenumber'])
+                         ['name', 'size', 'objectnumber', 'date', 'creator', 'contributor', 'rightsholder',
+                          'imagenumber'])
             jobinfo['estimatedtime'] = '%8.1f' % (len(images) * 10 / 60.0)
 
             if 'createmedia' in request.POST:
@@ -146,10 +147,18 @@ def showresults(request, filename):
     return response
 
 
-@login_required()
+#@login_required()
 def showqueue(request):
     elapsedtime = time.time()
-    jobs, count = getJoblist()
+    jobs, errors, jobcount, errorcount = getJoblist()
+    if 'checkjobs' in request.POST:
+        errors = None
+    elif 'showerrors' in request.POST:
+        jobs = None
+    else:
+        jobs = None
+        errors = None
+        count = 0
     dropdowns = getDropdowns()
     elapsedtime = time.time() - elapsedtime
     status = 'up'
@@ -158,4 +167,5 @@ def showqueue(request):
     return render(request, 'uploadmedia.html',
                   {'dropdowns': dropdowns, 'overrides': overrides, 'timestamp': timestamp,
                    'elapsedtime': '%8.2f' % elapsedtime,
-                   'status': status, 'title': TITLE, 'serverinfo': SERVERINFO, 'jobs': jobs, 'count': count})
+                   'status': status, 'title': TITLE, 'serverinfo': SERVERINFO, 'jobs': jobs, 'jobcount': jobcount,
+                   'errors': errors, 'errorcount': errorcount})

@@ -33,16 +33,36 @@ def getJobfile(jobnumber):
     return JOBDIR % jobnumber
 
 
+def jobsummary(jobstats):
+    result = [0, 0, 0, []]
+    for jobname, status, count, imagefilenames in jobstats:
+        if 'pending' in status:
+            result[0] = count - 1
+        if 'submitted' in status:
+            result[0] = count - 1
+            inputimages = imagefilenames
+        if 'ingested' in status:
+            result[1] = count
+            try:
+                result[2] = result[0] - result[1]
+                result[3] = [image for image in inputimages if image not in imagefilenames and image != 'name']
+            except:
+                pass
+    return result
+
+
 def getJoblist():
     jobpath = JOBDIR % ''
     filelist = [f for f in listdir(jobpath) if isfile(join(jobpath, f)) and ('.csv' in f or 'trace.log' in f)]
     jobdict = {}
+    errors = []
     for f in sorted(filelist):
+        linecount, imagefilenames = checkFile(join(jobpath, f))
         parts = f.split('.')
         if 'original' in parts[1]:
-            continue
+            status = 'submitted'
         elif 'processed' in parts[1]:
-            status = 'complete'
+            status = 'ingested'
         elif 'inprogress' in parts[1]:
             status = 'job started'
         elif 'step1' in parts[1]:
@@ -59,14 +79,22 @@ def getJoblist():
             status = 'unknown'
         jobkey = parts[0]
         if not jobkey in jobdict: jobdict[jobkey] = []
-        jobdict[jobkey].append([f, status])
-    joblist = [[jobkey, False, jobdict[jobkey]] for jobkey in sorted(jobdict.keys(), reverse=True)]
+        jobdict[jobkey].append([f, status, linecount, imagefilenames])
+    joblist = [[jobkey, True, jobdict[jobkey], jobsummary(jobdict[jobkey])] for jobkey in sorted(jobdict.keys(), reverse=True)]
     for ajob in joblist:
-        ajob[1] = True
-        for s in ajob[2]:
-            if s[1] in ['complete', 'pending', 'job started']: ajob[1] = False
-    count = len(joblist)
-    return joblist[0:200], count
+        for image in ajob[3][3]:
+            errors.append([ajob[0], image])
+        for state in ajob[2]:
+            if state[1] in ['ingested', 'pending', 'job started']: ajob[1] = False
+    return joblist[0:500], errors, len(joblist), len(errors)
+
+
+def checkFile(filename):
+    file_handle = open(filename)
+    lines = file_handle.read().splitlines()
+    images = [f.split("\t")[0] for f in lines]
+    images = [f.split("|")[0] for f in images]
+    return len(lines), images
 
 
 def loginfo(infotype, line, request):
@@ -112,6 +140,7 @@ def get_exif(fn):
 
 objectnumberpattern = re.compile('([a-z]+)\.([a-zA-Z0-9]+)')
 
+
 def getNumber(filename):
     imagenumber = ''
     # the following is only for bampfa filenames...
@@ -123,16 +152,16 @@ def getNumber(filename):
         except:
             imagenumber = '1'
         # these legacy statement retained, just in case...
-        #numHyphens = objectnumber.count("-") - 1
+        # numHyphens = objectnumber.count("-") - 1
         #objectnumber = objectnumber.replace('-', '.', numHyphens)
         objectnumber = objectnumber.replace('-', '.')
-        objectnumber = objectnumberpattern.sub(r'\1-\2',objectnumber)
+        objectnumber = objectnumberpattern.sub(r'\1-\2', objectnumber)
     # for non-bampfa users (i.e. pahma, at the moment) it suffices to split on underscore...
     else:
         objectnumber = filename
         objectnumber = objectnumber.split('_')[0]
     # the following is a last ditch attempt to get an object number from a filename...
-    objectnumber = objectnumber.replace('.JPG', '').replace('.jpg', '').replace('.TIF','').replace('.tif','')
+    objectnumber = objectnumber.replace('.JPG', '').replace('.jpg', '').replace('.TIF', '').replace('.tif', '')
     return filename, objectnumber, imagenumber
 
 
