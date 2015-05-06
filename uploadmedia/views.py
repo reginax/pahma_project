@@ -16,7 +16,7 @@ TITLE = 'Bulk Media Upload'
 overrides = [['ifblank', 'Overide only if blank'],
              ['always', 'Always Overide']]
 
-# @login_required()
+@login_required()
 def uploadfiles(request):
     jobinfo = {}
     constants = {}
@@ -147,7 +147,7 @@ def showresults(request, filename):
     return response
 
 
-#@login_required()
+@login_required()
 def showqueue(request):
     elapsedtime = time.time()
     jobs, errors, jobcount, errorcount = getJoblist()
