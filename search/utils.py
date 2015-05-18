@@ -399,7 +399,6 @@ def doSearch(context):
 
     context['FIELDS'] = formFields
 
-    solrtime = time.time()
     # create a connection to a solr server
     s = solr.SolrConnection(url='%s/%s' % (solr_server, solr_core))
     queryterms = []
@@ -513,6 +512,7 @@ def doSearch(context):
         startpage = 0
         context['start'] = 1
     try:
+        solrtime = time.time()
         response = s.query(querystring, facet='true', facet_field=facetfields, fq={}, fl=fl,
                            rows=context['maxresults'], facet_limit=MAXFACETS, sort=context['sortkey'],
                            facet_mincount=1, start=startpage)
