@@ -405,7 +405,19 @@ def doSearch(context):
     queryterms = []
     urlterms = []
 
+    if 'berkeleymapper' in context:
+        displayFields = 'bMapper'
+    elif 'csv' in requestObject:
+        displayFields = 'inCSV'
+    else:
+        displayFields = context['displayType'] + 'Display'
+
     facetfields = getfields('Facet','solrfield')
+    if 'summarize' in requestObject or 'downloadstats' in requestObject:
+        fl = [PARMS[p][3] for p in context['summaryrows']]
+        fl.append(PARMS[context['summarizeon']][3])
+    else:
+        fl = getfields(displayFields,'solrfield')
     if 'map-google' in requestObject or 'csv' in requestObject or 'map-bmapper' in requestObject or 'summarize' in requestObject or 'downloadstats' in requestObject:
         querystring = requestObject['querystring']
         url = requestObject['url']
@@ -501,7 +513,7 @@ def doSearch(context):
         startpage = 0
         context['start'] = 1
     try:
-        response = s.query(querystring, facet='true', facet_field=facetfields, fq={},
+        response = s.query(querystring, facet='true', facet_field=facetfields, fq={}, fl=fl,
                            rows=context['maxresults'], facet_limit=MAXFACETS, sort=context['sortkey'],
                            facet_mincount=1, start=startpage)
         print 'Solr search succeeded, %s results, %s rows requested starting at %s; %8.2f seconds.' % (
@@ -518,12 +530,6 @@ def doSearch(context):
     context['items'] = []
     summaryrows = {}
     imageCount = 0
-    if 'berkeleymapper' in context:
-        displayFields = 'bMapper'
-    elif 'csv' in requestObject:
-        displayFields = 'inCSV'
-    else:
-        displayFields = context['displayType'] + 'Display'
     for i, listItem in enumerate(results):
         item = {}
         item['counter'] = i
