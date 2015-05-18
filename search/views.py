@@ -106,7 +106,7 @@ def statistics(request):
             loginfo('statistics1', context, request)
             context = computeStats(requestObject, context)
             loginfo('statistics2', context, request)
-            context['time'] = '%8.2f' % (time.time() - elapsedtime)
+            context['summarytime'] = '%8.2f' % (time.time() - elapsedtime)
             return render(request, 'statsResults.html', context)
 
 
