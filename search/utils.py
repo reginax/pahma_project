@@ -384,9 +384,9 @@ def setConstants(context):
 
 
 def doSearch(context):
+    elapsedtime = time.time()
     solr_server = SOLRSERVER
     solr_core = SOLRCORE
-    elapsedtime = time.time()
     context = setConstants(context)
     requestObject = context['searchValues']
 

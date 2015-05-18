@@ -101,10 +101,12 @@ def statistics(request):
         form = forms.Form(requestObject)
 
         if form.is_valid():
+            elapsedtime = time.time()
             context = {'searchValues': requestObject}
+            loginfo('statistics1', context, request)
             context = computeStats(requestObject, context)
-
-            loginfo('statistics', context, request)
+            loginfo('statistics2', context, request)
+            context['time'] = '%8.2f' % (time.time() - elapsedtime)
             return render(request, 'statsResults.html', context)
 
 
