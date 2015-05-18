@@ -10,7 +10,7 @@ from os import path
 from copy import deepcopy
 
 # from django.http import HttpResponse, HttpResponseRedirect
-#from cspace_django_site.main import cspace_django_site
+# from cspace_django_site.main import cspace_django_site
 
 # global variables
 
@@ -18,7 +18,8 @@ from appconfig import MAXMARKERS, MAXRESULTS, MAXLONGRESULTS, MAXFACETS, IMAGESE
 from appconfig import BMAPPERURL, BMAPPERCONFIGFILE, LOCALDIR, SEARCH_QUALIFIERS
 from appconfig import EMAILABLEURL, SUGGESTIONS, LAYOUT, CSPACESERVER, INSTITUTION
 from appconfig import VERSION, FIELDDEFINITIONS, getParms
-from appconfig import DROPDOWNS, FIELDS, FACETS, LOCATION, PARMS, SEARCHCOLUMNS, SEARCHROWS, SOLRSERVER, SOLRCORE, TITLE, DEFAULTSORTKEY
+from appconfig import DROPDOWNS, FIELDS, FACETS, LOCATION, PARMS, SEARCHCOLUMNS, SEARCHROWS, SOLRSERVER, SOLRCORE, \
+    TITLE, DEFAULTSORTKEY
 from appconfig import DERIVATIVECOMPACT, DERIVATIVEGRID, SIZECOMPACT, SIZEGRID
 
 SolrIsUp = True  # an initial guess! this is verified below...
@@ -58,23 +59,17 @@ def deURN(urn):
         return m.group(0)[1:len(m.group(0)) - 1]
 
 
-def getfields(fieldset):
-    # for solr faceting
-    if fieldset == 'inCSV':
-        pickField = 'name'
-    elif fieldset == 'Facet':
-        pickField = 'solrfield'
-    elif fieldset == 'FacetLabels':
-        pickField = 'label'
-        fieldset = 'Facet'
-    elif fieldset == "bMapper":
-        pickField = 'name'
-    #elif fieldset == "bmapperdata":
-    #    return []
+def getfields(fieldset, pickField):
+    result = []
+    pickField = pickField.split(',')
+    for pick in pickField:
+        if not pick in 'name solrfield label'.split(' '):
+            pick = 'solrfield'
+        result.append([f[pick] for f in FIELDS[fieldset]])
+    if len(pickField) > 1:
+        return zip(result[0],result[1])
     else:
-        pickField = 'solrfield'
-
-    return [f[pickField] for f in FIELDS[fieldset]]
+        return result[0]
 
 
 def getfacets(response):
@@ -110,16 +105,27 @@ def makeMarker(location):
         return None
 
 
+def checkValue(cell):
+    # the following few lines are a hack to handle non-unicode data which appears to be present in the solr datasource
+    if isinstance(cell, unicode):
+        try:
+            cell = cell.translate({0xd7: u"x"})
+            cell = cell.decode('utf-8', 'ignore').encode('utf-8')
+        except:
+            print 'unicode problem', cell.encode('utf-8', 'ignore')
+            cell = u'invalid unicode data'
+    return cell
+
+
 def writeCsv(filehandle, items, writeheader, bmapper=False):
     if bmapper:
-        fieldset = getfields('bMapper')
+        fieldset = getfields('bMapper', 'name')
     else:
-        fieldset = getfields('inCSV')
+        fieldset = getfields('inCSV', 'name')
     print "Fieldset: %s" % fieldset
     writer = csv.writer(filehandle, delimiter='\t')
-    # write the berkeley mapper header as the header for the csv file, if asked...
-    if writeheader:
-        writer.writerow(getfields('bMapper'))
+    # write the header
+    writer.writerow(fieldset)
     for item in items:
         # get the cells from the item dict in the order specified; make empty cells if key is not found.
         row = []
@@ -128,36 +134,20 @@ def writeCsv(filehandle, items, writeheader, bmapper=False):
             for x in item['otherfields']:
                 if x['name'] not in fieldset:
                     continue
-                r.append(x['value'])
+                r.append(checkValue(x['value']))
             location = item['location']
             l = location.split(',')
             r.append(l[0])
             r.append(l[1])
             for cell in r:
-                # the following few lines are a hack to handle non-unicode data which appears to be present in the solr datasource
-                if isinstance(cell, unicode):
-                    try:
-                        cell = cell.translate({0xd7: u"x"})
-                        cell = cell.decode('utf-8', 'ignore').encode('utf-8')
-                    except:
-                        print 'unicode problem', cell.encode('utf-8', 'ignore')
-                        cell = u'invalid unicode data'
                 row.append(cell)
-            writer.writerow(row)
-            continue
-        for x in item['otherfields']:
-            if x['name'] not in fieldset:
-                continue
-            cell = x['value']
-            # the following few lines are a hack to handle non-unicode data which appears to be present in the solr datasource
-            if isinstance(cell, unicode):
-                try:
-                    cell = cell.translate({0xd7: u"x"})
-                    cell = cell.decode('utf-8', 'ignore').encode('utf-8')
-                except:
-                    print 'unicode problem', cell.encode('utf-8', 'ignore')
-                    cell = u'invalid unicode data'
-            row.append(cell)
+        else:
+            for x in item['otherfields']:
+                if x['name'] not in fieldset:
+                    continue
+                cell = checkValue(x['value'])
+                row.append(cell)
+
         writer.writerow(row)
 
 
@@ -224,6 +214,16 @@ def setupGoogleMap(requestObject, context):
     #    context['mapmsg'].append(
     #        '%s points is the limit. Only first %s accessions (with latlongs) plotted!' % (MAXMARKERS, len(markerlist)))
 
+    return context
+
+
+def computeStats(requestObject, context):
+    context['summarizeonlabel'] = PARMS[requestObject['summarizeon']][0]
+    context['summarizeon'] = requestObject['summarizeon']
+    context['summaryrows'] = [requestObject[z] for z in requestObject if 'include-' in z]
+    context['summarylabels'] = [PARMS[var][0] for var in context['summaryrows']]
+    context = doSearch(context)
+    #context['summarylabels'] = [var for var in context['summaryrows']]
     return context
 
 
@@ -403,9 +403,9 @@ def doSearch(context):
     s = solr.SolrConnection(url='%s/%s' % (solr_server, solr_core))
     queryterms = []
     urlterms = []
-    #facetfields = getfields(context['facets'])
-    facetfields = getfields('Facet')
-    if 'map-google' in requestObject or 'csv' in requestObject or 'map-bmapper' in requestObject:
+
+    facetfields = getfields('Facet','solrfield')
+    if 'map-google' in requestObject or 'csv' in requestObject or 'map-bmapper' in requestObject or 'summarize' in requestObject or 'downloadstats' in requestObject:
         querystring = requestObject['querystring']
         url = requestObject['url']
         # Did the user request the full set?
@@ -415,11 +415,12 @@ def doSearch(context):
     else:
         for p in requestObject:
             if p in ['csrfmiddlewaretoken', 'displayType', 'resultsOnly', 'maxresults', 'url', 'querystring', 'pane',
-                     'pixonly', 'locsonly', 'acceptterms', 'submit', 'start', 'sortkey']: continue
+                     'pixonly', 'locsonly', 'acceptterms', 'submit', 'start', 'sortkey', 'count', 'summarizeon']: continue
             if '_qualifier' in p: continue
             if 'select-' in p: continue  # skip select control for map markers
-            if not requestObject[p]: continue  # uh...looks like we can have empty items...let's skip 'em
+            if 'include-' in p: continue  # skip form values used in statistics
             if 'item-' in p: continue
+            if not requestObject[p]: continue  # uh...looks like we can have empty items...let's skip 'em
             searchTerm = requestObject[p]
             terms = searchTerm.split(' OR ')
             ORs = []
@@ -503,7 +504,7 @@ def doSearch(context):
                            rows=context['maxresults'], facet_limit=MAXFACETS, sort=context['sortkey'],
                            facet_mincount=1, start=startpage)
         print 'Solr search succeeded, %s results, %s rows requested starting at %s' % (
-        response.numFound, context['maxresults'], startpage)
+            response.numFound, context['maxresults'], startpage)
     #except:
     except Exception as inst:
         #raise
@@ -514,15 +515,26 @@ def doSearch(context):
     results = response.results
 
     context['items'] = []
+    summaryrows = {}
     imageCount = 0
     if 'berkeleymapper' in context:
         displayFields = 'bMapper'
+    elif 'csv' in requestObject:
+        displayFields = 'inCSV'
     else:
         displayFields = context['displayType'] + 'Display'
     for i, listItem in enumerate(results):
         item = {}
         item['counter'] = i
         otherfields = []
+
+        if 'summarize' in requestObject or 'downloadstats' in requestObject:
+            summarizeon = extractValue(listItem, PARMS[context['summarizeon']][3])
+            summfields = [extractValue(listItem, PARMS[p][3]) for p in context['summaryrows']]
+            if not summarizeon in summaryrows:
+                summaryrows[summarizeon] = [0,[]]
+            summaryrows[summarizeon][1] = summfields
+            summaryrows[summarizeon][0] += 1
 
         # pull out the fields that have special functions in the UI
         for p in PARMS:
@@ -577,7 +589,9 @@ def doSearch(context):
     facets = getfacets(response)
     context['labels'] = [p['label'] for p in FIELDS[displayFields]]
     context['facets'] = [[m[f], facets[f]] for f in facetfields]
-    context['fields'] = getfields('FacetLabels')
+    context['fields'] = getfields('Facet','label')
+    context['statsfields'] = getfields('inCSV','name,label,solrfield')
+    context['summaryrows'] = [[r,summaryrows[r][0],summaryrows[r][1]] for r in sorted(summaryrows.keys())]
     context['range'] = range(len(facetfields))
     context['pixonly'] = pixonly
     context['locsonly'] = locsonly

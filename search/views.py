@@ -8,7 +8,8 @@ from django.template.loader import render_to_string
 from django.http import HttpResponse, HttpResponseRedirect
 from django import forms
 from cspace_django_site.main import cspace_django_site
-from utils import writeCsv, doSearch, setupGoogleMap, setupBMapper, setupCSV, setDisplayType, setConstants, loginfo
+from utils import writeCsv, doSearch, setupGoogleMap, setupBMapper, computeStats, setupCSV, setDisplayType, \
+    setConstants, loginfo
 from appconfig import CSVPREFIX, CSVEXTENSION, MAXRESULTS
 from .models import AdditionalInfo
 
@@ -22,7 +23,7 @@ def direct(request):
     return redirect('search/')
 
 
-@login_required()
+#@login_required()
 def search(request):
     if request.method == 'GET' and request.GET != {}:
         context = {'searchValues': dict(request.GET.iteritems())}
@@ -86,11 +87,25 @@ def csv(request):
 
             # Create the HttpResponse object with the appropriate CSV header.
             response = HttpResponse(content_type='text/csv')
-            response['Content-Disposition'] = 'attachment; filename="%s-%s.%s"' % (CSVPREFIX, datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S"), CSVEXTENSION)
-            #response.write(u'\ufeff'.encode('utf8'))
+            response['Content-Disposition'] = 'attachment; filename="%s-%s.%s"' % (
+            CSVPREFIX, datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S"), CSVEXTENSION)
+            # response.write(u'\ufeff'.encode('utf8'))
             writeCsv(response, csvitems, writeheader=True)
             loginfo('csv', context, request)
             return response
+
+
+def statistics(request):
+    if request.method == 'POST' and request.POST != {}:
+        requestObject = dict(request.POST.iteritems())
+        form = forms.Form(requestObject)
+
+        if form.is_valid():
+            context = {'searchValues': requestObject}
+            context = computeStats(requestObject, context)
+
+            loginfo('statistics', context, request)
+            return render(request, 'statsResults.html', context)
 
 
 def loadNewFields(request, fieldfile):

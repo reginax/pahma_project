@@ -235,6 +235,18 @@ $(document).ready(function () {
         $('#select-items').prop('checked', false);
     });
 
+    $(document).on('click', '#summarize, #downloadstats', function () {
+        var formData = getFormData('#selectedItems');
+        formData[$(this).attr('name')] = '';
+        $.post("../statistics/", formData).done(function (data) {
+            $('#statsresults').html(data);
+        });
+
+        $('#statsListing').tablesorter({theme: 'blue'});
+
+        ga('send', 'pageview', { 'page': '/statistics' });
+    });
+
     $(document).on('click', '.map-item', function () {
         var Elem = $(this).siblings('.small-map');
         if ($(Elem).css("display") == "none") {
