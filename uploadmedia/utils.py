@@ -14,6 +14,7 @@ from os.path import isfile, isdir, join
 
 config = cspace.getConfig(path.join(settings.BASE_PARENT_DIR, 'config'), 'uploadmedia')
 TEMPIMAGEDIR = config.get('files', 'directory')
+POSTBLOBPATH = config.get('info', 'postblobpath')
 JOBDIR = path.join(TEMPIMAGEDIR, '%s')
 SERVERINFO = {
     'serverlabelcolor': config.get('info', 'serverlabelcolor'),
@@ -192,7 +193,7 @@ def writeCsv(filename, items, writeheader):
 
 
 # following function borrowed from Django docs, w modifications
-def handle_uploaded_file(f, imageinfo):
+def handle_uploaded_file(f):
     destination = open(path.join(TEMPIMAGEDIR, '%s') % f.name, 'wb+')
     with destination:
         for chunk in f.chunks():
