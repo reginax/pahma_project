@@ -4,7 +4,7 @@ from django.conf.urls import patterns, url
 from uploadmedia import views
 
 urlpatterns = patterns('',
-                       url(r'^/?$', views.showqueue, name='showqueue'),
+                       url(r'^/?$', views.uploadfiles),
                        url(r'^uploadfiles', views.uploadfiles, name='uploadfiles'),
                        url(r'^rest/(?P<action>[\w\-\.]+)$', views.rest, name='rest'),
                        url(r'^checkfilename', views.checkfilename, name='checkfilename'),

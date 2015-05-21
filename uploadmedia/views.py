@@ -151,6 +151,7 @@ def rest(request, action):
 def uploadfiles(request):
     elapsedtime = time.time()
     status = 'up'
+    constants = setConstants(request, im)
 
     if request.POST:
         constants = setConstants(request, im)

@@ -15,7 +15,7 @@ hostname = cspace.getConfigOptionWithSection(config,
 TITLE = 'Applications Available'
 
 hiddenApps = 'hello service suggest suggestsolr suggestpostgres solarapi imageserver landing locviewer batchuploadimages rest_framework'.split(' ')
-loginRequiredApps = 'ireports search uploadmedia toobox'.split(' ')
+loginRequiredApps = 'ireports search uploadmedia toolbox'.split(' ')
 
 #@login_required()
 def index(request):
