@@ -2,14 +2,14 @@ __author__ = 'jblowe'
 
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+import json
+#from common.cspace import logged_in_or_basicauth
 from django.shortcuts import render, HttpResponse, redirect
 from django.core.servers.basehttp import FileWrapper
-from django.conf import settings
-from django import forms
-import json
+#from django.conf import settings
+#from django import forms
 import time, datetime
-# from common.cspace import logged_in_or_basicauth
-from utils import SERVERINFO, getDropdowns, handle_uploaded_file, assignValue, getCSID, getNumber, get_exif, writeCsv, \
+from utils import SERVERINFO, POSTBLOBPATH, getDropdowns, handle_uploaded_file, assignValue, getCSID, getNumber, get_exif, writeCsv, \
     getJobfile, getJoblist, loginfo, getQueue
 import subprocess
 
@@ -76,7 +76,7 @@ def prepareFiles(request, validateonly, dropdowns):
                 loginfo('start', getJobfile(jobnumber), request)
                 try:
                     retcode = subprocess.call(
-                        ["/usr/local/share/django/bampfa_project/uploadmedia/postblob.sh", getJobfile(jobnumber)])
+                        [POSTBLOBPATH, getJobfile(jobnumber)])
                     if retcode < 0:
                         loginfo('process', jobnumber + " Child was terminated by signal %s" % -retcode, request)
                     else:
@@ -203,7 +203,15 @@ def showresults(request, filename):
 @login_required()
 def showqueue(request):
     elapsedtime = time.time()
-    jobs, count = getJoblist()
+    jobs, errors, jobcount, errorcount = getJoblist()
+    if 'checkjobs' in request.POST:
+        errors = None
+    elif 'showerrors' in request.POST:
+        jobs = None
+    else:
+        jobs = None
+        errors = None
+        count = 0
     dropdowns = getDropdowns()
     elapsedtime = time.time() - elapsedtime
     status = 'up'
@@ -212,4 +220,5 @@ def showqueue(request):
     return render(request, 'uploadmedia.html',
                   {'dropdowns': dropdowns, 'overrides': overrides, 'timestamp': timestamp,
                    'elapsedtime': '%8.2f' % elapsedtime,
-                   'status': status, 'title': TITLE, 'serverinfo': SERVERINFO, 'jobs': jobs, 'count': count})
+                   'status': status, 'title': TITLE, 'serverinfo': SERVERINFO, 'jobs': jobs, 'jobcount': jobcount,
+                   'errors': errors, 'errorcount': errorcount})
