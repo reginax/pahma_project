@@ -1,4 +1,4 @@
-Django==1.7
+Django==1.5
 Pillow
 PyGreSQL
 Pygments
@@ -10,7 +10,6 @@ django-tables2-reports
 djangorestframework
 itsdangerous
 numpy
-pyzmq
 requests
 six
 solrpy
