@@ -234,8 +234,17 @@ def loadFields(fieldFile):
         solrIsUp = False
         print 'Solr facet search failed. Concluding that Solr is down or unreachable... Will not be trying again! Please fix and restart!'
 
-    return DROPDOWNS, FIELDS, FACETS, LOCATION, PARMS, SEARCHCOLUMNS, SEARCHROWS, SOLRSERVER, SOLRCORE, TITLE, DEFAULTSORTKEY
+    # figure out which solr fields are the required ones...
+    REQUIRED = []
+    requiredfields = 'csid mainentry location accession objectno sortkey blob'.split(' ')
+    for p in PARMS:
+        for r in requiredfields:
+            if r in PARMS[p][1]:
+                if PARMS[p][3] not in REQUIRED:
+                    REQUIRED.append(PARMS[p][3])
+
+    return DROPDOWNS, FIELDS, FACETS, LOCATION, PARMS, SEARCHCOLUMNS, SEARCHROWS, SOLRSERVER, SOLRCORE, TITLE, DEFAULTSORTKEY, REQUIRED
 
 # on startup, do a query to get options values for forms...
-DROPDOWNS, FIELDS, FACETS, LOCATION, PARMS, SEARCHCOLUMNS, SEARCHROWS, SOLRSERVER, SOLRCORE, TITLE, DEFAULTSORTKEY = loadFields(FIELDDEFINITIONS)
+DROPDOWNS, FIELDS, FACETS, LOCATION, PARMS, SEARCHCOLUMNS, SEARCHROWS, SOLRSERVER, SOLRCORE, TITLE, DEFAULTSORTKEY, REQUIRED = loadFields(FIELDDEFINITIONS)
 print 'Reading field definitions from %s' % path.join(settings.BASE_PARENT_DIR, 'config/' + FIELDDEFINITIONS)

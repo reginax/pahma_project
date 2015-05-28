@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, render_to_response, redirect
 from django.template.loader import render_to_string
 from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib import messages
 from django import forms
 from cspace_django_site.main import cspace_django_site
 from utils import writeCsv, doSearch, setupGoogleMap, setupBMapper, computeStats, setupCSV, setDisplayType, \
@@ -82,18 +83,20 @@ def csv(request):
         form = forms.Form(requestObject)
 
         if form.is_valid():
-            context = {'searchValues': requestObject}
-            csvitems = setupCSV(requestObject, context)
+            try:
+                context = {'searchValues': requestObject}
+                csvformat, fieldset, csvitems = setupCSV(requestObject, context)
+                loginfo('csv', context, request)
 
-            # Create the HttpResponse object with the appropriate CSV header.
-            response = HttpResponse(content_type='text/csv')
-            response['Content-Disposition'] = 'attachment; filename="%s-%s.%s"' % (
-            CSVPREFIX, datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S"), CSVEXTENSION)
-            # response.write(u'\ufeff'.encode('utf8'))
-            writeCsv(response, csvitems, writeheader=True)
-            loginfo('csv', context, request)
-            return response
-
+                # create the HttpResponse object with the appropriate CSV header.
+                response = HttpResponse(content_type='text/csv')
+                response['Content-Disposition'] = 'attachment; filename="%s-%s.%s"' % (
+                    CSVPREFIX, datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S"), CSVEXTENSION)
+                return writeCsv(response, fieldset, csvitems, writeheader=True, csvFormat=csvformat)
+            except:
+                messages.error(request, 'Problem creating .csv file. Sorry!')
+                context['messages'] = messages
+                return search(request)
 
 def statistics(request):
     if request.method == 'POST' and request.POST != {}:
@@ -102,13 +105,17 @@ def statistics(request):
 
         if form.is_valid():
             elapsedtime = time.time()
-            context = {'searchValues': requestObject}
-            loginfo('statistics1', context, request)
-            context = computeStats(requestObject, context)
-            loginfo('statistics2', context, request)
-            context['summarytime'] = '%8.2f' % (time.time() - elapsedtime)
-            return render(request, 'statsResults.html', context)
-
+            try:
+                context = {'searchValues': requestObject}
+                loginfo('statistics1', context, request)
+                context = computeStats(requestObject, context)
+                loginfo('statistics2', context, request)
+                context['summarytime'] = '%8.2f' % (time.time() - elapsedtime)
+                # 'downloadstats' is handled in writeCSV, via post
+                return render(request, 'statsResults.html', context)
+            except:
+                context['summarytime'] = '%8.2f' % (time.time() - elapsedtime)
+                return HttpResponse('Please pick some values!')
 
 def loadNewFields(request, fieldfile):
     loadFields(fieldfile + '.csv')
