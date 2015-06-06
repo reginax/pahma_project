@@ -33,7 +33,7 @@ import cgi
 import cgitb;
 
 cgitb.enable()  # for troubleshooting
-import pgdb
+import psycopg2
 
 form = cgi.FieldStorage()
 
@@ -41,7 +41,7 @@ timeoutcommand = 'set statement_timeout to 500'
 
 
 def getlocations(connect_string):
-    postgresdb = pgdb.connect(database=connect_string)
+    postgresdb = psycopg2.connect(database=connect_string)
     cursor = postgresdb.cursor()
 
     try:
@@ -79,7 +79,7 @@ def getlocations(connect_string):
         return keys
         #return json.dumps(result)    # or "json.dump(result, sys.stdout)"
 
-    except pgdb.DatabaseError, e:
+    except psycopg2.DatabaseError, e:
         sys.stderr.write('autosuggest select error: %s' % e)
         return None
     except:

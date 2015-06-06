@@ -2,7 +2,7 @@
 
 import time
 import sys
-import pgdb
+import psycopg2
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -10,13 +10,13 @@ sys.setdefaultencoding('utf-8')
 timeoutcommand = "set statement_timeout to 240000; SET NAMES 'utf8';"
 
 def testDB(config):
-    dbconn = pgdb.connect(database=config.get('connect', 'connect_string'))
+    dbconn = psycopg2.connect(database=config.get('connect', 'connect_string'))
     objects = dbconn.cursor()
     try:
         objects.execute('set statement_timeout to 5000')
         objects.execute('select * from hierarchy limit 30000')
         return "OK"
-    except pgdb.DatabaseError, e:
+    except psycopg2.DatabaseError, e:
         sys.stderr.write('testDB error: %s' % e)
         return '%s' % e
     except:
@@ -25,7 +25,7 @@ def testDB(config):
 
 
 def dbtransaction(command, config):
-    dbconn = pgdb.connect(database=config.get('connect', 'connect_string'))
+    dbconn = psycopg2.connect(database=config.get('connect', 'connect_string'))
     cursor = dbconn.cursor()
     cursor.execute(command)
 
@@ -451,7 +451,7 @@ left outer join taxon_naturalhistory tn on (tc.id=tn.id) """
 #left outer join taxon_naturalhistory tn on (tc.id=tn.id)""" % ("and con.rare = 'true'","and cob.deadflag = 'false'")
 
 def getlocations(location1, location2, num2ret, config, updateType, institution):
-    dbconn = pgdb.connect(database=config.get('connect', 'connect_string'))
+    dbconn = psycopg2.connect(database=config.get('connect', 'connect_string'))
     objects = dbconn.cursor()
     objects.execute(timeoutcommand)
 
@@ -469,7 +469,7 @@ def getlocations(location1, location2, num2ret, config, updateType, institution)
             objects.execute(getobjects)
             elapsedtime = time.time() - elapsedtime
             if debug: sys.stderr.write('all objects: %s :: %s\n' % (loc[0], elapsedtime))
-        except pgdb.DatabaseError, e:
+        except psycopg2.DatabaseError, e:
             sys.stderr.write('getlocations select error: %s' % e)
             #return result
             raise
@@ -480,7 +480,7 @@ def getlocations(location1, location2, num2ret, config, updateType, institution)
 
         try:
             rows = objects.fetchall()
-        except pgdb.DatabaseError, e:
+        except psycopg2.DatabaseError, e:
             sys.stderr.write("fetchall getlocations database error!")
 
         if debug: sys.stderr.write('number objects to be checked: %s\n' % len(rows))
@@ -496,7 +496,7 @@ def getlocations(location1, location2, num2ret, config, updateType, institution)
 
 
 def getplants(location1, location2, num2ret, config, updateType, qualifier):
-    dbconn = pgdb.connect(database=config.get('connect', 'connect_string'))
+    dbconn = psycopg2.connect(database=config.get('connect', 'connect_string'))
     objects = dbconn.cursor()
     objects.execute(timeoutcommand)
 
@@ -513,7 +513,7 @@ def getplants(location1, location2, num2ret, config, updateType, qualifier):
         elapsedtime = time.time() - elapsedtime
         #sys.stderr.write('query :: %s\n' % getobjects)
         if debug: sys.stderr.write('all objects: %s :: %s\n' % (location1, elapsedtime))
-    except pgdb.DatabaseError, e:
+    except psycopg2.DatabaseError, e:
         raise
         #sys.stderr.write('getplants select error: %s' % e)
         #return result
@@ -524,7 +524,7 @@ def getplants(location1, location2, num2ret, config, updateType, qualifier):
     try:
         result = objects.fetchall()
         if debug: sys.stderr.write('object count: %s\n' % (len(result)))
-    except pgdb.DatabaseError, e:
+    except psycopg2.DatabaseError, e:
         sys.stderr.write("fetchall getplants database error!")
 
     return result
@@ -541,7 +541,7 @@ def getloclist(searchType, location1, location2, num2ret, config):
     elif searchType == 'range':
         whereclause = "WHERE locationkey >= replace('" + location1 + "',' ','0') AND locationkey <= replace('" + location2 + "',' ','0')"
 
-    dbconn = pgdb.connect(database=config.get('connect', 'connect_string'))
+    dbconn = psycopg2.connect(database=config.get('connect', 'connect_string'))
     objects = dbconn.cursor()
     objects.execute(timeoutcommand)
     if int(num2ret) > 30000: num2ret = 30000
@@ -584,7 +584,7 @@ INNER JOIN misc
 WHERE
      cc.objectNumber = '%s'"""
 
-    dbconn = pgdb.connect(database=config.get('connect', 'connect_string'))
+    dbconn = psycopg2.connect(database=config.get('connect', 'connect_string'))
     objects = dbconn.cursor()
     objects.execute(timeoutcommand)
     if int(num2ret) > 1000: num2ret = 1000
@@ -706,7 +706,7 @@ limit """ + str(num2ret)
 
 
 def getrefname(table, term, config):
-    dbconn = pgdb.connect(database=config.get('connect', 'connect_string'))
+    dbconn = psycopg2.connect(database=config.get('connect', 'connect_string'))
     objects = dbconn.cursor()
     objects.execute(timeoutcommand)
 
@@ -741,7 +741,7 @@ def getrefname(table, term, config):
 
 
 def findrefnames(table, termlist, config):
-    dbconn = pgdb.connect(database=config.get('connect', 'connect_string'))
+    dbconn = psycopg2.connect(database=config.get('connect', 'connect_string'))
     objects = dbconn.cursor()
     objects.execute(timeoutcommand)
 
@@ -760,7 +760,7 @@ def findrefnames(table, termlist, config):
     return result
 
 def finddoctypes(table, doctype, config):
-    dbconn = pgdb.connect(database=config.get('connect', 'connect_string'))
+    dbconn = psycopg2.connect(database=config.get('connect', 'connect_string'))
     doctypes = dbconn.cursor()
     doctypes.execute(timeoutcommand)
 
@@ -775,7 +775,7 @@ def finddoctypes(table, doctype, config):
 
 
 def getobjinfo(museumNumber, config):
-    dbconn = pgdb.connect(database=config.get('connect', 'connect_string'))
+    dbconn = psycopg2.connect(database=config.get('connect', 'connect_string'))
     objects = dbconn.cursor()
     objects.execute(timeoutcommand)
 
@@ -804,7 +804,7 @@ WHERE co.objectnumber = '%s' LIMIT 1""" % museumNumber
 
 
 def gethierarchy(query, config):
-    dbconn = pgdb.connect(database=config.get('connect', 'connect_string'))
+    dbconn = psycopg2.connect(database=config.get('connect', 'connect_string'))
     institution = config.get('info', 'institution')
     objects = dbconn.cursor()
     objects.execute(timeoutcommand)
@@ -866,7 +866,7 @@ ORDER BY ParentPlace, Place
 
 
 def getCSID(argType, arg, config):
-    dbconn = pgdb.connect(database=config.get('connect', 'connect_string'))
+    dbconn = psycopg2.connect(database=config.get('connect', 'connect_string'))
     objects = dbconn.cursor()
     objects.execute(timeoutcommand)
 
@@ -888,7 +888,7 @@ WHERE pc.refname ILIKE '%""" + arg + "%%'"
 
 
 def getCSIDs(argType, arg, config):
-    dbconn = pgdb.connect(database=config.get('connect', 'connect_string'))
+    dbconn = psycopg2.connect(database=config.get('connect', 'connect_string'))
     objects = dbconn.cursor()
     objects.execute(timeoutcommand)
 
@@ -902,7 +902,7 @@ WHERE computedcrate ILIKE '%%''%s''%%'""" % arg
 
 
 def findparents(refname, config):
-    dbconn = pgdb.connect(database=config.get('connect', 'connect_string'))
+    dbconn = psycopg2.connect(database=config.get('connect', 'connect_string'))
     objects = dbconn.cursor()
     objects.execute(timeoutcommand)
     query = """WITH RECURSIVE ethnculture_hierarchyquery as (
@@ -942,7 +942,7 @@ order by level""" % refname.replace("'", "''")
         return [["findparents error"]]
 
 def getCSIDDetail(config, csid, detail):
-    dbconn = pgdb.connect(database=config.get('connect', 'connect_string'))
+    dbconn = psycopg2.connect(database=config.get('connect', 'connect_string'))
     objects = dbconn.cursor()
     objects.execute(timeoutcommand)
 
@@ -1005,7 +1005,7 @@ AND csid.name = '%s'""" % csid
         return ''
 
 def checkData(config, data, datatype):
-    dbconn = pgdb.connect(database=config.get('connect', 'connect_string'))
+    dbconn = psycopg2.connect(database=config.get('connect', 'connect_string'))
     objects = dbconn.cursor()
     objects.execute(timeoutcommand)
 
@@ -1029,7 +1029,7 @@ AND lc.refname LIKE 'urn:cspace:pahma.cspace.berkeley.edu:locationauthorities:na
     return objects.fetchone()
 
 def getSitesByOwner(config, owner):
-    dbconn = pgdb.connect(database=config.get('connect', 'connect_string'))
+    dbconn = psycopg2.connect(database=config.get('connect', 'connect_string'))
     objects = dbconn.cursor()
     objects.execute(timeoutcommand)
 
@@ -1048,7 +1048,7 @@ ORDER BY REGEXP_REPLACE(fcp.item, '^.*\)''(.*)''$', '\\1')"""
     return objects.fetchall()
 
 def getDisplayName(config, refname):
-    dbconn = pgdb.connect(database=config.get('connect', 'connect_string'))
+    dbconn = psycopg2.connect(database=config.get('connect', 'connect_string'))
     objects = dbconn.cursor()
     objects.execute(timeoutcommand)
 
@@ -1060,7 +1060,7 @@ WHERE pog.owner LIKE '""" + refname + "%'"
     return objects.fetchone()
 
 def getObjDetailsByOwner(config, owner):
-    dbconn = pgdb.connect(database=config.get('connect', 'connect_string'))
+    dbconn = psycopg2.connect(database=config.get('connect', 'connect_string'))
     objects = dbconn.cursor()
     objects.execute(timeoutcommand)
 

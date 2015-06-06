@@ -41,7 +41,7 @@ REST_FRAMEWORK = {
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': '/images/cache',
+        'LOCATION': '/home/app_webapps/cache/' + PROJECT_NAME + '/images',
         'CULL_FREQUENCY': 100000,
         'OPTIONS': {
             'MAX_ENTRIES': 1000000
