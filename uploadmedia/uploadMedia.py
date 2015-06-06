@@ -12,8 +12,7 @@ import time
 
 CONFIGDIRECTORY = '/var/www/cfgs/'
 
-from cswaUtils import postxml, relationsPayload, getConfig
-from cswaDB import getCSID
+from cswaExtras import postxml, relationsPayload, getConfig, getCSID
 
 
 def mediaPayload(f, institution):

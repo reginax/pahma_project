@@ -2,6 +2,7 @@
 
 # modify these for each deployment...
 PROTO="https"
+TENANT='xxx'
 HOST="xxx.cspace.berkeley.edu"
 SRVC="cspace-services/blobs"
 URL="${PROTO}${HOST}/$SRVC"
@@ -90,7 +91,8 @@ do
 done < $INPUTFILE
 
 trace ">>>>>>>>>>>>>>> End of Blob Creation, starting Media and Relation record creation process: `date` "
-python /var/www/cgi-bin/uploadMedia.py $OUTPUTFILE $MEDIACONFIG >> $TRACELOG
+trace "python /var/www/cgi-bin/uploadMedia.py $OUTPUTFILE $MEDIACONFIG >> $TRACELOG"
+python /var/www/${TENANT}/uploadmedia/uploadMedia.py $OUTPUTFILE $MEDIACONFIG >> $TRACELOG 2>&1
 trace "Media record and relations created."
 
 mv $INPUTFILE $JOB.original.csv

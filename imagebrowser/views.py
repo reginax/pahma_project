@@ -17,8 +17,6 @@ config = cspace.getConfig(path.join(settings.BASE_PARENT_DIR, 'config'), 'imageb
 MAXMARKERS = int(config.get('imagebrowser', 'MAXMARKERS'))
 MAXRESULTS = int(config.get('imagebrowser', 'MAXRESULTS'))
 MAXLONGRESULTS = int(config.get('imagebrowser', 'MAXLONGRESULTS'))
-IMAGESERVER = config.get('imagebrowser', 'IMAGESERVER')
-# CSPACESERVER = config.get('imagebrowser', 'CSPACESERVER')
 SOLRSERVER = config.get('imagebrowser', 'SOLRSERVER')
 SOLRCORE = config.get('imagebrowser', 'SOLRCORE')
 TITLE = config.get('imagebrowser', 'TITLE')
@@ -55,4 +53,4 @@ def images(request):
     else:
         return render(request, 'showImages.html',
                       {'title': TITLE, 'pgNum': 10, 'maxresults': 20,
-                       'imageserver': IMAGESERVER, 'loginBtnNext': 'imagebrowser/'})
+                       'imageserver': 'not used', 'loginBtnNext': 'imagebrowser/'})
