@@ -10,10 +10,10 @@ BMU has two components:
 * A batch component consisting of shell and python scripts, which take
   the images and metadata and "ingests" them into CSpace.
 
-To deploy it on an IS&T server (RHEL VM):
+To deploy it on an IS&T Unix Team-managed server (A RHEL6 VM):
 
-* Clone this repo (pahma_project) and install and configure the Django
-  webapp "as usual".
+* Clone this repo and install and configure the Django
+  webapp(s) "as usual".
 
 * Follow the following steps to configure the batch component to run in
   the environment you are using: the batch component uses bits and pieces of
@@ -21,6 +21,9 @@ To deploy it on an IS&T server (RHEL VM):
   number of expectations (dependencies) about where things are located
   and what they are named.  Sorry it is so complicated, someday we'll make
   it more robust.
+
+* Copy the batchmediauploadDev.cfg file to a new config file and edit the
+  configuration for use by the the batch script postblob.sh, below.
 
 * Copy one of postblobviaFile.sh or postblobviaHttp.sh to postblob.sh
   in this directory.
@@ -31,18 +34,13 @@ To deploy it on an IS&T server (RHEL VM):
   facility). Use the latter if the blob must be POSTed over HTTP to a
   remote CSpace server.
 
-* Edit the parameters in the beginning of the script so that the
-  script will run correctly (i.e. passwords, servers, etc. etc.)
-
-* Ensure that the needed "CGI webapps" are installed in
-  /var/www/cgi-bin, and that the uploadmedia*.cfg files exist there
-  and are readable by this webapp. (This webapp uses cswaUtils and
-  cswaDB from the "legacy" CSpace webapps.
+* Edit the parameters in the beginning of this script so that the
+  script will run correctly (i.e. passwords, servers, etc. etc.). Specify
+  the .cfg file you edited above in MEDIACONFIG.
 
 * Ensure that the temporary cache for images and intermediate files is
-  present and properly configured (i.e. usually is is
-  /tmp/upload_cache, SELinux tags=???, ownership=apache:apache,
-  permissions=writable by Apache)
+  present and properly configured with appropriate permissions. For the
+  online portion, the current setting is /tmp/image_upload_cache_{TENANT}.
 
 * Alas, there is no way to test this webapp except to upload some
   media files.
@@ -56,13 +54,13 @@ To deploy it on an IS&T server (RHEL VM):
   script that reports on the status of uploads that runs via cron as
   well.
 
-  Here is the current crontab for apache on pahma-dev, where this
-  webapp runs:
+  Here is the current crontab for app_webapps on webapps-dev.csacpe and webapps.cspace, where this
+  webapp runs nightly:
 
 [jblowe@pahma-dev ~]$ sudo crontab -u apache -l
 
-10  5  * * * perl /usr/local/share/django/pahma_project/uploadmedia/checkRuns.pl jobs | expand -12 | mail -s "recent BMU jobs" pahma-cspace@berkeley.edu > /dev/null 2>&1
-59 21  * * * shopt -s nullglob; for f in /tmp/upload_cache/*.step1.csv; do f=$(echo $f | sed -e 's/\.step1.csv//'); echo  Starting `date` $f >> /tmp/upload_cache/batches.log ; time /usr/local/share/django/pahma_project/uploadmedia/postblob.sh $f >> /tmp/upload_cache/batches.log ; echo  Ending `date` $f >> /tmp/upload_cache/batches.log ; done > /dev/null 2>&1
+10  5  * * * perl /var/www/pahma/uploadmedia/checkRuns.pl jobs | expand -12 | mail -s "recent BMU jobs" pahma-cspace@berkeley.edu > /dev/null 2>&1
+59 21  * * * shopt -s nullglob; for f in /tmp/upload_cache/*.step1.csv; do f=$(echo $f | sed -e 's/\.step1.csv//'); echo  Starting `date` $f >> /tmp/upload_cache/batches.log ; time /var/www/pahma/uploadmedia/postblob.sh $f >> /tmp/upload_cache/batches.log ; echo  Ending `date` $f >> /tmp/upload_cache/batches.log ; done > /dev/null 2>&1
 
 A few more details on the batch process:
 
