@@ -1,15 +1,18 @@
 #!/bin/bash
 
+source ~/venv/bin/activate
+
 # modify these for each deployment...
-PROTO="https"
-TENANT='xxx'
-HOST="xxx.cspace.berkeley.edu"
+PROTO="https://"
+TENANT='bampfa'
+HOST="${TENANT}-dev.cspace.berkeley.edu"
 SRVC="cspace-services/blobs"
 URL="${PROTO}${HOST}/$SRVC"
-TYPE="Content-Type: application/xml"
-USER="admin@bampfa.cspace.berkeley.edu:xxxxxxx"
-MEDIACONFIG="uploadmediaDev"
+CONTENT_TYPE="Content-Type: application/xml"
+USER="import@xxx.cspace.berkeley.edu:xxxxxxx"
+MEDIACONFIG="${TENANT}_Uploadmedia_Dev"
 BASEURL="${PROTO}://${HOST}/${SRVC}"
+UPLOADSCRIPT="/var/www/${TENANT}/uploadmedia/uploadMedia.py"
 
 JOB=$1
 IMGDIR=$(dirname $1)
@@ -91,8 +94,8 @@ do
 done < $INPUTFILE
 
 trace ">>>>>>>>>>>>>>> End of Blob Creation, starting Media and Relation record creation process: `date` "
-trace "python /var/www/cgi-bin/uploadMedia.py $OUTPUTFILE $MEDIACONFIG >> $TRACELOG"
-python /var/www/${TENANT}/uploadmedia/uploadMedia.py $OUTPUTFILE $MEDIACONFIG >> $TRACELOG 2>&1
+trace "python $UPLOADSCRIPT $OUTPUTFILE $MEDIACONFIG >> $TRACELOG"
+python $UPLOADSCRIPT $OUTPUTFILE $MEDIACONFIG >> $TRACELOG 2>&1
 trace "Media record and relations created."
 
 mv $INPUTFILE $JOB.original.csv

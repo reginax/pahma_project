@@ -10,7 +10,7 @@ import time
 # at the moment, the whole shebang expects to be run in /var/www/cgi-bin, and there are
 # a couple of hardcoded dependencies below
 
-CONFIGDIRECTORY = '/var/www/cfgs/'
+CONFIGDIRECTORY = ''
 
 from cswaExtras import postxml, relationsPayload, getConfig, getCSID
 

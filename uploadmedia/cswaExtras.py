@@ -17,7 +17,7 @@ timeoutcommand = "set statement_timeout to 240000; SET NAMES 'utf8';"
 
 
 def getCSID(argType, arg, config):
-    dbconn = psycopg2.connect(database=config.get('connect', 'connect_string'))
+    dbconn = psycopg2.connect(config.get('connect', 'connect_string'))
     objects = dbconn.cursor()
     objects.execute(timeoutcommand)
 
@@ -65,9 +65,9 @@ def getConfig(form):
     try:
         fileName = form.get('webapp') + '.cfg'
         config = ConfigParser.RawConfigParser()
-        config.read(os.path.join('../cfgs', fileName))
+        config.read(fileName)
         # test to see if it seems like it is really a config file
-        updateType = config.get('info', 'updatetype')
+        logo = config.get('info', 'logo')
         return config
     except:
         return False
