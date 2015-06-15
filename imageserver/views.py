@@ -46,20 +46,11 @@ def get_image(request, image):
         url = "%s/cspace-services/%s" % (server, image)
         f = urllib2.urlopen(url)
         data = f.read()
-
         elapsedtime = time.time() - elapsedtime
-    except urllib2.HTTPError, e:
-        print 'The server couldn\'t fulfill the request.'
-        print 'Error code: ', e.code
-        if hasattr(e, "headers"):
-            print e.headers
-            print 'has WWW-Authenticate', e.headers.has_key('WWW-Authenticate')
-        image404 = open(path.join(settings.BASE_PARENT_DIR, 'config', 'unavailable.jpg'),'r').read()
+    except:
+        logger.info('%s :: %s :: %s' % ('image error', '-', '%s :: %8.3f seconds' % (image, elapsedtime)))
+        image404 = open(path.join(settings.BASE_PARENT_DIR, 'cspace_django_site/static/cspace_django_site/images', '404.jpg'),'r').read()
         return HttpResponse(image404, content_type='image/jpeg')
-    except urllib2.URLError, e:
-        print 'We failed to reach a server.'
-        print 'Reason: ', e.reason
-        return render(request, 'ServerNotWorking.html')
 
     logger.info('%s :: %s :: %s' % ('image', '-', '%s :: %8.3f seconds' % (image, elapsedtime)))
     return HttpResponse(data, content_type='image/jpeg')
