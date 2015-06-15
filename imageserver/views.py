@@ -52,7 +52,8 @@ def get_image(request, image):
         print 'Error code: ', e.code
         print e.headers
         print 'has WWW-Authenticate', e.headers.has_key('WWW-Authenticate')
-        raise
+        image404 = open(path.join(settings.BASE_PARENT_DIR, 'config', '404-240px.jpg'),'r').read()
+        return HttpResponse(image404, content_type='image/jpeg')
     except urllib2.URLError, e:
         print 'We failed to reach a server.'
         print 'Reason: ', e.reason
