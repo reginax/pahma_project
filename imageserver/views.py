@@ -1,6 +1,7 @@
 __author__ = 'jblowe'
 
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
 from django.http import HttpResponse
 from common import cspace # we use the config file reading function
 from cspace_django_site import settings
@@ -50,14 +51,15 @@ def get_image(request, image):
     except urllib2.HTTPError, e:
         print 'The server couldn\'t fulfill the request.'
         print 'Error code: ', e.code
-        print e.headers
-        print 'has WWW-Authenticate', e.headers.has_key('WWW-Authenticate')
-        image404 = open(path.join(settings.BASE_PARENT_DIR, 'config', '404-240px.jpg'),'r').read()
+        if hasattr(e, "headers"):
+            print e.headers
+            print 'has WWW-Authenticate', e.headers.has_key('WWW-Authenticate')
+        image404 = open(path.join(settings.BASE_PARENT_DIR, 'config', 'unavailable.jpg'),'r').read()
         return HttpResponse(image404, content_type='image/jpeg')
     except urllib2.URLError, e:
         print 'We failed to reach a server.'
         print 'Reason: ', e.reason
-        raise
+        return render(request, 'ServerNotWorking.html')
 
     logger.info('%s :: %s :: %s' % ('image', '-', '%s :: %8.3f seconds' % (image, elapsedtime)))
     return HttpResponse(data, content_type='image/jpeg')
