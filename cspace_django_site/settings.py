@@ -1,7 +1,6 @@
 # Django settings for cspace_django_site project.
 import os
 import logging
-from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_PARENT_DIR = os.path.dirname(BASE_DIR)
