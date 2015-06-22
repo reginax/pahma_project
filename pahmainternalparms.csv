@@ -1,11 +1,11 @@
-# parameter specification spreadsheet for a django portal app															x
+#	parameter specification spreadsheet for pahma internal portal														x
 #															x
-date	3/30/15														x
-revision	1.8														x
-title	Collections														x
+date	06/15/15														x
+revision	1.0														x
+title	Collections (internal use only)														x
 #															x
 server	http://localhost:8983/solr														
-core	pahma-public														
+core	pahma-internal														
 #															
 #		Fields						row,[column]	row,[column]	row,[column]	row,[column]	row,[column]	row,[column]	row,[column]	x
 #															x
@@ -47,5 +47,10 @@ field	34	accdate	Accession Date	objaccdate_ss	x		keyword	4,3				23		25	x
 field	35	acqdate	Acquisition Date	objacqdate_ss	x		keyword	3,3				24		26	x
 field	36	fcpgeoloc	LatLong	objfcpgeoloc_p	x		location					25		29	x
 field	37	fcpelevation	Collection Place Elevation	objfcpelevation_s	x		keyword					26		30	x
-field	38	text	Keyword	text	x		keyword	1,1							x
-field	39	blobs	Blob	blob_ss			blob								x
+field	37	location	Museum Location	location_s	x	lo	keyword	5,3				27		31	x
+field	38	crate	Container	crate_s	x	lo	keyword	6,3				28		32	x
+field	39	exhibition	Exhibition	exhibition_ss	x		keyword								
+field	40	group	Group	group_ss	x		keyword								
+field	41	locationdate	Location Date	locationdate_dt	x		date	7,3				29		33	x
+field	42	text	Keyword	text	x		keyword	1,1							x
+field	43	blobs	Blob	blob_ss			blob							34	x
