@@ -20,6 +20,7 @@ MAXLONGRESULTS = int(config.get('imagebrowser', 'MAXLONGRESULTS'))
 SOLRSERVER = config.get('imagebrowser', 'SOLRSERVER')
 SOLRCORE = config.get('imagebrowser', 'SOLRCORE')
 TITLE = config.get('imagebrowser', 'TITLE')
+INSTITUTION = config.get('imagebrowser', 'INSTITUTION')
 #SUGGESTIONS = config.get('imagebrowser', 'SUGGESTIONS')
 #LAYOUT = config.get('imagebrowser', 'LAYOUT')
 
@@ -48,9 +49,10 @@ def images(request):
         context = doSearch(context)
 
         context['loginBtnNext'] = 'imagebrowser/'
+        context['institution'] = INSTITUTION
         return render(request, 'showImages.html', context)
 
     else:
         return render(request, 'showImages.html',
-                      {'title': TITLE, 'pgNum': 10, 'maxresults': 20,
+                      {'title': TITLE, 'pgNum': 10, 'maxresults': 20, 'institution': INSTITUTION,
                        'imageserver': 'not used', 'loginBtnNext': 'imagebrowser/'})

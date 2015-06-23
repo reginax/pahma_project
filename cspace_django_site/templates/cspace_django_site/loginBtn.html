@@ -15,8 +15,12 @@
         </div>
     {% endblock %}
 {% else %}
-    <a href="{% url 'login' %}?next=/{{ loginBtnNext }}" id="login" class="prettyBtn">{% trans 'Sign in' %}</a>
+    {% if institution %}
+    <a href="{% url 'login' %}?next=/{{ institution }}/{{ loginBtnNext }}" id="login" class="prettyBtn">{% trans 'Sign in' %}</a>
     <div class="line">
         <div style="display: block;"><a href="{% url 'landing:index' %}" style="margin: 8px 0 0 0; float:right;">All available webapps</a></div>
     </div>
+    {% else %}
+        <a href="{% url 'login' %}" id="login" class="prettyBtn">{% trans 'Sign in' %}</a>
+    {% endif %}
 {% endif %}

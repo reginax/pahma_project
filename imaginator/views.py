@@ -22,6 +22,7 @@ CSPACESERVER = config.get('imaginator', 'CSPACESERVER')
 SOLRSERVER = config.get('imaginator', 'SOLRSERVER')
 SOLRCORE = config.get('imaginator', 'SOLRCORE')
 TITLE = config.get('imaginator', 'TITLE')
+INSTITUTION = config.get('imaginator', 'INSTITUTION')
 SUGGESTIONS = config.get('imaginator', 'SUGGESTIONS')
 LAYOUT = config.get('imaginator', 'LAYOUT')
 
@@ -30,6 +31,8 @@ LAYOUT = config.get('imaginator', 'LAYOUT')
 def index(request):
 
     context = setConstants({})
+
+    context['loginBtnNext'] = 'imaginator/'
 
     # http://blog.mobileesp.com/
     # the middleware must be installed for the following to work...
@@ -69,11 +72,9 @@ def index(request):
         # do search
         loginfo('start search', context, request)
         context = doSearch(context)
-        context['loginBtnNext'] = 'imaginator/'
 
         return render(request, 'imagineImages.html', context)
 
     else:
-        context['loginBtnNext'] = 'imaginator/'
         
         return render(request, 'imagineImages.html', context)
