@@ -21,11 +21,11 @@ urlpatterns = patterns('',
                        #  Uncomment the admin/doc line below to enable admin documentation:
                        #  url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-                       url(r'^$', include('landing.urls', namespace='landing')),
+                       url(r'^$', 'landing.views.index', name='index'),
                        # these are django builtin webapps
                        url(r'^admin/', include(admin.site.urls)),
                        url(r'^accounts/login/$', views.login, name='login'),
-                       url(r'^accounts/logout/$', 'django.contrib.auth.views.logout_then_login', name='logout'),
+                       url(r'^accounts/logout/$', 'django.contrib.auth.views.logout', name='logout'),
                        #url(r'^accounts/logout/$', views.logout, name='logout'),
                        # these are "internal webapps", used by other webapps -- not user-facing
                        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
