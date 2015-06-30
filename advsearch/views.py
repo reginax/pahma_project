@@ -86,7 +86,7 @@ def search(request):
                 csid = csid.text
                 objectNumber = i.find('.//objectNumber')
                 objectNumber = objectNumber.text
-                link = 'http://%s:8180/collectionspace/ui/%s/html/cataloging.html?csid=%s' % (hostname, tenant, csid)
+                link = 'http://%s/collectionspace/ui/%s/html/cataloging.html?csid=%s' % (hostname, tenant, csid)
                 r.append(link)
                 r.append(objectNumber)
                 r2 = []
