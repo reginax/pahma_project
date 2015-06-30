@@ -60,7 +60,7 @@ def search(request):
             # but tenant is not even stored there...
             hostname = 'pahma.cspace.berkeley.edu'
             tenant = 'pahma'
-            link = 'http://%s:8180/collectionspace/ui/%s/html/cataloging.html?csid=%s' % (hostname, tenant, csid)
+            link = 'http://%s/collectionspace/ui/%s/html/cataloging.html?csid=%s' % (hostname, tenant, csid)
             r.append(link)
             r.append(objectNumber)
             r2 = []
