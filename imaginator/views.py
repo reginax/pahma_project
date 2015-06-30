@@ -32,8 +32,6 @@ def index(request):
 
     context = setConstants({})
 
-    context['loginBtnNext'] = 'imaginator/'
-
     # http://blog.mobileesp.com/
     # the middleware must be installed for the following to work...
     if request.is_phone:
@@ -45,8 +43,6 @@ def index(request):
 
     if request.method == 'GET' and request.GET != {}:
         context['searchValues'] = request.GET
-
-        context = setConstants(context)
 
         if 'text' in request.GET:
             context['text'] = request.GET['text']
