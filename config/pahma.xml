@@ -7,7 +7,7 @@
     <logo img="http://hearstmuseum.berkeley.edu/sites/default/files/images/00_sitewide_imgs/Logo_Red.jpg" url="http://hearstmuseum.berkeley.edu/" />
   </metadata>
   <recordlinkback>
-    <linkback method="root" linkurl="https://dev.cspace.berkeley.edu/pahma_project/search/search/?displayType=full&amp;maxresults=1&amp;start=0" text="View Details" fieldname="Full Record" key1="musno" value1="char120:1" />
+    <linkback method="root" linkurl="https://webapps.cspace.berkeley.edu/pahma/search/search/?displayType=full&amp;maxresults=1&amp;start=0" text="View Details" fieldname="Full Record" key1="musno" value1="char120:1" />
   </recordlinkback>
   <concepts xlmns:darwin="http://digir.net/schema/conceptual/darwin/2003/1.0">
     <concept viewlist="1" colorlist="0" datatype="char120:1" alias="Museum Number" />
