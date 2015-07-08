@@ -35,7 +35,7 @@ urlpatterns = patterns('',
                        url(r'^suggest/', include('suggest.urls', namespace='suggest')),
                        url(r'^imageserver/', include('imageserver.urls', namespace='imageserver')),
                        # these are user-facing (i.e. present a UI to the caller)
-                       url(r'^toolbox/', include('toolbox.urls')),
+                       url(r'^toolbox/', include('toolbox.urls', namespace='toolbox')),
                        url(r'^search/', include('search.urls', namespace='search')),
                        url(r'^ireports/', include('ireports.urls', namespace='ireports')),
                        url(r'^imagebrowser/?', include('imagebrowser.urls', namespace='imagebrowser')),
