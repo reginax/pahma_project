@@ -1,0 +1,82 @@
+Very terse deployment instructions for this webapp.
+
+Upload Tricoder replaces the "legacy" CGI webapp that uploads files to temporary directory where the
+batch system can get to them.
+
+It is a knock-off the webapp portion of the Bulk Media Uploader.
+
+To deploy it on an IS&T server (RHEL VM):
+
+* Clone this repo (pahma_project) and install and configure the Django
+  webapp "as usual".
+
+* Ensure that the temporary cache for images and intermediate files is
+  present and properly configured (i.e. usually is is
+  /tmp/upload_cache, SELinux tags=???, ownership=apache:apache,
+  permissions=writable by Apache)
+
+* Alas, there is no way to test this webapp except to upload some files.
+
+* There are some helper scripts: "runJob.sh" runs a single job from
+  the command line. "runHelpers.sh" attempts to find problem media and
+  create jobs to re-load/re-link them. See below.
+
+* The webapp creates  files in a tmp/ directory.
+
+* Every hour, a cron
+
+* uploadtricoder.sh - this runs a single *.step1.csv file; it is used
+by the webapp to do "online uploads"
+
+* checkObj.pl - this script checks Blobs uploaded vs. Media created; it
+is used by the very rickety "runHelpers.sh" script below to report on
+problem records.
+
+* checkRuns.pl - this script creates some reports on BMU activity:
+number of jobs and their status, lists of images and the CSIDs, finds
+problem data (missing images, duplicates, etc.)
+
+* runHelpers.sh - matches CSIDs loaded with log files, to find
+discrepancies between what is in the database and what seems to have
+been uploaded. No longer works due to schema changes in the Solr
+datasource, which it uses to find Blob CSIDs.
+
+* runJob.sh - like bulkmediaupload.sh, but does not cleanup/rename
+intermediate files.
+
+* verifyObjectsAndMedia.sh - somewhat scary script to make a list of
+imagefile names and object numbers...
+
+RUNNING THE BMU FROM THE COMMAND LINE
+
+Once it is installed, the BMU can be invoked on the command line as:
+
+$ bulkmediaupload.sh xxxxxx
+
+Provided you have a Tricoder file named "xxxxxx.step1.csv" in the pwd with the following fields (the header is required):
+
+name (i.e. field name)
+size (can be null)
+objectnumber
+date (can be null)
+creator (refname)
+contributor
+rightsholder (refname)
+
+e.g.
+
+1-4673_2014_10_13at09_18_25.JPG
+
+4416952
+
+1-4673
+
+2014:10:13 09:18:25
+
+urn:cspace:pahma.cspace.berkeley.edu:personauthorities:name(person):item:name(7652)'A Person Name'
+
+Trinity Miller
+
+urn:cspace:pahma.cspace.berkeley.edu:orgauthorities:name(organization):item:name(8107)'Phoebe A. Hearst Museum of Anthropology'
+
+NB: the image files mentioned in this file must also be present in this same directory.

@@ -42,6 +42,7 @@ urlpatterns = patterns('',
                        url(r'^imaginator/?', include('imaginator.urls', namespace='imaginator')),
                        url(r'^landing/?', include('landing.urls', namespace='landing')),
                        url(r'^uploadmedia/', include('uploadmedia.urls', namespace='uploadmedia')),
+                       url(r'^uploadtricoder/', include('uploadtricoder.urls', namespace='uploadtricoder')),
                        url(r'^batchuploadimages/', include('batchuploadimages.urls', namespace='batchuploadimages')),
                        url(r'^locviewer/?', include('locviewer.urls', namespace='locviewer')),
 )

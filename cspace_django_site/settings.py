@@ -176,6 +176,7 @@ INSTALLED_APPS = (
     'imaginator',
     'search',
     'uploadmedia',
+    'uploadtricoder',
     'locviewer',
     'toolbox',
     'batchuploadimages'

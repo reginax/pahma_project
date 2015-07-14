@@ -1,0 +1,29 @@
+{% if tricoder_files %}
+    <hr/>
+    <h1>{{ tricoder_filecount }} tricoder file{{ count|pluralize }} in the queue.
+    {% if tricoder_filecount > tricoder_files|length %}
+        Only the first {{ tricoder_files|length }} displayed.
+    {% endif %}
+    </h1>
+    <table cellspace="1" id="resultsListing" class="tablesorter">
+        <thead>
+        <tr>
+            <th>File Name</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for fileno,filefailed,fileinfo,filesummary in tricoder_files %}
+            <tr>
+                <td><a href="showresults/{{ fileno }}">{{ fileno}}</a></td>
+                <td>{{ filesummary }}</td>
+                {% if filefailed == True %}
+                    <td><span style="color: red">Failed.</span></td>
+                {% else %}
+                    <td/>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

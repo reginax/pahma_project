@@ -1,0 +1,8 @@
+<hr/>
+{% if validateonly %}
+    <h2><span style="color:red">Validation only! {{ count }} files examined!</span></h2>
+{% elif count %}
+    <h1>{{ count }} files uploaded</h1>
+{% endif %}
+    </tbody>
+</table>
