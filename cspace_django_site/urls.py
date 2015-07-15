@@ -45,4 +45,5 @@ urlpatterns = patterns('',
                        url(r'^uploadtricoder/', include('uploadtricoder.urls', namespace='uploadtricoder')),
                        url(r'^batchuploadimages/', include('batchuploadimages.urls', namespace='batchuploadimages')),
                        url(r'^locviewer/?', include('locviewer.urls', namespace='locviewer')),
+                       url(r'^internal/', include('internal.urls', namespace='internal')),
 )
