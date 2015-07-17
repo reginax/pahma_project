@@ -9,10 +9,9 @@ from django.core.servers.basehttp import FileWrapper
 #from django.conf import settings
 #from django import forms
 import time, datetime
-from utils import SERVERINFO, POSTBLOBPATH, handle_uploaded_file, getCSID, get_tricoder_file, get_tricoder_filelist, loginfo, getQueue
+from utils import SERVERINFO, TITLE, POSTBLOBPATH, handle_uploaded_file, getCSID, get_tricoder_file, get_tricoder_filelist, loginfo, getQueue
 import subprocess
 
-TITLE = 'Tricoder File Upload'
 
 class trcdr:  # empty class for tricoder metadata
     pass
@@ -114,7 +113,7 @@ def uploadfiles(request):
     elapsedtime = time.time() - elapsedtime
 
     return render(request, 'uploadtricoder.html',
-                  {'title': TITLE, 'serverinfo': SERVERINFO, 'tricoder_files': tricoder_files, 'count': len(tricoder_files),
+                  {'apptitle': TITLE, 'serverinfo': SERVERINFO, 'tricoder_files': tricoder_files, 'count': len(tricoder_files),
                    'constants': constants, 'tricoder_fileinfo': tricoder_fileinfo, 'validateonly': trcdr.validateonly,
                    'status': status, 'timestamp': timestamp,
                    'elapsedtime': '%8.2f' % elapsedtime})
@@ -137,7 +136,7 @@ def checkfilename(request):
     return render(request, 'uploadtricoder.html', {'filenames2check': listoffilenames,
                                                 'objectnumbers': objectnumbers, 'timestamp': timestamp,
                                                 'elapsedtime': '%8.2f' % elapsedtime,
-                                                'status': status, 'title': TITLE, 'serverinfo': SERVERINFO})
+                                                'status': status, 'apptitle': TITLE, 'serverinfo': SERVERINFO})
 
 
 @login_required()
@@ -167,5 +166,5 @@ def showqueue(request):
     return render(request, 'uploadtricoder.html',
                   {'timestamp': timestamp,
                    'elapsedtime': '%8.2f' % elapsedtime,
-                   'status': status, 'title': TITLE, 'serverinfo': SERVERINFO, 'tricoder_files': tricoder_files, 'tricoder_filecount': tricoder_filecount,
+                   'status': status, 'apptitle': TITLE, 'serverinfo': SERVERINFO, 'tricoder_files': tricoder_files, 'tricoder_filecount': tricoder_filecount,
                    'errors': errors, 'errorcount': errorcount})

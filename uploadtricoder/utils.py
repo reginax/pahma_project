@@ -14,6 +14,7 @@ from os.path import isfile, isdir, join
 config = cspace.getConfig(path.join(settings.BASE_PARENT_DIR, 'config'), 'uploadtricoder')
 TRICODERDIR = config.get('files', 'directory')
 POSTBLOBPATH = config.get('info', 'postblobpath')
+TITLE = config.get('info', 'apptitle')
 FILEPATH = path.join(TRICODERDIR, '%s')
 SERVERINFO = {
     'serverlabelcolor': config.get('info', 'serverlabelcolor'),
