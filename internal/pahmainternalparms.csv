@@ -47,8 +47,8 @@ field	34	accdate	Accession Date	objaccdate_ss	x		keyword	4,3				23		25	x
 field	35	acqdate	Acquisition Date	objacqdate_ss	x		keyword	3,3				24		26	x
 field	36	fcpgeoloc	LatLong	objfcpgeoloc_p	x		location					25		29	x
 field	37	fcpelevation	Collection Place Elevation	objfcpelevation_s	x		keyword					26		30	x
-field	37	location	Museum Location	location_s	x	lo	keyword	5,3				27		31	x
-field	38	crate	Container	crate_s	x	lo	keyword	6,3				28		32	x
+field	37	location	Museum Location	currentlocation_s	x	lo	keyword	5,3	8			27		31	x
+field	38	crate	Container	computedcrate_s	x	cr	keyword	6,3				28		32	x
 field	39	exhibition	Exhibition Title	exhibitiontitle_ss	x		keyword	8,3				29		33	
 field	39	exhibition	Exhibition Numbrer	exhibitionnumber_ss	x		keyword	9,3				30		34	
 field	40	group	Group	grouptitle_ss	x		keyword	10,3				31		35	
