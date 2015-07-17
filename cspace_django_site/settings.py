@@ -179,7 +179,8 @@ INSTALLED_APPS = (
     'uploadtricoder',
     'locviewer',
     'toolbox',
-    'batchuploadimages'
+    'batchuploadimages',
+    'internal'
 )
 
 # A sample logging configuration. The only tangible logging

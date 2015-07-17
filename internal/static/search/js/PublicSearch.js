@@ -83,7 +83,7 @@ function checkPage(Page,increment) {
 }
 
 $(document).ready(function () {
-    var display;
+
     // $('#searchfields').click(function() {
     //     chooseSlideDirection('#searchfieldsTarget');
     // });
@@ -93,7 +93,7 @@ $(document).ready(function () {
         var $n = $("#start");
         if (checkPage($n.val(),1)) {
             $n.val(Number($n.val()) + 1);
-            submitForm(display);
+            submitForm('search-list');
         }
     });
 
@@ -101,7 +101,7 @@ $(document).ready(function () {
         var $n = $("#start");
         if (checkPage($n.val(),-1)) {
             $n.val(Number($n.val()) - 1);
-            submitForm(display);
+            submitForm('search-list');
         }
     });
 
@@ -123,9 +123,7 @@ $(document).ready(function () {
     });
 
     $('#search-list, #search-full, #search-grid').click(function () {
-        display = $(this).attr('name');
         submitForm($(this).attr('name'));
-
     });
 
     $('#search input[type=text]').keypress(function(event) {
