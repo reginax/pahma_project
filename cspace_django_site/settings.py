@@ -43,18 +43,6 @@ REST_FRAMEWORK = {
     ]
 }
 
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-#         'LOCATION': '/home/app_webapps/cache/' + PROJECT_NAME + '/images',
-#         #'LOCATION': '/tmp/' + PROJECT_NAME + '/images',
-#         'CULL_FREQUENCY': 100000,
-#         'OPTIONS': {
-#             'MAX_ENTRIES': 1000000
-#         }
-#     }
-# }
-
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []
