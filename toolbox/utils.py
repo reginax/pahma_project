@@ -96,7 +96,7 @@ def getAppList(myappdir, thisInstitution, thisDeployment):
     files = os.listdir(myappdir)
     badconfigfiles = []
 
-    webapps = {'listapps': ['Available Webapps', 'red', None, 'green']}
+    webapps = {'listapps': ['Available Tools', 'red', None, 'green']}
 
     for configfile in files:
         if '.cfg' in configfile:
