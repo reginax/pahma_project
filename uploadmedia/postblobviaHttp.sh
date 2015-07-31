@@ -11,9 +11,10 @@ SRVC="cspace-services/blobs"
 URL="${PROTO}${HOST}/$SRVC"
 CONTENT_TYPE="Content-Type: application/xml"
 USER="import@xxx.cspace.berkeley.edu:xxxxxxx"
-MEDIACONFIG="${TENANT}_Uploadmedia_Dev"
+MEDIACONFIG="/var/www/${TENANT}/uploadmedia/${TENANT}_Uploadmedia_Dev"
 UPLOADSCRIPT="/var/www/${TENANT}/uploadmedia/uploadMedia.py"
 
+# this should be the fully qualified name of the input file, up to ".step1.csv"
 JOB=$1
 IMGDIR=$(dirname $1)
 

@@ -8,28 +8,46 @@ BMU has two components:
   image)
 
 * A batch component consisting of shell and python scripts, which take
-  the images and metadata and "ingests" them into CSpace.
+  the images and metadata and "ingest" them into CSpace.
 
-To deploy it on an IS&T Unix Team-managed server (A RHEL6 VM):
+To deploy it on an IS&T Unix Team-managed server, (A RHEL6 VM, e.g. cspace-prod.cspace.berkeley.edu):
+
+WEBAPP COMPONENT:
 
 * Clone this repo and install and configure the Django
-  webapp(s) "as usual".
+  webapp(s), including this one, "as usual".  In particular, create the temporary cache,
+  with appropriate permissions, and record the full pathin the deployed
+  config file, uploadmedia.cfg
+
+  e.g.
+
+  [files]
+  directory         = /tmp/image_upload_cache_pahma
+
+BATCH COMPONENT:
 
 * Follow the following steps to configure the batch component to run in
-  the environment you are using: the batch component uses bits and pieces of
-  code from other apps, relies on cron or something similar to run, has a
-  number of expectations (dependencies) about where things are located
-  and what they are named.  Sorry it is so complicated, someday we'll make
-  it more robust.
+  the environment you are using: the batch component relies on cron or
+  something similar to run, and has a number of expectations (dependencies)
+  about where things are located and what they are named.
+  Sorry it is so complicated, someday we'll make it more robust.
 
-* Copy the batchmediauploadDev.cfg file to a new config file and edit the
-  configuration for use by the the batch script postblob.sh, below.
+* Copy the batchmediauploadDev.cfg file to a new config file in the same directory
+  (i.e. uploadmedia/) and edit the configuration for use by the the batch script postblob.sh,
+  below.
+
+  e.g.
+
+  cp batchmediauploadDev.cfg pahma_Uploadmedia_Dev.cfg
+  vi pahma_Uploadmedia_Dev.cfg
 
 * Copy one of postblobviaFile.sh or postblobviaHttp.sh to postblob.sh
   in this directory.
 
-* (NB: use the first if this webapp is running on the same server as
-  the CSpace deployment it address -- and therefore can use the
+  cp postblobviaHttp.sh postblob.sh
+
+* (NB: use the former of these if this webapp is running on the same server
+  as the CSpace deployment it address -- and therefore can use the
   somewhat more efficient "direct file move" CSpace blob upload
   facility). Use the latter if the blob must be POSTed over HTTP to a
   remote CSpace server.

@@ -8,6 +8,7 @@ from django.shortcuts import render, HttpResponse, redirect
 from django.core.servers.basehttp import FileWrapper
 #from django.conf import settings
 #from django import forms
+from os import path
 import time, datetime
 from utils import SERVERINFO, POSTBLOBPATH, getDropdowns, handle_uploaded_file, assignValue, getCSID, getNumber, get_exif, writeCsv, \
     getJobfile, getJoblist, loginfo, getQueue
@@ -75,8 +76,7 @@ def prepareFiles(request, validateonly, dropdowns):
             if not validateonly:
                 loginfo('start', getJobfile(jobnumber), request)
                 try:
-                    retcode = subprocess.call(
-                        [POSTBLOBPATH, getJobfile(jobnumber)])
+                    retcode = subprocess.call([path.join(POSTBLOBPATH, 'postblob.sh'), getJobfile(jobnumber)])
                     if retcode < 0:
                         loginfo('process', jobnumber + " Child was terminated by signal %s" % -retcode, request)
                     else:

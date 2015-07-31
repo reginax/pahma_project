@@ -10,7 +10,7 @@ SRVC="cspace-services/blobs"
 URL="${PROTO}${HOST}/$SRVC"
 CONTENT_TYPE="Content-Type: application/xml"
 USER="import@xxx.cspace.berkeley.edu:xxxxxxx"
-MEDIACONFIG="${TENANT}_Uploadmedia_Dev"
+MEDIACONFIG="/var/www/${TENANT}/uploadmedia/${TENANT}_Uploadmedia_Dev"
 BASEURL="${PROTO}://${HOST}/${SRVC}"
 UPLOADSCRIPT="/var/www/${TENANT}/uploadmedia/uploadMedia.py"
 

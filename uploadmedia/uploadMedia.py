@@ -3,15 +3,6 @@ import sys
 import codecs
 import time
 
-# NB: the BMU facility uses methods from the "legacy" CGI webapps, imported below.
-# Therefore, it must either be run from the directory where these modules live,
-# or these modules must be copied to where the batch system (i.e. cron job) runs the script
-#
-# at the moment, the whole shebang expects to be run in /var/www/cgi-bin, and there are
-# a couple of hardcoded dependencies below
-
-CONFIGDIRECTORY = ''
-
 from cswaExtras import postxml, relationsPayload, getConfig, getCSID
 
 
@@ -53,7 +44,7 @@ def uploadmedia(mediaElements, config):
         hostname = config.get('connect', 'hostname')
         username = config.get('connect', 'username')
         password = config.get('connect', 'password')
-        INSTITUTION = config.get('info', 'institution')
+        institution = config.get('info', 'institution')
     except:
         print "could not get at least one of realm, hostname, username, password or institution from config file."
         # print "can't continue, exiting..."
@@ -63,7 +54,7 @@ def uploadmedia(mediaElements, config):
     if objectCSID == [] or objectCSID is None:
         print "could not get (i.e. find) objectnumber's csid: %s." % mediaElements['objectnumber']
         # raise Exception("<span style='color:red'>Object Number not found: %s!</span>" % mediaElements['objectnumber'])
-        #raise
+        # raise
     else:
         objectCSID = objectCSID[0]
         mediaElements['objectCSID'] = objectCSID
@@ -86,11 +77,11 @@ def uploadmedia(mediaElements, config):
         messages = []
         messages.append("posting to media REST API...")
         # print updateItems
-        payload = mediaPayload(updateItems, INSTITUTION)
+        payload = mediaPayload(updateItems, institution)
         messages.append(payload)
         messages.append(payload)
         (url, data, mediaCSID, elapsedtime) = postxml('POST', uri, realm, hostname, username, password, payload)
-        #elapsedtimetotal += elapsedtime
+        # elapsedtimetotal += elapsedtime
         messages.append('got mediacsid %s elapsedtime %s ' % (mediaCSID, elapsedtime))
         mediaElements['mediaCSID'] = mediaCSID
         messages.append("media REST API post succeeded...")
@@ -103,7 +94,7 @@ def uploadmedia(mediaElements, config):
 
         updateItems['objectCsid'] = objectCSID
         updateItems['subjectCsid'] = mediaCSID
-        # "urn:cspace:INSTITUTION.cspace.berkeley.edu:media:id(%s)" % mediaCSID
+        # "urn:cspace:institution.cspace.berkeley.edu:media:id(%s)" % mediaCSID
 
         updateItems['objectDocumentType'] = 'CollectionObject'
         updateItems['subjectDocumentType'] = 'Media'
@@ -129,14 +120,18 @@ def uploadmedia(mediaElements, config):
         mediaElements['obj2mediaCSID'] = csid
         messages.append("relations REST API post succeeded...")
 
-        primary_payload = """<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<ns2:invocationContext xmlns:ns2="http://collectionspace.org/services/common/invocable"
-  <mode>single</mode>
-  <docType>""" + mediaCSID + """</docType>
-  <singleCSID></singleCSID>
-</ns2:invocationContext>
-"""
-        postxml('POST', 'batch/57c6de27-4f1e-48d3-a661', realm, hostname, username, password, primary_payload)
+        # for PAHMA, each uploaded image becomes the primary
+        if institution == 'pahma':
+            primary_payload = """<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+            <ns2:invocationContext xmlns:ns2="http://collectionspace.org/services/common/invocable"
+            <mode>single</mode>
+            <docType>""" + mediaCSID + """</docType>
+            <singleCSID></singleCSID>
+            </ns2:invocationContext>
+            """
+            postxml('POST', 'batch/57c6de27-4f1e-48d3-a661', realm, hostname, username, password, primary_payload)
+        else:
+            pass
 
     return mediaElements
 
@@ -172,11 +167,11 @@ def getRecords(rawFile):
 
 if __name__ == "__main__":
 
-    print "MEDIA: config file: %s" % sys.argv[2]
-    print "MEDIA: input  file: %s" % sys.argv[1]
+    print "MEDIA: input  file (fully qualified path): %s" % sys.argv[1]
+    print "MEDIA: config file (fully qualified path): %s" % sys.argv[2]
 
     try:
-        form = {'webapp': CONFIGDIRECTORY + sys.argv[2]}
+        form = {'webapp': sys.argv[2]}
         config = getConfig(form)
     except:
         print "MEDIA: could not get configuration"
@@ -197,14 +192,16 @@ if __name__ == "__main__":
         elapsedtimetotal = time.time()
         mediaElements = {}
         for v1, v2 in enumerate(
-                'name size objectnumber blobCSID date creator contributor rightsholder imagenumber filenamewithpath'.split(' ')):
+                'name size objectnumber blobCSID date creator contributor rightsholder imagenumber filenamewithpath'.split(
+                        ' ')):
             mediaElements[v2] = r[v1]
-        #print mediaElements
+        # print mediaElements
         print 'objectnumber %s' % mediaElements['objectnumber']
         try:
             mediaElements = uploadmedia(mediaElements, config)
             print "MEDIA: objectnumber %s, objectcsid: %s, mediacsid: %s, %8.2f" % (
-                mediaElements['objectnumber'], mediaElements['objectCSID'], mediaElements['mediaCSID'], (time.time() - elapsedtimetotal))
+                mediaElements['objectnumber'], mediaElements['objectCSID'], mediaElements['mediaCSID'],
+                (time.time() - elapsedtimetotal))
             r.append(mediaElements['mediaCSID'])
             r.append(mediaElements['objectCSID'])
             outputfh.writerow(r)
