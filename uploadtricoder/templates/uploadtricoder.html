@@ -43,14 +43,14 @@
                     <input type="file" name="tricoderfiles" multiple>
                     <input type="checkbox" name="validateonly"> Validate files and filenames only, do not process.
                     <hr/>
-                    <h2>
+                    <!-- h2>
                         <li>Select action to perform</li>
-                    </h2>
-                    <input type="submit" name="createtricoder"
+                    </h2 -->
+                    <!-- input type="submit" name="createtricoder"
                            value="Upload to CSpace and Create Media Records NOW (100 tricoder files max)">
-                    <br/><br/>
+                    <br/><br/ -->
                     <input type="submit" name="uploadtricoder"
-                           value="Upload to CSpace and Queue for LATER CSpace Ingestion"></td>
+                           value="Upload to CSpace and Queue for Ingestion"></td>
                     <!-- <input type="submit" name="deletetricoder"
                                    value="DELETE CSpace Blob and Media records associated with these images">
                     -->
@@ -66,7 +66,9 @@
             </h2>
             <form action="{% url 'uploadtricoder:showqueue' %}" method="post">
                 {% csrf_token %}
-                <input type="submit" name="checkfiles" value="View status">
+                <input type="submit" name="checkpending" value="View Pending">
+                <input type="submit" name="checkprocessed" value="View Processed">
+                <input type="submit" name="checkfailed" value="View Problem Files">
                 {% include "tricoder_pastjobs.html" %}
                 {% include "tricoder_showqueue.html" %}
             </form>

@@ -22,16 +22,16 @@ SERVERINFO = {
 }
 
 if isdir(TRICODERDIR):
-    print "Using %s as working directory for tricoder files and metadata files" % TRICODERDIR
+    print "Using %s as working directory for tricoder files and metadata files" % (FILEPATH % 'input')
 else:
-    raise Exception("working directory %s does not exist. this webapp will not work!" % TRICODERDIR)
+    raise Exception("working directory %s does not exist. this webapp will not work!" % (FILEPATH % 'input'))
 
 # Get an instance of a logger, log some startup info
 logger = logging.getLogger(__name__)
 
 
 def get_tricoder_file(tricoder_filenumber):
-    return FILEPATH % tricoder_filenumber
+    return (FILEPATH % 'input/%s') % tricoder_filenumber
 
 
 def tricoder_filesummary(tricoder_filestats):
@@ -52,8 +52,8 @@ def tricoder_filesummary(tricoder_filestats):
     return result
 
 
-def get_tricoder_filelist():
-    tricoder_filepath = FILEPATH % ''
+def get_tricoder_filelist(directory):
+    tricoder_filepath = FILEPATH % directory
     filelist = [f for f in listdir(tricoder_filepath) if isfile(join(tricoder_filepath, f))]
     tricoder_filedict = {}
     errors = []

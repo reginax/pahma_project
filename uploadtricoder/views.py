@@ -150,15 +150,25 @@ def showresults(request, filename):
 @login_required()
 def showqueue(request):
     elapsedtime = time.time()
-    tricoder_files, errors, tricoder_filecount, errorcount = get_tricoder_filelist()
-    if 'checkfiles' in request.POST:
-        errors = None
-    elif 'showerrors' in request.POST:
-        tricoder_files = None
+    directory = None
+    tricoder_files, errors, tricoder_filecount, errorcount = get_tricoder_filelist('')
+    if 'checkpending' in request.POST:
+        directory = 'input'
+    elif 'checkprocessed' in request.POST:
+        directory = 'processed'
+    elif 'checkfailed' in request.POST:
+        directory = 'bad_barcode'
     else:
-        tricoder_files = None
         errors = None
         count = 0
+    if directory:
+        tricoder_files, errors, tricoder_filecount, errorcount = get_tricoder_filelist(directory)
+    else:
+        tricoder_files = None
+
+    if 'showerrors' in request.POST:
+        tricoder_files = None
+
     elapsedtime = time.time() - elapsedtime
     status = 'up'
     timestamp = time.strftime("%b %d %Y %H:%M:%S", time.localtime())
@@ -166,5 +176,6 @@ def showqueue(request):
     return render(request, 'uploadtricoder.html',
                   {'timestamp': timestamp,
                    'elapsedtime': '%8.2f' % elapsedtime,
-                   'status': status, 'apptitle': TITLE, 'serverinfo': SERVERINFO, 'tricoder_files': tricoder_files, 'tricoder_filecount': tricoder_filecount,
+                   'status': status, 'apptitle': TITLE, 'serverinfo': SERVERINFO, 'tricoder_files': tricoder_files,
+                   'tricoder_filecount': tricoder_filecount,
                    'errors': errors, 'errorcount': errorcount})
