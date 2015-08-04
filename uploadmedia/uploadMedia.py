@@ -123,10 +123,10 @@ def uploadmedia(mediaElements, config):
         # for PAHMA, each uploaded image becomes the primary
         if institution == 'pahma':
             primary_payload = """<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-            <ns2:invocationContext xmlns:ns2="http://collectionspace.org/services/common/invocable"
+            <ns2:invocationContext xmlns:ns2="http://collectionspace.org/services/common/invocable">
             <mode>single</mode>
-            <docType>""" + mediaCSID + """</docType>
-            <singleCSID></singleCSID>
+            <docType>Media</docType>
+            <singleCSID>""" + mediaCSID + """</singleCSID>
             </ns2:invocationContext>
             """
             postxml('POST', 'batch/57c6de27-4f1e-48d3-a661', realm, hostname, username, password, primary_payload)
