@@ -1,6 +1,7 @@
 *.pyc
 static_root
 uploadmedia/postblob.sh
+uploadmedia/*_Uploadmedia_*.cfg
 db.sqlite3
 logs/logfile.txt*
 logs/settings.log
@@ -10,5 +11,3 @@ config/*.csv
 .idea
 cspace_django_site/secret_key.py
 cspace_django_site/extra_settings.py
-uploadmedia/postblob.sh
-uploadmedia/pahma_Uploadmedia_Dev.cfg
