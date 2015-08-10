@@ -1,5 +1,8 @@
 __author__ = 'jblowe, amywieliczka'
 
+global FIELDDEFINITIONS
+FIELDDEFINITIONS = 'pahmainternalparms'
+
 import time, datetime
 
 from django.contrib.auth.decorators import login_required
@@ -10,7 +13,8 @@ from django.contrib import messages
 from django import forms
 from cspace_django_site.main import cspace_django_site
 from common.utils import writeCsv, doSearch, setupGoogleMap, setupBMapper, computeStats, setupCSV, setDisplayType, setConstants, loginfo
-from common.appconfig import CSVPREFIX, CSVEXTENSION, MAXRESULTS, loadFields
+from common.utils import CSVPREFIX, CSVEXTENSION
+from common.appconfig import loadFields, loadConfiguration
 from .models import AdditionalInfo
 
 

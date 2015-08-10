@@ -14,13 +14,20 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 # global variables
 
-from appconfig import MAXMARKERS, MAXRESULTS, MAXLONGRESULTS, MAXFACETS, IMAGESERVER, BMAPPERSERVER, BMAPPERDIR
-from appconfig import BMAPPERURL, BMAPPERCONFIGFILE, LOCALDIR, SEARCH_QUALIFIERS
-from appconfig import EMAILABLEURL, SUGGESTIONS, LAYOUT, CSPACESERVER, INSTITUTION
-from appconfig import VERSION, FIELDDEFINITIONS, getParms
-from appconfig import DROPDOWNS, FIELDS, FACETS, LOCATION, PARMS, SEARCHCOLUMNS, SEARCHROWS, SOLRSERVER, SOLRCORE
-from appconfig import CSVPREFIX, CSVEXTENSION, TITLE, DEFAULTSORTKEY, REQUIRED
-from appconfig import DERIVATIVECOMPACT, DERIVATIVEGRID, SIZECOMPACT, SIZEGRID
+from cspace_django_site import settings
+from common.appconfig import loadFields, loadConfiguration
+
+# global variables (at least to this module...)
+global FIELDDEFINITIONS
+
+# read this app's config file
+MAXMARKERS, MAXRESULTS, MAXLONGRESULTS, MAXFACETS, IMAGESERVER, BMAPPERSERVER, BMAPPERDIR, BMAPPERURL, BMAPPERCONFIGFILE, CSVPREFIX, CSVEXTENSION, LOCALDIR, SEARCH_QUALIFIERS, EMAILABLEURL, SUGGESTIONS, CSPACESERVER, INSTITUTION, VERSION, DERIVATIVECOMPACT, DERIVATIVEGRID, SIZECOMPACT, SIZEGRID = loadConfiguration('common')
+print 'Configuration successfully read'
+
+# on startup, do a query to get options values for forms...
+DROPDOWNS, FIELDS, FACETS, LOCATION, PARMS, SEARCHCOLUMNS, SEARCHROWS, SOLRSERVER, SOLRCORE, TITLE, DEFAULTSORTKEY, REQUIRED = loadFields(FIELDDEFINITIONS)
+print 'Reading field definitions from %s' % path.join(settings.BASE_PARENT_DIR, 'config/' + FIELDDEFINITIONS)
+
 
 SolrIsUp = True  # an initial guess! this is verified below...
 
@@ -328,7 +335,7 @@ def setConstants(context):
     context['institution'] = INSTITUTION
     context['emailableurl'] = EMAILABLEURL
     context['version'] = VERSION
-    context['layout'] = LAYOUT
+    #context['layout'] = LAYOUT
     context['dropdowns'] = FACETS
     context['derivativecompact'] = DERIVATIVECOMPACT
     context['derivativegrid'] = DERIVATIVEGRID
