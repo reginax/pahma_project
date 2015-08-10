@@ -50,7 +50,7 @@ field	37	fcpelevation	Collection Place Elevation	objfcpelevation_s	x		keyword			
 field	37	location	Museum Location	currentlocation_s	x	lo	keyword	5,3	8			27		31	x
 field	38	crate	Container	computedcrate_s	x	cr	keyword	6,3				28		32	x
 field	39	exhibition	Exhibition Title	exhibitiontitle_ss	x		keyword	8,3				29		33	
-field	39	exhibition	Exhibition Numbrer	exhibitionnumber_ss	x		keyword	9,3				30		34	
+field	39	exhibition	Exhibition Number	exhibitionnumber_ss	x		keyword	9,3				30		34
 field	40	group	Group	grouptitle_ss	x		keyword	10,3				31		35	
 field	41	locationdate	Location Date	locationdate_dt	x		date	7,3				32		36	x
 field	42	text	Keyword	text	x		keyword	1,1						37	x
