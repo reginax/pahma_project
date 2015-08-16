@@ -4,7 +4,7 @@
     {% endif %}
     {% if count > 0 %}
         {{ count }} items found.
-        {% if recordlimit %}{{ recordlimit }}{% endif %}
+        {% if recordlimit %}<span style="color: red; font-weight: bold; font-size: larger">{{ recordlimit }}</span>{% endif %}
         {% if pagesummary %}{{ pagesummary }}{% endif %}
     {% else %}no items found.
     {% endif %}
