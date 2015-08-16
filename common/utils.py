@@ -4,7 +4,6 @@ import time, datetime
 import csv
 import solr
 import cgi
-import logging
 
 from os import path
 from copy import deepcopy
@@ -12,20 +11,12 @@ from copy import deepcopy
 from django.http import HttpResponse, HttpResponseRedirect
 # from cspace_django_site.main import cspace_django_site
 
-# global variables
 
-from appconfig import MAXMARKERS, MAXRESULTS, MAXLONGRESULTS, MAXFACETS, IMAGESERVER, BMAPPERSERVER, BMAPPERDIR
-from appconfig import BMAPPERURL, BMAPPERCONFIGFILE, LOCALDIR, SEARCH_QUALIFIERS
-from appconfig import EMAILABLEURL, SUGGESTIONS, LAYOUT, CSPACESERVER, INSTITUTION
-from appconfig import VERSION, FIELDDEFINITIONS, getParms
-from appconfig import DROPDOWNS, FIELDS, FACETS, LOCATION, PARMS, SEARCHCOLUMNS, SEARCHROWS, SOLRSERVER, SOLRCORE
-from appconfig import CSVPREFIX, CSVEXTENSION, TITLE, DEFAULTSORTKEY, REQUIRED
-from appconfig import DERIVATIVECOMPACT, DERIVATIVEGRID, SIZECOMPACT, SIZEGRID
 
 SolrIsUp = True  # an initial guess! this is verified below...
 
 
-def loginfo(infotype, context, request):
+def loginfo(logger, infotype, context, request):
     logdata = ''
     # user = getattr(request, 'user', None)
     if request.user and not request.user.is_anonymous():
@@ -59,13 +50,13 @@ def deURN(urn):
         return m.group(0)[1:len(m.group(0)) - 1]
 
 
-def getfields(fieldset, pickField):
+def getfields(fieldset, pickField, prmz):
     result = []
     pickField = pickField.split(',')
     for pick in pickField:
         if not pick in 'name solrfield label'.split(' '):
             pick = 'solrfield'
-        result.append([f[pick] for f in FIELDS[fieldset]])
+        result.append([f[pick] for f in prmz.FIELDS[fieldset]])
     if len(pickField) > 1:
         # is this right??
         return zip(result[0], result[1])
@@ -185,8 +176,8 @@ def getMapPoints(context, requestObject):
     return mappableitems, numSelected
 
 
-def setupGoogleMap(requestObject, context):
-    context = doSearch(context)
+def setupGoogleMap(requestObject, context, prmz):
+    context = doSearch(context, prmz)
     selected = []
     for p in requestObject:
         if 'item-' in p:
@@ -224,43 +215,43 @@ def setupGoogleMap(requestObject, context):
     return context
 
 
-def setupBMapper(requestObject, context):
+def setupBMapper(requestObject, context, prmz):
     context['berkeleymapper'] = 'set'
-    context = doSearch(context)
+    context = doSearch(context, prmz)
     mappableitems, numSelected = getMapPoints(context, requestObject)
     context['mapmsg'] = []
     filename = 'bmapper%s.csv' % datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S")
-    filehandle = open(path.join(LOCALDIR, filename), 'wb')
-    writeCsv(filehandle, getfields('bMapper', 'name'), mappableitems, writeheader=False, csvFormat='bmapper')
+    filehandle = open(path.join(prmz.LOCALDIR, filename), 'wb')
+    writeCsv(filehandle, getfields('bMapper', 'name', prmz), mappableitems, writeheader=False, csvFormat='bmapper')
     filehandle.close()
     context['mapmsg'].append('%s points of the %s selected objects examined had latlongs (%s in result set).' % (
         len(mappableitems), numSelected, context['count']))
     # context['mapmsg'].append('if our connection to berkeley mapper were working, you be able see them plotted there.')
     context['items'] = mappableitems
-    bmapperconfigfile = '%s/%s/%s' % (BMAPPERSERVER, BMAPPERDIR, BMAPPERCONFIGFILE)
-    tabfile = '%s/%s/%s' % (BMAPPERSERVER, BMAPPERDIR, filename)
-    context['bmapperurl'] = BMAPPERURL % (tabfile, bmapperconfigfile)
+    bmapperconfigfile = '%s/%s/%s' % (prmz.BMAPPERSERVER, prmz.BMAPPERDIR, prmz.BMAPPERCONFIGFILE)
+    tabfile = '%s/%s/%s' % (prmz.BMAPPERSERVER, prmz.BMAPPERDIR, filename)
+    context['bmapperurl'] = prmz.BMAPPERURL % (tabfile, bmapperconfigfile)
     return context
     # return HttpResponseRedirect(context['bmapperurl'])
 
 
-def computeStats(requestObject, context):
-    context['summarizeonlabel'] = PARMS[requestObject['summarizeon']][0]
+def computeStats(requestObject, context, prmz):
+    context['summarizeonlabel'] = prmz.PARMS[requestObject['summarizeon']][0]
     context['summarizeon'] = requestObject['summarizeon']
     context['summaryrows'] = [requestObject[z] for z in requestObject if 'include-' in z]
-    context['summarylabels'] = [PARMS[var][0] for var in context['summaryrows']]
-    context = doSearch(context)
+    context['summarylabels'] = [prmz.PARMS[var][0] for var in context['summaryrows']]
+    context = doSearch(context, prmz)
     return context
 
 
-def setupCSV(requestObject, context):
+def setupCSV(requestObject, context, prmz):
     if 'downloadstats' in requestObject:
         context = computeStats(requestObject, context)
         csvitems = context['summaryrows']
         format = 'statistics'
     else:
         format = 'csv'
-        context = doSearch(context)
+        context = doSearch(context, prmz)
         selected = []
         # check to see if 'select all' is clicked...if so, skip checking individual items
         if 'select-item' in requestObject:
@@ -277,7 +268,7 @@ def setupCSV(requestObject, context):
     if 'downloadstats' in requestObject:
         fieldset = [context['summarizeonlabel'], 'N'] + context['summarylabels']
     else:
-        fieldset = getfields('inCSV', 'name')
+        fieldset = getfields('CSV', 'name', prmz)
 
     return format, fieldset, csvitems
 
@@ -318,34 +309,34 @@ def extractValue(listItem, key):
     return temp
 
 
-def setConstants(context):
+def setConstants(context, prmz):
     if not SolrIsUp: context['errormsg'] = 'Solr is down!'
-    context['suggestsource'] = SUGGESTIONS
-    context['title'] = TITLE
-    context['apptitle'] = TITLE
-    context['imageserver'] = IMAGESERVER
-    context['cspaceserver'] = CSPACESERVER
-    context['institution'] = INSTITUTION
-    context['emailableurl'] = EMAILABLEURL
-    context['version'] = VERSION
-    context['layout'] = LAYOUT
-    context['dropdowns'] = FACETS
-    context['derivativecompact'] = DERIVATIVECOMPACT
-    context['derivativegrid'] = DERIVATIVEGRID
-    context['sizecompact'] = SIZECOMPACT
-    context['sizegrid'] = SIZEGRID
+    context['suggestsource'] = prmz.SUGGESTIONS
+    context['title'] = prmz.TITLE
+    context['apptitle'] = prmz.TITLE
+    context['imageserver'] = prmz.IMAGESERVER
+    context['cspaceserver'] = prmz.CSPACESERVER
+    context['institution'] = prmz.INSTITUTION
+    context['emailableurl'] = prmz.EMAILABLEURL
+    context['version'] = prmz.VERSION
+    #context['layout'] = prmz.LAYOUT
+    context['dropdowns'] = prmz.FACETS
+    context['derivativecompact'] = prmz.DERIVATIVECOMPACT
+    context['derivativegrid'] = prmz.DERIVATIVEGRID
+    context['sizecompact'] = prmz.SIZECOMPACT
+    context['sizegrid'] = prmz.SIZEGRID
     context['timestamp'] = time.strftime("%b %d %Y %H:%M:%S", time.localtime())
-    context['qualifiers'] = [{'val': s, 'dis': s} for s in SEARCH_QUALIFIERS]
+    context['qualifiers'] = [{'val': s, 'dis': s} for s in prmz.SEARCH_QUALIFIERS]
     context['resultoptions'] = [100, 500, 1000, 2000, 10000]
 
-    context['searchrows'] = range(SEARCHROWS + 1)[1:]
-    context['searchcolumns'] = range(SEARCHCOLUMNS + 1)[1:]
+    context['searchrows'] = range(prmz.SEARCHROWS + 1)[1:]
+    context['searchcolumns'] = range(prmz.SEARCHCOLUMNS + 1)[1:]
 
     emptyCells = {}
     for row in context['searchrows']:
         for col in context['searchcolumns']:
             empty = True
-            for field in FIELDS['Search']:
+            for field in prmz.FIELDS['Search']:
                 if field['row'] == row and field['column'] == col:
                     empty = False
             if empty:
@@ -379,35 +370,35 @@ def setConstants(context):
         if 'pixonly' in requestObject: context['pixonly'] = requestObject['pixonly']
         if 'maxresults' in requestObject: context['maxresults'] = int(requestObject['maxresults'])
         context['start'] = int(requestObject['start']) if 'start' in requestObject else 1
-        context['maxfacets'] = int(requestObject['maxfacets']) if 'maxfacets' in requestObject else MAXFACETS
-        context['sortkey'] = requestObject['sortkey'] if 'sortkey' in requestObject else DEFAULTSORTKEY
+        context['maxfacets'] = int(requestObject['maxfacets']) if 'maxfacets' in requestObject else prmz.MAXFACETS
+        context['sortkey'] = requestObject['sortkey'] if 'sortkey' in requestObject else prmz.DEFAULTSORTKEY
     except:
         print "no searchValues set"
         context['displayType'] = setDisplayType({})
         context['url'] = ''
         context['querystring'] = ''
-        context['core'] = SOLRCORE
+        context['core'] = prmz.SOLRCORE
         context['maxresults'] = 0
         context['start'] = 1
-        context['sortkey'] = DEFAULTSORTKEY
+        context['sortkey'] = prmz.DEFAULTSORTKEY
 
     if context['start'] < 1: context['start'] = 1
 
-    context['PARMS'] = PARMS
+    context['PARMS'] = prmz.PARMS
     if not 'FIELDS' in context:
-        context['FIELDS'] = FIELDS
+        context['FIELDS'] = prmz.FIELDS
 
     return context
 
 
-def doSearch(context):
+def doSearch(context, prmz):
     elapsedtime = time.time()
-    solr_server = SOLRSERVER
-    solr_core = SOLRCORE
-    context = setConstants(context)
+    solr_server = prmz.SOLRSERVER
+    solr_core = prmz.SOLRCORE
+    context = setConstants(context, prmz)
     requestObject = context['searchValues']
 
-    formFields = deepcopy(FIELDS)
+    formFields = deepcopy(prmz.FIELDS)
     for searchfield in formFields['Search']:
         if searchfield['name'] in requestObject.keys():
             searchfield['value'] = requestObject[searchfield['name']]
@@ -424,23 +415,23 @@ def doSearch(context):
     if 'berkeleymapper' in context:
         displayFields = 'bMapper'
     elif 'csv' in requestObject:
-        displayFields = 'inCSV'
+        displayFields = 'CSV'
     else:
         displayFields = context['displayType'] + 'Display'
 
-    facetfields = getfields('Facet', 'solrfield')
+    facetfields = getfields('Facet', 'solrfield', prmz)
     if 'summarize' in requestObject or 'downloadstats' in requestObject:
-        solrfl = [PARMS[p][3] for p in context['summaryrows']]
-        solrfl.append(PARMS[context['summarizeon']][3])
+        solrfl = [prmz.PARMS[p][3] for p in context['summaryrows']]
+        solrfl.append(prmz.PARMS[context['summarizeon']][3])
     else:
-        solrfl = getfields(displayFields, 'solrfield')
-    solrfl += REQUIRED  # always get these
+        solrfl = getfields(displayFields, 'solrfield', prmz)
+    solrfl += prmz.REQUIRED  # always get these
     if 'map-google' in requestObject or 'csv' in requestObject or 'map-bmapper' in requestObject or 'summarize' in requestObject or 'downloadstats' in requestObject:
         querystring = requestObject['querystring']
         url = requestObject['url']
         # Did the user request the full set?
         if 'select-item' in requestObject:
-            context['maxresults'] = min(requestObject['count'], MAXRESULTS)
+            context['maxresults'] = min(requestObject['count'], prmz.MAXRESULTS)
             context['start'] = 1
     else:
         for p in requestObject:
@@ -460,20 +451,20 @@ def doSearch(context):
                 t = t.strip()
                 if t == 'Null':
                     t = '[* TO *]'
-                    index = '-' + PARMS[p][3]
+                    index = '-' + prmz.PARMS[p][3]
                 else:
-                    if p in DROPDOWNS:
+                    if p in prmz.DROPDOWNS:
                         # if it's a value in a dropdown, it must always be an "exact search"
                         t = '"' + t + '"'
-                        index = PARMS[p][3].replace('_txt', '_s')
+                        index = prmz.PARMS[p][3].replace('_txt', '_s')
                     elif p + '_qualifier' in requestObject:
                         # print 'qualifier:',requestObject[p+'_qualifier']
                         qualifier = requestObject[p + '_qualifier']
                         if qualifier == 'exact':
-                            index = PARMS[p][3].replace('_txt', '_s')
+                            index = prmz.PARMS[p][3].replace('_txt', '_s')
                             t = '"' + t + '"'
                         elif qualifier == 'phrase':
-                            index = PARMS[p][3].replace('_ss', '_txt')
+                            index = prmz.PARMS[p][3].replace('_ss', '_txt')
                             index = index.replace('_s', '_txt')
                             t = '"' + t + '"'
                         elif qualifier == 'keyword':
@@ -481,17 +472,17 @@ def doSearch(context):
                             t = ' +'.join(t)
                             t = '(+' + t + ')'
                             t = t.replace('+-', '-')  # remove the plus if user entered a minus
-                            index = PARMS[p][3].replace('_ss', '_txt')
+                            index = prmz.PARMS[p][3].replace('_ss', '_txt')
                             index = index.replace('_s', '_txt')
-                    elif '_dt' in PARMS[p][3]:
+                    elif '_dt' in prmz.PARMS[p][3]:
                         querypattern = '%s: "%sZ"'
-                        index = PARMS[p][3]
+                        index = prmz.PARMS[p][3]
                     else:
                         t = t.split(' ')
                         t = ' +'.join(t)
                         t = '(+' + t + ')'
                         t = t.replace('+-', '-')  # remove the plus if user entered a minus
-                        index = PARMS[p][3]
+                        index = prmz.PARMS[p][3]
                 if t == 'OR': t = '"OR"'
                 if t == 'AND': t = '"AND"'
                 ORs.append(querypattern % (index, t))
@@ -516,14 +507,14 @@ def doSearch(context):
 
     if 'pixonly' in context:
         pixonly = context['pixonly']
-        querystring += " AND %s:[* TO *]" % PARMS['blobs'][3]
+        querystring += " AND %s:[* TO *]" % prmz.PARMS['blobs'][3]
         url += '&pixonly=True'
     else:
         pixonly = None
 
     if 'locsonly' in requestObject:
         locsonly = requestObject['locsonly']
-        querystring += " AND %s:[-90,-180 TO 90,180]" % LOCATION
+        querystring += " AND %s:[-90,-180 TO 90,180]" % prmz.LOCATION
         url += '&locsonly=True'
     else:
         locsonly = None
@@ -537,7 +528,7 @@ def doSearch(context):
     try:
         solrtime = time.time()
         response = s.query(querystring, facet='true', facet_field=facetfields, fq={}, fields=solrfl,
-                           rows=context['maxresults'], facet_limit=MAXFACETS, sort=context['sortkey'],
+                           rows=context['maxresults'], facet_limit=prmz.MAXFACETS, sort=context['sortkey'],
                            facet_mincount=1, start=startpage)
         print 'Solr search succeeded, %s results, %s rows requested starting at %s; %8.2f seconds.' % (
             response.numFound, context['maxresults'], startpage, time.time() - solrtime)
@@ -559,8 +550,8 @@ def doSearch(context):
         otherfields = []
 
         if 'summarize' in requestObject or 'downloadstats' in requestObject:
-            summarizeon = extractValue(rowDict, PARMS[context['summarizeon']][3])
-            summfields = [extractValue(rowDict, PARMS[p][3]) for p in context['summaryrows']]
+            summarizeon = extractValue(rowDict, prmz.PARMS[context['summarizeon']][3])
+            summfields = [extractValue(rowDict, prmz.PARMS[p][3]) for p in context['summaryrows']]
             if not summarizeon in summaryrows:
                 x = []
                 for ii in range(len(context['summaryrows'])): x.append([])
@@ -572,17 +563,17 @@ def doSearch(context):
             summaryrows[summarizeon][0] += 1
 
         # pull out the fields that have special functions in the UI
-        for p in PARMS:
-            if 'mainentry' in PARMS[p][1]:
-                item['mainentry'] = extractValue(rowDict, PARMS[p][3])
-            elif 'accession' in PARMS[p][1]:
-                x = PARMS[p]
-                item['accession'] = extractValue(rowDict, PARMS[p][3])
-                item['accessionfield'] = PARMS[p][4]
-            if 'sortkey' in PARMS[p][1]:
-                item['sortkey'] = extractValue(rowDict, PARMS[p][3])
+        for p in prmz.PARMS:
+            if 'mainentry' in prmz.PARMS[p][1]:
+                item['mainentry'] = extractValue(rowDict, prmz.PARMS[p][3])
+            elif 'accession' in prmz.PARMS[p][1]:
+                x = prmz.PARMS[p]
+                item['accession'] = extractValue(rowDict, prmz.PARMS[p][3])
+                item['accessionfield'] = prmz.PARMS[p][4]
+            if 'sortkey' in prmz.PARMS[p][1]:
+                item['sortkey'] = extractValue(rowDict, prmz.PARMS[p][3])
 
-        for p in FIELDS[displayFields]:
+        for p in prmz.FIELDS[displayFields]:
             try:
                 otherfields.append(
                     {'label': p['label'], 'name': p['name'], 'value': extractValue(rowDict, p['solrfield'])})
@@ -597,14 +588,14 @@ def doSearch(context):
         if 'blob_ss' in rowDict.keys():
             item['blobs'] = rowDict['blob_ss']
             imageCount += len(item['blobs'])
-        if LOCATION in rowDict.keys():
-            item['marker'] = makeMarker(rowDict[LOCATION])
-            item['location'] = rowDict[LOCATION]
+        if prmz.LOCATION in rowDict.keys():
+            item['marker'] = makeMarker(rowDict[prmz.LOCATION])
+            item['location'] = rowDict[prmz.LOCATION]
         context['items'].append(item)
 
-    # if context['displayType'] in ['full', 'grid'] and response._numFound > MAXRESULTS:
-    # context['recordlimit'] = '(limited to %s for long display)' % MAXRESULTS
-    #    context['items'] = context['items'][:MAXLONGRESULTS]
+    # if context['displayType'] in ['full', 'grid'] and response._numFound > prmz.MAXRESULTS:
+    # context['recordlimit'] = '(limited to %s for long display)' % prmz.MAXRESULTS
+    #    context['items'] = context['items'][:prmz.MAXLONGRESULTS]
     if context['displayType'] in ['full', 'grid', 'list'] and response._numFound > context['maxresults']:
         context['recordlimit'] = '(display limited to %s)' % context['maxresults']
 
@@ -618,14 +609,14 @@ def doSearch(context):
     context['count'] = response._numFound
 
     m = {}
-    for p in PARMS:
-        m[PARMS[p][3]] = PARMS[p][4]
+    for p in prmz.PARMS:
+        m[prmz.PARMS[p][3]] = prmz.PARMS[p][4]
 
     facets = getfacets(response)
-    context['labels'] = [p['label'] for p in FIELDS[displayFields]]
+    context['labels'] = [p['label'] for p in prmz.FIELDS[displayFields]]
     context['facets'] = [[m[f], facets[f]] for f in facetfields]
-    context['fields'] = getfields('Facet', 'label')
-    context['statsfields'] = getfields('inCSV', 'name,label,solrfield')
+    context['fields'] = getfields('Facet', 'label', prmz)
+    context['statsfields'] = getfields('inCSV', 'name,label,solrfield', prmz)
     context['summaryrows'] = [[r, summaryrows[r][0], summaryrows[r][1]] for r in sorted(summaryrows.keys())]
     context['itemlisted'] = len(context['summaryrows'])
     context['range'] = range(len(facetfields))
@@ -647,7 +638,3 @@ def doSearch(context):
     context['time'] = '%8.3f' % (time.time() - elapsedtime)
     return context
 
-
-# Get an instance of a logger, log some startup info
-logger = logging.getLogger(__name__)
-logger.info('%s :: %s :: %s' % ('portal startup', '-', '%s | %s | %s' % (SOLRSERVER, IMAGESERVER, BMAPPERSERVER)))

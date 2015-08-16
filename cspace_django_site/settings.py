@@ -131,7 +131,7 @@ ROOT_URLCONF = 'cspace_django_site.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'cspace_django_site.wsgi.application'
 
-TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
+TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates'), os.path.join(BASE_DIR, 'common/templates')]
 
 #TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -167,6 +167,7 @@ INSTALLED_APPS = (
     'uploadtricoder',
     'locviewer',
     'toolbox',
+    'common',
     'batchuploadimages',
     'internal'
 )
