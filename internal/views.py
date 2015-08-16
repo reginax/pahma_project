@@ -36,6 +36,7 @@ def direct(request):
     return redirect('search/')
 
 
+@login_required()
 def search(request):
     if request.method == 'GET' and request.GET != {}:
         context = {'searchValues': dict(request.GET.iteritems())}
@@ -49,6 +50,7 @@ def search(request):
     return render(request, 'search.html', context)
 
 
+@login_required()
 def retrieveResults(request):
     if request.method == 'POST' and request.POST != {}:
         requestObject = dict(request.POST.iteritems())
@@ -62,6 +64,7 @@ def retrieveResults(request):
         return render(request, 'searchResults.html', context)
 
 
+@login_required()
 def bmapper(request):
     if request.method == 'POST' and request.POST != {}:
         requestObject = dict(request.POST.iteritems())
@@ -75,6 +78,7 @@ def bmapper(request):
             return HttpResponse(context['bmapperurl'])
 
 
+@login_required()
 def gmapper(request):
     if request.method == 'POST' and request.POST != {}:
         requestObject = dict(request.POST.iteritems())
@@ -88,6 +92,7 @@ def gmapper(request):
             return render(request, 'maps.html', context)
 
 
+@login_required()
 def csv(request):
     if request.method == 'POST' and request.POST != {}:
         requestObject = dict(request.POST.iteritems())
@@ -110,6 +115,7 @@ def csv(request):
                 return search(request)
 
 
+@login_required()
 def statistics(request):
     if request.method == 'POST' and request.POST != {}:
         requestObject = dict(request.POST.iteritems())
