@@ -3,34 +3,45 @@ __author__ = 'jblowe'
 import os
 import re
 import time
+import logging
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, render_to_response
 
 from common.utils import doSearch, setConstants, loginfo
+from common.appconfig import loadConfiguration, loadFields
 from common import cspace # we use the config file reading function
 from cspace_django_site import settings
 from os import path
 
 config = cspace.getConfig(path.join(settings.BASE_PARENT_DIR, 'config'), 'imaginator')
 
-MAXMARKERS = int(config.get('imaginator', 'MAXMARKERS'))
-MAXRESULTS = int(config.get('imaginator', 'MAXRESULTS'))
-MAXLONGRESULTS = int(config.get('imaginator', 'MAXLONGRESULTS'))
-IMAGESERVER = config.get('imaginator', 'IMAGESERVER')
-CSPACESERVER = config.get('imaginator', 'CSPACESERVER')
-SOLRSERVER = config.get('imaginator', 'SOLRSERVER')
-SOLRCORE = config.get('imaginator', 'SOLRCORE')
-TITLE = config.get('imaginator', 'TITLE')
-INSTITUTION = config.get('imaginator', 'INSTITUTION')
-SUGGESTIONS = config.get('imaginator', 'SUGGESTIONS')
-LAYOUT = config.get('imaginator', 'LAYOUT')
+# read common config file
+common = 'common'
+prmz = loadConfiguration(common)
+print 'Configuration for %s successfully read' % common
+# read common config file
+common = 'common'
+prmz = loadConfiguration(common)
+print 'Configuration for %s successfully read' % common
+
+prmz.TITLE = 'Imaginator'
+prmz.SOLRSERVER = config.get('imaginator', 'SOLRSERVER')
+prmz.SOLRCORE = config.get('imaginator', 'SOLRCORE')
+prmz.FIELDDEFINITIONS = config.get('imaginator', 'FIELDDEFINITIONS')
+
+# on startup, setup this webapp layout...
+prmz = loadFields(prmz.FIELDDEFINITIONS, prmz)
+
+# Get an instance of a logger, log some startup info
+logger = logging.getLogger(__name__)
+logger.info('%s :: %s :: %s' % ('imaginator startup', '-', '%s | %s' % (prmz.SOLRSERVER, prmz.IMAGESERVER)))
 
 
-#@login_required()
+@login_required()
 def index(request):
 
-    context = setConstants({})
+    context = setConstants({}, prmz)
 
     # http://blog.mobileesp.com/
     # the middleware must be installed for the following to work...
@@ -50,7 +61,7 @@ def index(request):
             context['musno'] = request.GET['musno']
             context['maxresults'] = 1
         if 'submit' in request.GET:
-            context['maxresults'] = MAXRESULTS
+            context['maxresults'] = prmz.MAXRESULTS
             if "Metadata" in request.GET['submit']:
                 context['resultType'] = 'metadata'
                 context['displayType'] = 'full'
@@ -63,11 +74,11 @@ def index(request):
                 context['maxresults'] = 1
         else:
             context['resultType'] = 'metadata'
-        context['title'] = TITLE
+        context['title'] = prmz.TITLE
 
         # do search
-        loginfo('start search', context, request)
-        context = doSearch(context)
+        loginfo(logger, 'start search', context, request)
+        context = doSearch(context, prmz)
 
         return render(request, 'imagineImages.html', context)
 

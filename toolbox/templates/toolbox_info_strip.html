@@ -5,10 +5,10 @@
     <h1 class="bannerTitle" id="site-name">{{ apptitle }}</h1>
 
     <!-- div class="user-tools" -->
-    <div class="unit" style="float:right;">
+    <div class="unit">
         {% include "cspace_django_site/loginBtn.html" with loginBtnNext="search/" %}
     </div>
-    <div style="float:right; margin-top: 6px;" class="unit">
+    <div class="unit">
         {% for info in additionalInfo %}
             <a href="#" id="{{ info.slug }}" class="expandInfo">{{ info.name }}</a>
         {% endfor %}
