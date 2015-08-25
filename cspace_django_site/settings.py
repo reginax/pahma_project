@@ -7,11 +7,16 @@ BASE_PARENT_DIR = os.path.dirname(BASE_DIR)
 LOGS_DIR = BASE_PARENT_DIR + os.sep + 'logs'
 PROJECT_NAME = os.path.basename(BASE_PARENT_DIR)
 
+try:
+    from extra_settings import *
+except ImportError, exp:
+    print 'you must configure one of the extra_*.py settings files as extra_settings.py!'
+    exit(0)
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 import django.conf.global_settings as DEFAULT_SETTINGS  # http://stackoverflow.com/a/15446953/1763984
-GOOGLE_ANALYTICS = -1
 TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.request',
     'cspace_django_site.context_processors.settings',
@@ -152,24 +157,26 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    # 'demo' apps -- uncomment for debugging or demo
     'hello',
     'service',
-    'landing',
+    # 'service' apps: no UI
+    'common',
+    'suggest',
     'suggestpostgres',
     'suggestsolr',
-    'suggest',
-    'ireports',
-    'imageserver',
+    'batchuploadimages',
+    # 'standard' apps
     'imagebrowser',
+    'imageserver',
     'imaginator',
+    'internal',
+    'ireports',
+    'landing',
     'search',
+    'toolbox',
     'uploadmedia',
     'uploadtricoder',
-    'locviewer',
-    'toolbox',
-    'common',
-    'batchuploadimages',
-    'internal'
 )
 
 # A sample logging configuration. The only tangible logging
@@ -274,8 +281,3 @@ except ImportError:
     from utils.secret_key_gen import *
     generate_secret_key(os.path.join(SETTINGS_DIR, 'secret_key.py'))
     from secret_key import *
-
-try:
-	from extra_settings import *
-except ImportError, exp:
-	pass

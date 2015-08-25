@@ -1,5 +1,7 @@
 import os
 
+# settings needed for Production
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_PARENT_DIR = os.path.dirname(BASE_DIR)
 LOGS_DIR = BASE_PARENT_DIR + os.sep + 'logs'
