@@ -50,7 +50,7 @@ def parseRows(rows, prmz):
     for function in functions:
         prmz.FIELDS[function] = []
 
-    fieldkeys = 'label fieldtype suggestions solrfield name X order'.split(' ')
+    fieldkeys = 'label fieldtype suggestions solrfield name X order searchtarget'.split(' ')
 
     for rowid, row in enumerate(rows):
         rowtype = row[0]
@@ -70,7 +70,7 @@ def parseRows(rows, prmz):
             prmz.TITLE = row[1]
 
         elif rowtype == 'field':
-            needed = [row[labels[i]] for i in 'Label Role Suggestions SolrField Name Search'.split(' ')]
+            needed = [row[labels[i]] for i in 'Label Role Suggestions SolrField Name Search SearchTarget'.split(' ')]
             if row[labels['Suggestions']] != '':
                 # suggestname = '%s.%s' % (row[labels['Suggestions']], row[labels['Name']])
                 suggestname = row[labels['Name']]

@@ -459,12 +459,18 @@ def doSearch(context, prmz):
                         index = prmz.PARMS[p][3].replace('_txt', '_s')
                     elif p + '_qualifier' in requestObject:
                         # print 'qualifier:',requestObject[p+'_qualifier']
+                        index = prmz.PARMS[p][3]
+                        # if this is a "switcharoo field", use the specified shadow
+                        if prmz.PARMS[p][6] != '':
+                            index = prmz.PARMS[p][6]
                         qualifier = requestObject[p + '_qualifier']
                         if qualifier == 'exact':
-                            index = prmz.PARMS[p][3].replace('_txt', '_s')
+                            # for exact searches, reset the index to the original in case the switcharoo changed it
+                            index = prmz.PARMS[p][3]
+                            index = index.replace('_txt', '_s')
                             t = '"' + t + '"'
                         elif qualifier == 'phrase':
-                            index = prmz.PARMS[p][3].replace('_ss', '_txt')
+                            index = index.replace('_ss', '_txt')
                             index = index.replace('_s', '_txt')
                             t = '"' + t + '"'
                         elif qualifier == 'keyword':
@@ -472,7 +478,7 @@ def doSearch(context, prmz):
                             t = ' +'.join(t)
                             t = '(+' + t + ')'
                             t = t.replace('+-', '-')  # remove the plus if user entered a minus
-                            index = prmz.PARMS[p][3].replace('_ss', '_txt')
+                            index = index.replace('_ss', '_txt')
                             index = index.replace('_s', '_txt')
                     elif '_dt' in prmz.PARMS[p][3]:
                         querypattern = '%s: "%sZ"'
