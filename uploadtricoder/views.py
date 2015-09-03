@@ -107,7 +107,7 @@ def rest(request, action):
          'elapsedtime': '%8.2f' % elapsedtime}), content_type='text/json')
 
 
-#@login_required()
+@login_required()
 def uploadfiles(request):
     elapsedtime = time.time()
     status = 'up'
@@ -133,7 +133,7 @@ def uploadfiles(request):
                    'elapsedtime': '%8.2f' % elapsedtime})
 
 
-#@login_required()
+@login_required()
 def checkfilename(request):
     elapsedtime = time.time()
     if 'filenames2check' in request.POST and request.POST['filenames2check'] != '':
@@ -153,7 +153,7 @@ def checkfilename(request):
                                                    'status': status, 'apptitle': TITLE, 'serverinfo': SERVERINFO})
 
 
-#@login_required()
+@login_required()
 def showresults(request):
     filename = request.GET['filename']
     directory = request.GET['directory']
@@ -166,7 +166,7 @@ def showresults(request):
                    'filecontent': f.read(), 'filename': filename, 'directory': directory})
 
 
-#@login_required()
+@login_required()
 def showqueue(request):
     elapsedtime = time.time()
     directory = None
