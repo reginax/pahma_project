@@ -1,8 +1,32 @@
-<hr/>
-{% if validateonly %}
-    <h2><span style="color:red">Validation only! {{ count }} files examined!</span></h2>
-{% elif count %}
-    <h1>{{ count }} files uploaded</h1>
+{% if numProblems > 0 %}
+    <h2><span style="color:red">{{ numProblems }} problems found! Some files not uploaded!</span></h2>
+{% else %}
+    {% if validateonly %}
+        <h2><span style="color:red">Validation only! {{ count }} files examined!</span></h2>
+    {% endif %}
 {% endif %}
+
+{% if count %}
+    <h3>{{ count }} file{{ count|pluralize }} processed.</h3>
+{% endif %}
+
+<table cellspace="1" id="resultsListing" class="tablesorter">
+        <thead>
+        <tr>
+            <th>File Name</th>
+            {% for h in stats %}
+            <th style="width: 50px; text-align: right">{{ h }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for tuf in tricoder_upload_files %}
+            <tr>
+                <td><a href="showresults/?filename={{ tuf.name }}&directory={{ directory }}">{{ tuf.name }}</a></td>
+                <td>{{ tuf.status }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
     </tbody>
 </table>

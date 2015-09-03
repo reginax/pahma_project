@@ -54,11 +54,9 @@
                     <!-- <input type="submit" name="deletetricoder"
                                    value="DELETE CSpace Blob and Media records associated with these images">
                     -->
-
-                    {% if tricoder_files %}
+                    {% if tricoder_upload_files %}
                         {% include "tricoder_files.html" %}
                     {% endif %}
-
                 {% endif %}
             </form>
             <h2>
@@ -73,6 +71,11 @@
                 {% include "tricoder_showqueue.html" %}
             </form>
         </ol>
+        {% if filecontent %}
+            <hr/>
+            <h2>In directory {{ directory }}: {{ filename }}</h2>
+            <pre>{{ filecontent }}</pre>
+        {% endif %}
     </div>
 {% endblock %}
 

@@ -30,8 +30,8 @@ else:
 logger = logging.getLogger(__name__)
 
 
-def get_tricoder_file(tricoder_filenumber):
-    return (FILEPATH % 'input/%s') % tricoder_filenumber
+def get_tricoder_file(directory,tricoder_filenumber):
+    return (FILEPATH % '%s/%s') % (directory,tricoder_filenumber)
 
 
 def tricoder_filesummary(tricoder_filestats):
@@ -54,12 +54,20 @@ def tricoder_filesummary(tricoder_filestats):
 
 def get_tricoder_filelist(directory):
     tricoder_filepath = FILEPATH % directory
-    filelist = [f for f in listdir(tricoder_filepath) if isfile(join(tricoder_filepath, f))]
+    filelist = [f for f in listdir(tricoder_filepath) if isfile(join(tricoder_filepath, f)) and 'barcode.' in f]
     tricoder_filedict = {}
     errors = []
     for f in sorted(filelist):
-        linecount, imagefilenames = checkFile(join(tricoder_filepath, f))
-        tricoder_filedict[f] = linecount, imagefilenames
+        linecount, tricodertypes = checkFile(join(tricoder_filepath, f))
+        counts = [0,0,0,0]
+        subtotal = 0
+        for i,recordtype in enumerate('M R C'.split(' ')):
+            for t in tricodertypes:
+                if '"%s"' % recordtype in t:
+                    counts[i] += 1
+                    subtotal += 1
+        counts[3] = subtotal
+        tricoder_filedict[f] = counts
     tricoder_filelist = [[tricoder_filekey, False, tricoder_filedict[tricoder_filekey]] for tricoder_filekey in sorted(tricoder_filedict.keys(), reverse=True)]
     return tricoder_filelist[0:500], errors, len(tricoder_filelist), len(errors)
 
@@ -67,9 +75,8 @@ def get_tricoder_filelist(directory):
 def checkFile(filename):
     file_handle = open(filename)
     lines = file_handle.read().splitlines()
-    files = [f.split("\t")[0] for f in lines]
-    files = [f.split("|")[0] for f in files]
-    return len(lines), files
+    recordtypes = [f.split(",")[0] for f in lines]
+    return len(lines), recordtypes
 
 
 def loginfo(infotype, line, request):
@@ -94,7 +101,7 @@ def getCSID(objectnumber):
 
 # following function borrowed from Django docs, w modifications
 def handle_uploaded_file(f):
-    destination = open(path.join(TRICODERDIR, '%s') % f.name, 'wb+')
+    destination = open(path.join(TRICODERDIR, 'input/%s') % f.name, 'wb+')
     with destination:
         for chunk in f.chunks():
             destination.write(chunk)
