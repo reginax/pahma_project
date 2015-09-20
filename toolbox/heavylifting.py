@@ -1,6 +1,6 @@
 import django_tables2 as tables
 from constants import getAgencies, getHierarchies
-import connector
+import dbconnector
 from common import cspace
 import re
 
@@ -169,7 +169,7 @@ def xxx(request,context,config):
         hierarchy = request.GET["hierarchy"]
         context['selected_hierarchy'] = hierarchy
         config_file_name = 'HierarchyViewer'
-        res = connector.gethierarchy(hierarchy, config)
+        res = dbconnector.gethierarchy(hierarchy, config)
         hostname = config.get('connect', 'hostname')
         institution = config.get('info', 'institution')
         port = config.get('link', 'port')
