@@ -36,6 +36,7 @@ urlpatterns = patterns('',
                        url(r'^imageserver/', include('imageserver.urls', namespace='imageserver')),
 
                        # these are user-facing (i.e. present a UI to the caller)
+                       #url(r'^asura/', include('asura.urls', namespace='asura')),
                        url(r'^batchuploadimages/', include('batchuploadimages.urls', namespace='batchuploadimages')),
                        url(r'^imagebrowser/?', include('imagebrowser.urls', namespace='imagebrowser')),
                        url(r'^imaginator/?', include('imaginator.urls', namespace='imaginator')),
@@ -43,7 +44,8 @@ urlpatterns = patterns('',
                        url(r'^ireports/', include('ireports.urls', namespace='ireports')),
                        url(r'^landing/?', include('landing.urls', namespace='landing')),
                        url(r'^search/', include('search.urls', namespace='search')),
-                       url(r'^toolbox/', include('toolbox.urls', namespace='toolbox')),
+                       url(r'^simplesearch/', include('simplesearch.urls', namespace='simplesearch')),
+                       #url(r'^toolbox/', include('toolbox.urls', namespace='toolbox')),
                        url(r'^uploadmedia/', include('uploadmedia.urls', namespace='uploadmedia')),
-                       url(r'^uploadtricoder/', include('uploadtricoder.urls', namespace='uploadtricoder')),
+                       #url(r'^uploadtricoder/', include('uploadtricoder.urls', namespace='uploadtricoder')),
 )

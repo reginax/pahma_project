@@ -25,6 +25,7 @@ INSTALLED_APPS = (
     'suggestsolr',
     'batchuploadimages',
     # 'standard' apps
+    #'asura',
     'imagebrowser',
     'imageserver',
     'imaginator',
@@ -32,7 +33,8 @@ INSTALLED_APPS = (
     'ireports',
     'landing',
     'search',
-    'toolbox',
+    #'toolbox',
+    'simplesearch',
     'uploadmedia',
-    'uploadtricoder',
+    #'uploadtricoder',
 )

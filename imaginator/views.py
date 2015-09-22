@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, render_to_response
 
 from common.utils import doSearch, setConstants, loginfo
-from common.appconfig import loadConfiguration, loadFields
+from common.appconfig import loadConfiguration, loadFields, getParms
 from common import cspace # we use the config file reading function
 from cspace_django_site import settings
 from os import path
@@ -20,18 +20,18 @@ config = cspace.getConfig(path.join(settings.BASE_PARENT_DIR, 'config'), 'imagin
 common = 'common'
 prmz = loadConfiguration(common)
 print 'Configuration for %s successfully read' % common
-# read common config file
-common = 'common'
-prmz = loadConfiguration(common)
-print 'Configuration for %s successfully read' % common
 
-prmz.TITLE = 'Imaginator'
-prmz.SOLRSERVER = config.get('imaginator', 'SOLRSERVER')
-prmz.SOLRCORE = config.get('imaginator', 'SOLRCORE')
-prmz.FIELDDEFINITIONS = config.get('imaginator', 'FIELDDEFINITIONS')
+searchConfig = cspace.getConfig(path.join(settings.BASE_PARENT_DIR, 'config'), 'imaginator')
+prmz.FIELDDEFINITIONS = searchConfig.get('imaginator', 'FIELDDEFINITIONS')
 
-# on startup, setup this webapp layout...
+# add in the the field definitions...
 prmz = loadFields(prmz.FIELDDEFINITIONS, prmz)
+
+# override a couple parameters for this app
+prmz.MAXRESULTS = int(searchConfig.get('imaginator', 'MAXRESULTS'))
+prmz.TITLE = searchConfig.get('imaginator', 'TITLE')
+
+print 'Configuration for %s successfully read' % 'imaginator'
 
 # Get an instance of a logger, log some startup info
 logger = logging.getLogger(__name__)
@@ -52,13 +52,14 @@ def index(request):
     else:
         context['device'] = 'other'
 
-    if request.method == 'GET' and request.GET != {}:
+    if request.method == 'GET':
         context['searchValues'] = request.GET
+        prmz.MAXFACETS = 0
 
-        if 'text' in request.GET:
-            context['text'] = request.GET['text']
-        if 'musno' in request.GET:
-            context['musno'] = request.GET['musno']
+        if 'keyword' in request.GET:
+            context['keyword'] = request.GET['keyword']
+        if 'accession' in request.GET:
+            context['accession'] = request.GET['accession']
             context['maxresults'] = 1
         if 'submit' in request.GET:
             context['maxresults'] = prmz.MAXRESULTS
@@ -74,10 +75,9 @@ def index(request):
                 context['maxresults'] = 1
         else:
             context['resultType'] = 'metadata'
-        context['title'] = prmz.TITLE
 
         # do search
-        loginfo(logger, 'start search', context, request)
+        loginfo(logger, 'start imaginator search', context, request)
         context = doSearch(context, prmz)
 
         return render(request, 'imagineImages.html', context)
