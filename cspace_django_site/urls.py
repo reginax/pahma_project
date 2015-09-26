@@ -47,5 +47,5 @@ urlpatterns = patterns('',
                        url(r'^simplesearch/', include('simplesearch.urls', namespace='simplesearch')),
                        #url(r'^toolbox/', include('toolbox.urls', namespace='toolbox')),
                        url(r'^uploadmedia/', include('uploadmedia.urls', namespace='uploadmedia')),
-                       #url(r'^uploadtricoder/', include('uploadtricoder.urls', namespace='uploadtricoder')),
+                       url(r'^uploadtricoder/', include('uploadtricoder.urls', namespace='uploadtricoder')),
 )
