@@ -56,7 +56,7 @@ def getfields(fieldset, pickField, prmz):
     for pick in pickField:
         if not pick in 'name solrfield label'.split(' '):
             pick = 'solrfield'
-        result.append([f[pick] for f in prmz.FIELDS[fieldset]])
+        result.append([f[pick] for f in prmz.FIELDS[fieldset] if f['fieldtype'] != 'constant'])
     if len(pickField) > 1:
         # is this right??
         return zip(result[0], result[1])
@@ -114,7 +114,7 @@ def writeCsv(filehandle, fieldset, items, writeheader=False, csvFormat='csv'):
     writer = csv.writer(filehandle, delimiter='\t')
     # write the header
     if writeheader:
-        writer.writerow(fieldset)
+        writer.writerow(fieldset) 
     for item in items:
         # get the cells from the item dict in the order specified; make empty cells if key is not found.
         row = []
@@ -143,11 +143,12 @@ def writeCsv(filehandle, fieldset, items, writeheader=False, csvFormat='csv'):
             for x in item['otherfields']:
                 if x['name'] not in fieldset:
                     continue
+                if type(x['value']) == type([]):
+                    x['value'] = '|'.join(x['value'])
+                    pass
                 cell = checkValue(x['value'])
                 row.append(cell)
-
         writer.writerow(row)
-
     return filehandle
 
 
@@ -246,7 +247,7 @@ def computeStats(requestObject, context, prmz):
 
 def setupCSV(requestObject, context, prmz):
     if 'downloadstats' in requestObject:
-        context = computeStats(requestObject, context)
+        context = computeStats(requestObject, context, prmz)
         csvitems = context['summaryrows']
         format = 'statistics'
     else:
@@ -268,7 +269,7 @@ def setupCSV(requestObject, context, prmz):
     if 'downloadstats' in requestObject:
         fieldset = [context['summarizeonlabel'], 'N'] + context['summarylabels']
     else:
-        fieldset = getfields('CSV', 'name', prmz)
+        fieldset = getfields('inCSV', 'name', prmz)
 
     return format, fieldset, csvitems
 
@@ -415,7 +416,7 @@ def doSearch(context, prmz):
     if 'berkeleymapper' in context:
         displayFields = 'bMapper'
     elif 'csv' in requestObject:
-        displayFields = 'CSV'
+        displayFields = 'inCSV'
     else:
         displayFields = context['displayType'] + 'Display'
 
@@ -553,7 +554,6 @@ def doSearch(context, prmz):
     for i, rowDict in enumerate(results):
         item = {}
         item['counter'] = i
-        otherfields = []
 
         if 'summarize' in requestObject or 'downloadstats' in requestObject:
             summarizeon = extractValue(rowDict, prmz.PARMS[context['summarizeon']][3])
@@ -579,14 +579,20 @@ def doSearch(context, prmz):
             if 'sortkey' in prmz.PARMS[p][1]:
                 item['sortkey'] = extractValue(rowDict, prmz.PARMS[p][3])
 
+
+        otherfields = []
         for p in prmz.FIELDS[displayFields]:
             try:
-                otherfields.append(
-                    {'label': p['label'], 'name': p['name'], 'value': extractValue(rowDict, p['solrfield'])})
+                multi = len(rowDict[p['solrfield']]) if '_ss' in p['solrfield'] else 0
+                value2use = rowDict[p['solrfield']]
+                if type(p['fieldtype']) == type({}):
+                    value2use = [p['fieldtype'][v] for v in value2use]
+                    otherfields.append({'label': p['label'], 'name': p['name'], 'multi': multi, 'value': value2use, 'special': True})
+                else:
+                    otherfields.append({'label': p['label'], 'name': p['name'], 'multi': multi, 'value': value2use})
             except:
-                pass
-                # raise
-                # otherfields.append({'label':p['label'],'value': ''})
+                #raise
+                otherfields.append({'label': p['label'], 'name': p['name'], 'multi': 0, 'value': ''})
         item['otherfields'] = otherfields
         if 'csid_s' in rowDict.keys():
             item['csid'] = rowDict['csid_s']

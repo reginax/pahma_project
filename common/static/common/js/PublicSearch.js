@@ -270,11 +270,7 @@ $(document).ready(function () {
         if ($(Elem).css("display") == "none") {
             var marker = ($(Elem).attr('data-marker'));
             console.log('img ' + marker);
-            $(Elem).html('<img src="https://maps.google.com/maps/api/staticmap?&zoom=10&size=400x200&maptype=roadmap&markers=' +
-            marker + '&sensor=false"/>' +
-            '<div style="height: 40px;">' +
-            '<small><a target="_map" href="https://maps.google.com/maps/i?q=loc:'+marker+'&amp;source=embed">Larger Map</a>'+
-            '</small></div>');
+            $(Elem).html('<iframe width="600" height="450" frameborder="0" style="border:0" src="https://www.google.com/maps/embed/v1/place?q='+marker+'&key=AIzaSyBeDzud2rQvl70-TFgsdlMa9vsUl_vidZk&maptype=satellite" allowfullscreen></iframe>');
             Elem.slideDown();
             enablega('send', 'pageview', { 'page': '/map/inline' }, googleAnalytics);
         }
