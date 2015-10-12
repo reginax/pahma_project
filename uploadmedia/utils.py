@@ -22,6 +22,14 @@ SERVERINFO = {
 }
 INSTITUTION = config.get('info', 'institution')
 
+SLIDEHANDLING = {}
+for slide_parameter in 'imagetype copyright source'.split(' '):
+    try:
+        SLIDEHANDLING[slide_parameter] = config.get('info', slide_parameter)
+    except:
+        pass
+
+
 if isdir(TEMPIMAGEDIR):
     print "Using %s as working directory for images and metadata files" % TEMPIMAGEDIR
 else:
@@ -113,23 +121,28 @@ def getQueue(jobtypes):
     return [x for x in listdir(JOBDIR % '') if '%s.csv' % jobtypes in x]
 
 
-def getDropdowns():
+def getBMUoptions():
     allowintervention = config.get('info', 'allowintervention')
     allowintervention = True if allowintervention.lower() == 'true' else False
     usebmuoptions = config.get('info', 'usebmuoptions')
     usebmuoptions = True if usebmuoptions.lower() == 'true' else False
     bmuoptions = config.get('info', 'bmuoptions')
     bmuoptions = json.loads(bmuoptions.replace('\n', ''))
-    creators = config.get('info', 'creators')
-    creators = json.loads(creators)
-    rightsholders = config.get('info', 'rightsholders')
-    rightsholders = json.loads(rightsholders)
+    overrides = config.get('info', 'overrides')
+    overrides = json.loads(overrides.replace('\n', ''))
+    for override in overrides:
+        if override[1] == 'dropdown':
+            dropdown = config.get('info', override[2]+'s')
+            dropdown = json.loads(dropdown)
+            override.append(dropdown)
+        else:
+            # add an empty dropdown element -- has to be a dict
+            override.append({})
     return {
         'allowintervention': allowintervention,
         'usebmuoptions': usebmuoptions,
         'bmuoptions': bmuoptions,
-        'creators': creators,
-        'rightsholders': rightsholders
+        'overrides': overrides
     }
 
 
@@ -183,8 +196,18 @@ def handle_uploaded_file(f):
 
 
 def assignValue(defaultValue, override, imageData, exifvalue, refnameList):
+    # oh boy! these next couple lines are doozies! sorry!
+    if type(refnameList) == type({}):
+        refName = refnameList.get(defaultValue, defaultValue)
+    else:
+        refName = [z[1] for z in refnameList if z[0] == defaultValue]
+        # should never happen that there is more than one match, but the configurer may have made a boo-boo
+        if len(refName) == 1:
+            refName = refName[0]
+        else:
+            refName = defaultValue
     if override == 'always':
-        return defaultValue, refnameList.get(defaultValue, defaultValue)
+        return defaultValue, refName
     elif exifvalue in imageData:
         imageValue = imageData[exifvalue]
         # a bit of cleanup
@@ -193,11 +216,10 @@ def assignValue(defaultValue, override, imageData, exifvalue, refnameList):
         imageValue = imageValue.replace('\n', '')
         imageValue = imageValue.replace('\r', '')
         imageValue = escape(imageValue)
-        return imageValue, refnameList.get(imageValue, imageValue)
-    elif override == 'ifblank':
-        return defaultValue, refnameList.get(defaultValue, defaultValue)
+        return imageValue, refName
+    # the follow is really the 'ifblank' condition
     else:
-        return '', ''
+        return defaultValue, refName
 
 
 # this function not currently in use. Copied from another script, it's not Django-compatible

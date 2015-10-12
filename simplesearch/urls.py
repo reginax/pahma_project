@@ -1,8 +1,8 @@
 __author__ = 'jblowe'
 
 from django.conf.urls import patterns, url
-from search import views
+from simplesearch import views
 
 urlpatterns = patterns('',
-                       url(r'^$', views.search, name='index'),
+                       url(r'^$', views.simplesearch, name='index'),
                        )

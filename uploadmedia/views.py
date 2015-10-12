@@ -8,52 +8,60 @@ from django.shortcuts import render, HttpResponse, redirect
 from django.core.servers.basehttp import FileWrapper
 #from django.conf import settings
 #from django import forms
-from os import path
+from os import path, remove
+import logging
 import time, datetime
 from getNumber import getNumber
-from utils import SERVERINFO, POSTBLOBPATH, INSTITUTION, getDropdowns, handle_uploaded_file, assignValue,  get_exif, writeCsv, \
-    getJobfile, getJoblist, loginfo, getQueue
+from utils import SERVERINFO, POSTBLOBPATH, INSTITUTION, SLIDEHANDLING
+from utils import getBMUoptions, handle_uploaded_file, assignValue, get_exif, writeCsv, getJobfile, getJoblist, loginfo
 import subprocess
-# from .models import AdditionalInfo
+from .models import AdditionalInfo
 
-TITLE = 'Bulk Media Upload'
+# Get an instance of a logger, log some startup info
+logger = logging.getLogger(__name__)
+logger.info('%s :: %s :: %s' % ('uploadmedia startup', '-', '-'))
 
-overrides = [['ifblank', 'Overide only if blank'],
-             ['always', 'Always Overide']]
 
+TITLE = 'Bulk Media Uploader'
+
+override_options = [['ifblank', 'Overide only if blank'],
+                    ['always', 'Always Overide']]
+
+fields2write = 'name size objectnumber date creator contributor rightsholder imagenumber handling approvedforweb'.split(' ')
+for slide_parameter in SLIDEHANDLING:
+    fields2write.append(slide_parameter)
 
 class im:  # empty class for image metadata
     pass
 
+im.BMUoptions = getBMUoptions()
 
-def prepareFiles(request, validateonly, dropdowns):
+for o in im.BMUoptions['overrides']:
+    if not o[2] in fields2write:
+        fields2write.append(o[2])
+
+def prepareFiles(request, validateonly, BMUoptions, constants):
+    jobnumber = constants['jobnumber']
     jobinfo = {}
     images = []
     for lineno, afile in enumerate(request.FILES.getlist('imagefiles')):
         # print afile
         try:
-            print "%s %s: %s %s (%s %s)" % ('id', lineno, 'name', afile.name, 'size', afile.size)
+            print "%s %s: %s %s (%s %s)" % ('id', lineno + 1, 'name', afile.name, 'size', afile.size)
             image = get_exif(afile)
             filename, objectnumber, imagenumber = getNumber(afile.name, INSTITUTION)
-            # objectCSID = getCSID(objectnumber)
-            im.creator, im.creatorRefname = assignValue(im.creatorDisplayname, im.overrideCreator, image, 'Artist',
-                                                        dropdowns['creators'])
-            im.contributor, dummy = assignValue(im.contributor, im.overrideContributor, image, 'ImageDescription', {})
-            im.rightsholder, im.rightsholderRefname = assignValue(im.rightsholderDisplayname, im.overrideRightsholder,
-                                                                  image, 'RightsHolder', dropdowns['rightsholders'])
             datetimedigitized, dummy = assignValue('', 'ifblank', image, 'DateTimeDigitized', {})
             imageinfo = {'id': lineno, 'name': afile.name, 'size': afile.size,
                          'objectnumber': objectnumber,
                          'imagenumber': imagenumber,
                          # 'objectCSID': objectCSID,
-                         'date': datetimedigitized,
-                         'creator': im.creatorRefname,
-                         'contributor': im.contributor,
-                         'rightsholder': im.rightsholderRefname,
-                         'creatorDisplayname': im.creator,
-                         'rightsholderDisplayname': im.rightsholder,
-                         'contributorDisplayname': im.contributor
-            }
+                         'date': datetimedigitized}
+            for override in BMUoptions['overrides']:
+                dname,refname = assignValue(constants[override[2]][0], constants[override[2]][1], image, override[3], override[4])
+                imageinfo[override[2]] = refname
+                # add the Displayname just in case...
+                imageinfo['%sDisplayname' % override[2]] = dname
+
             if not validateonly:
                 handle_uploaded_file(afile)
 
@@ -63,9 +71,26 @@ def prepareFiles(request, validateonly, dropdowns):
                 else:
                     imageinfo[option] = ''
 
+            # the slide parameters should only be added if we are indeed handling a slide
+            if imageinfo['handling'] == 'slide':
+                for slide_parameter in SLIDEHANDLING:
+                    imageinfo[slide_parameter] = SLIDEHANDLING[slide_parameter]
+
+            # borndigital media have their mh id numbers unconditionally replaced with a sequence number
+            if imageinfo['handling'] == 'borndigital':
+                # for these, we create a media handling number...
+                # options considered were:
+                # DP-2015-10-08-12-16-43-0001 length: 27
+                # DP-201510081216430001 length: 21
+                # DP-2CBE859E990BFB1 length: 18
+                # DP-2cbe859e990bfb1 length: 18 the winner!
+                mhnumber = jobnumber + ("-%0.4d" % (lineno + 1))
+                mhnumber = hex(int(mhnumber.replace('-','')))[2:]
+                imageinfo['objectnumber'] = 'DP-' + mhnumber
             images.append(imageinfo)
+
         except:
-            # raise
+            raise
             if not validateonly:
                 # we still upload the file, anyway...
                 handle_uploaded_file(afile)
@@ -73,12 +98,10 @@ def prepareFiles(request, validateonly, dropdowns):
                            'error': 'problem extracting image metadata, not processed'})
 
     if len(images) > 0:
-        jobnumber = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
         jobinfo['jobnumber'] = jobnumber
 
         if not validateonly:
-            writeCsv(getJobfile(jobnumber) + '.step1.csv', images,
-                     ['name', 'size', 'objectnumber', 'date', 'creator', 'contributor', 'rightsholder', 'imagenumber', 'handling', 'approvedforweb'])
+            writeCsv(getJobfile(jobnumber) + '.step1.csv', images, fields2write)
         jobinfo['estimatedtime'] = '%8.1f' % (len(images) * 10 / 60.0)
 
         if 'createmedia' in request.POST:
@@ -104,32 +127,15 @@ def prepareFiles(request, validateonly, dropdowns):
 
 
 def setConstants(request, im):
-    im.dropdowns = getDropdowns()
-
     im.validateonly = 'validateonly' in request.POST
 
-    try:
-        im.contributor = request.POST['contributor']
-        im.overrideContributor = request.POST['overridecreator']
+    constants = {}
 
-        im.creatorDisplayname = request.POST['creator']
-        im.overrideCreator = request.POST['overridecreator']
-
-        im.rightsholderDisplayname = request.POST['rightsholder']
-        im.overrideRightsholder = request.POST['overriderightsholder']
-    except:
-
-        im.contributor = ''
-        im.overrideContributor = ''
-
-        im.creatorDisplayname = ''
-        im.overrideCreator = ''
-
-        im.rightsholderDisplayname = ''
-        im.overrideRightsholder = ''
-
-    constants = {'creator': im.creatorDisplayname, 'contributor': im.contributor,
-                 'rightsholder': im.rightsholderDisplayname}
+    for override in im.BMUoptions['overrides']:
+        if override[2] in request.POST:
+            constants[override[2]] = [request.POST[override[2]],request.POST['override%s' % override[2]]]
+        else:
+            constants[override[2]] = ['', 'never']
 
     return constants
 
@@ -141,8 +147,8 @@ def rest(request, action):
     status = 'error' # assume murphy's law applies...
 
     if request.FILES:
-        setConstants(request, im)
-        jobinfo, images = prepareFiles(request, im.validateonly, im.dropdowns)
+        constants = setConstants(request, im)
+        jobinfo, images = prepareFiles(request, im.validateonly, im.BMUoptions, constants)
         status = 'ok' # OK, I guess it doesn't after all
     else:
         jobinfo = {}
@@ -162,22 +168,22 @@ def uploadfiles(request):
     elapsedtime = time.time()
     status = 'up'
     constants = setConstants(request, im)
+    constants['jobnumber'] = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
 
     if request.POST:
-        constants = setConstants(request, im)
-        jobinfo, images = prepareFiles(request, im.validateonly, im.dropdowns)
+        jobinfo, images = prepareFiles(request, im.validateonly, im.BMUoptions, constants)
     else:
         jobinfo = {}
         images = []
-        constants = {}
 
     timestamp = time.strftime("%b %d %Y %H:%M:%S", time.localtime())
     elapsedtime = time.time() - elapsedtime
+    logger.info('%s :: %s :: %s' % ('uploadmedia job ', constants['jobnumber'], '-'))
 
     return render(request, 'uploadmedia.html',
                   {'apptitle': TITLE, 'serverinfo': SERVERINFO, 'images': images, 'count': len(images),
                    'constants': constants, 'jobinfo': jobinfo, 'validateonly': im.validateonly,
-                   'dropdowns': im.dropdowns, 'overrides': overrides, 'status': status, 'timestamp': timestamp,
+                   'dropdowns': im.BMUoptions, 'override_options': override_options, 'status': status, 'timestamp': timestamp,
                    'elapsedtime': '%8.2f' % elapsedtime})
 
 
@@ -191,14 +197,14 @@ def checkfilename(request):
     else:
         objectnumbers = []
         listoffilenames = ''
-    dropdowns = getDropdowns()
+    BMUoptions = getBMUoptions()
     elapsedtime = time.time() - elapsedtime
     status = 'up'
     timestamp = time.strftime("%b %d %Y %H:%M:%S", time.localtime())
 
     return render(request, 'uploadmedia.html', {'filenames2check': listoffilenames,
-                                                'objectnumbers': objectnumbers, 'dropdowns': dropdowns,
-                                                'overrides': overrides, 'timestamp': timestamp,
+                                                'objectnumbers': objectnumbers, 'dropdowns': BMUoptions,
+                                                'override_options': override_options, 'timestamp': timestamp,
                                                 'elapsedtime': '%8.2f' % elapsedtime,
                                                 'status': status, 'apptitle': TITLE, 'serverinfo': SERVERINFO})
 
@@ -212,6 +218,18 @@ def showresults(request, filename):
 
 
 @login_required()
+def deletejob(request, filename):
+    try:
+        remove(getJobfile(filename))
+        logger.info('%s :: %s' % ('uploadmedia job deleted', filename))
+
+    except:
+        logger.info('%s :: %s' % ('uploadmedia tried and failed to delete job', filename))
+    #return redirect('../showqueue')
+    return showqueue(request)
+
+
+@login_required()
 def showqueue(request):
     elapsedtime = time.time()
     jobs, errors, jobcount, errorcount = getJoblist()
@@ -220,16 +238,14 @@ def showqueue(request):
     elif 'showerrors' in request.POST:
         jobs = None
     else:
-        jobs = None
         errors = None
-        count = 0
-    dropdowns = getDropdowns()
+    BMUoptions = getBMUoptions()
     elapsedtime = time.time() - elapsedtime
     status = 'up'
     timestamp = time.strftime("%b %d %Y %H:%M:%S", time.localtime())
 
     return render(request, 'uploadmedia.html',
-                  {'dropdowns': dropdowns, 'overrides': overrides, 'timestamp': timestamp,
+                  {'dropdowns': BMUoptions, 'override_options': override_options, 'timestamp': timestamp,
                    'elapsedtime': '%8.2f' % elapsedtime,
                    'status': status, 'apptitle': TITLE, 'serverinfo': SERVERINFO, 'jobs': jobs, 'jobcount': jobcount,
                    'errors': errors, 'errorcount': errorcount})

@@ -29,17 +29,28 @@ def mediaPayload(mh, institution):
 <approvedForWeb>%s</approvedForWeb>
 <primaryDisplay>false</primaryDisplay>
 IMAGENUMBERELEMENT
+LOCALITY
 </ns2:media_INSTITUTION>
 </document>
 """
+
+    # institution specific hacks! figure out the right way to handle this someday!
     if institution == 'bampfa':
-        payload = payload.replace('IMAGENUMBERELEMENT', '<imageNumber>%s</imageNumber>' % mh['imageNumber'])
-    else:
+        if 'imageNumber' in mh:
+            payload = payload.replace('IMAGENUMBERELEMENT', '<imageNumber>%s</imageNumber>' % mh['imageNumber'])
         payload = payload.replace('IMAGENUMBERELEMENT', '')
+
+    if institution == 'ucjeps':
+        payload = payload.replace('approvedForWeb', 'postToPublic')
+        if 'locality' in mh:
+            payload = payload.replace('LOCALITY', '<locality>%s</locality>' % mh['locality'])
+        payload = payload.replace('LOCALITY', '')
+
     payload = payload.replace('INSTITUTION', institution)
     payload = payload % (
         mh['blobCsid'], mh['rightsHolderRefname'], mh['creator'], mh['name'], mh['contributor'], mh['objectNumber'],
         mh['imageType'], mh['source'], mh['copyrightStatement'], mh['approvedforweb'])
+    # print "mediaPayload..."
     # print payload
     return payload
 
@@ -76,7 +87,7 @@ def uploadmedia(mediaElements, config):
         objectCSID = objectCSID[0]
         mediaElements['objectCSID'] = objectCSID
 
-    if alwayscreatemedia or objectCSID is not None:
+    if alwayscreatemedia or objectCSID is not None or mediaElements['handling'] == 'borndigital':
 
         updateItems = {'objectStatus': 'found',
                        'subjectCsid': '',
@@ -89,6 +100,7 @@ def uploadmedia(mediaElements, config):
                        'contributor': mediaElements['contributor'],
                        'creator': mediaElements['creator'],
                        'mediaDate': mediaElements['mediaDate'],
+                       'approvedforweb': mediaElements['approvedforweb'],
                        'imageType': mediaElements['imagetype'],
                        'copyrightStatement': mediaElements['copyrightstatement'],
                        'source': mediaElements['source'],
@@ -137,7 +149,7 @@ def uploadmedia(mediaElements, config):
 
         payload = relationsPayload(updateItems)
         (url, data, csid, elapsedtime) = postxml('POST', uri, realm, hostname, username, password, payload)
-        #elapsedtimetotal += elapsedtime
+        # elapsedtimetotal += elapsedtime
         messages.append('got relation csid %s elapsedtime %s ' % (csid, elapsedtime))
         mediaElements['media2objCSID'] = csid
         messages.append("relations REST API post succeeded...")
@@ -214,8 +226,10 @@ if __name__ == "__main__":
 
         elapsedtimetotal = time.time()
         mediaElements = {}
-        for v1, v2 in enumerate(
-                'name size objectnumber blobCSID date creator contributor rightsholder imagenumber handling approvedforweb filenamewithpath'.split(' ')):
+        columns = 'name|size|objectnumber|blobCSID|mediaDate|creator|contributor|rightsholder|imagenumber|handling|approvedforweb|source|copyrightstatement|imagetype'.split('|')
+        # name|size|objectnumber|mediaDate|creator|contributor|rightsholder|imagenumber|handling|approvedforweb|source|copyright|imagetype
+        # name size objectnumber blobCSID mediaDate creator contributor rightsholder imagenumber handling approvedforweb filenamewithpath'.split(' ')):
+        for v1, v2 in enumerate(columns):
             mediaElements[v2] = r[v1]
         mediaElements['approvedforweb'] == 'true' if mediaElements['approvedforweb'] == 'on' else 'false'
         # print mediaElements
@@ -231,5 +245,5 @@ if __name__ == "__main__":
         except:
             print "MEDIA: create failed for objectnumber %s, %8.2f" % (
                 mediaElements['objectnumber'], (time.time() - elapsedtimetotal))
-            # raise
+            raise
 

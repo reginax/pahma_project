@@ -14,18 +14,19 @@ from cspace_django_site.main import cspace_django_site
 from common.utils import writeCsv, doSearch, setupGoogleMap, setupBMapper, computeStats, setupCSV, setDisplayType, setConstants, loginfo
 # from common.utils import CSVPREFIX, CSVEXTENSION
 from common.appconfig import loadFields, loadConfiguration
+from common import cspace  # we use the config file reading function
 from .models import AdditionalInfo
 
 from cspace_django_site import settings
-from common.appconfig import loadFields, loadConfiguration
 
 # read common config file
-common = 'common'
-prmz = loadConfiguration(common)
-print 'Configuration for %s successfully read' % common
+prmz = loadConfiguration('common')
+print 'Configuration for common successfully read'
 
 # on startup, setup this webapp layout...
-prmz = loadFields('pahmainternalparms.csv', prmz)
+config = cspace.getConfig(path.join(settings.BASE_PARENT_DIR, 'config'), 'internal')
+fielddefinitions = config.get('search', 'FIELDDEFINITIONS')
+prmz = loadFields(fielddefinitions, prmz)
 
 # Get an instance of a logger, log some startup info
 logger = logging.getLogger(__name__)
