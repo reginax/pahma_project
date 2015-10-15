@@ -128,7 +128,6 @@ def writeCsv(filehandle, fieldset, items, writeheader=False, csvFormat='csv'):
                     pass
                 r.append(checkValue(x['value']))
             location = item['location']
-            location = item['location']
             l = location.split(',')
             r.append(l[0])
             r.append(l[1])
