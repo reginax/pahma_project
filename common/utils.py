@@ -123,7 +123,11 @@ def writeCsv(filehandle, fieldset, items, writeheader=False, csvFormat='csv'):
             for x in item['otherfields']:
                 if x['name'] not in fieldset:
                     continue
+                if type(x['value']) == type([]):
+                    x['value'] = '|'.join(x['value'])
+                    pass
                 r.append(checkValue(x['value']))
+            location = item['location']
             location = item['location']
             l = location.split(',')
             r.append(l[0])
