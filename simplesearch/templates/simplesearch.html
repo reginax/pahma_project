@@ -36,7 +36,9 @@
     </form>
 
     <div id="content-main">
+    {% if totalItems %}
         <div class="results">
+        <p>results: {{ totalItems }}</p>
             <table>
                 <tr>
                     {% for label in labels %}
@@ -53,6 +55,7 @@
                 {% endfor %}
             </table>
         </div>
+    {% endif %}
     </div>
 
 {% endblock %}

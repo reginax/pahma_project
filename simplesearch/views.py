@@ -47,8 +47,17 @@ def simplesearch(request):
         (url, data, statusCode) = connection.make_get_request(
             'cspace-services/%s?kw=%s&wf_deleted=false' % ('collectionobjects', kw))
         # ...collectionobjects?kw=%27orchid%27&wf_deleted=false
+        print 'cspace-services/%s?kw=%s&wf_deleted=false' % ('collectionobjects', kw)
         cspaceXML = fromstring(data)
         items = cspaceXML.findall('.//list-item')
+        totalItems = cspaceXML.find('.//totalItems')
+        totalItems = int(totalItems.text)
+        fieldsReturned = cspaceXML.find('.//fieldsReturned')
+        fieldsReturned = fieldsReturned.text.split('|')
+        fieldsReturned = [f for f in fieldsReturned if f not in 'uri refName workflowState csid objectNumber'.split(' ')]
+        #<fieldsReturned>
+        #   csid|uri|refName|updatedAt|workflowState|title|objectNumber|objectName|responsibleDepartment|taxon
+        #</fieldsReturned>
         results = []
         for i in items:
             outputrow = []
@@ -62,7 +71,7 @@ def simplesearch(request):
             outputrow.append(link)
             outputrow.append(objectNumber)
             additionalfields = []
-            for field in ['objectName', 'title', 'updatedAt']:
+            for field in fieldsReturned:
                 element = i.find('.//%s' % field)
                 element = '' if element is None else element.text
                 # extract display name if a refname... nb: this pattern might do damage in some cases!
@@ -70,9 +79,10 @@ def simplesearch(request):
                 additionalfields.append(element)
             outputrow.append(additionalfields)
             results.append(outputrow)
+        labels = ['objectNumber'] + fieldsReturned
         return render(request, 'simplesearch.html',
-                      {'apptitle': TITLE, 'results': results, 'kw': kw,
-                       'labels': 'Object Number|Object Name|Title|Updated At'.split('|')})
+                      {'apptitle': TITLE, 'results': results, 'kw': kw, 'totalItems': totalItems,
+                       'labels': labels})
 
     else:
         return render(request, 'simplesearch.html', {'apptitle': TITLE})
