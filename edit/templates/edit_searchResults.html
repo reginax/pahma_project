@@ -1,0 +1,15 @@
+{% include "edit_searchstats.html" %}
+{% if errormsg %}
+   <span style="color: red">{{ errormsg }}</span>
+{% endif %}
+<form method="post" class="searchForm" id="selectedItems" action="../csv/">
+    {% csrf_token %}
+    {% if count > 0 %}
+        <div id="tabs">
+            <ul>
+                <li><a href="#results">Results</a></li>
+            </ul>
+            {% include "edit_results.html" %}
+        </div>
+    {% endif %}
+</form>

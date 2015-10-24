@@ -1,0 +1,42 @@
+<h2>{{ entity }} ({{ csid }})</h2>
+<table width="100%">
+
+    {% for item in items %}
+        <tr>
+            <td {% if item.style %} style="{{ item.style }}"{% endif %}>
+                <label>{{ item.label }}</label>
+            </td>
+
+            <td>
+            {% if 'dropdown' in item.fieldtype %}
+                <select id="{{ item.name }}" name="{{ item.name }}">
+                    <option value="">Please select</option>
+                    {% for value in item.dropdowns %}
+                        <option value="{{ value.0 }}"{% if value.0 == searchValues.dropdown %} selected{% endif %}>{{ value.0|slice:":40" }} ({{ value.1 }})</option>
+                    {% endfor %}
+                </select>
+            {% else %}
+                <input size="100" type="{{ item.type }}" id="{{ item.name }}" name="{{ item.name }}" source="{{ suggestsource }}"
+                       value="{{ item.default }}"/>
+            {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+<hr/>
+<div id="nochangeitems">
+<h3>Non-editable fields</h3>
+<table width="100%">
+
+    {% for item in nochangeitems %}
+        <tr>
+            <td {% if item.style %} style="{{ item.style }}"{% endif %}>
+                <label>{{ item.label }}</label>
+            </td>
+            <td>
+                {{ item.default }}
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+</div>
