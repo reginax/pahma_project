@@ -36,7 +36,7 @@ logger.info('%s :: %s :: %s' % ('osteology portal startup', '-', '%s | %s | %s' 
 def direct(request):
     return redirect('search/')
 
-
+@login_required()
 def search(request):
     if request.method == 'GET' and request.GET != {}:
         context = {'searchValues': dict(request.GET.iteritems())}
@@ -49,7 +49,7 @@ def search(request):
     context['additionalInfo'] = AdditionalInfo.objects.filter(live=True)
     return render(request, 'search.html', context)
 
-
+@login_required()
 def retrieveResults(request):
     if request.method == 'POST' and request.POST != {}:
         requestObject = dict(request.POST.iteritems())
@@ -62,7 +62,7 @@ def retrieveResults(request):
         loginfo(logger, 'results.%s' % context['displayType'], context, request)
         return render(request, 'searchResults.html', context)
 
-
+@login_required()
 def bmapper(request):
     if request.method == 'POST' and request.POST != {}:
         requestObject = dict(request.POST.iteritems())
@@ -75,7 +75,7 @@ def bmapper(request):
             loginfo(logger, 'bmapper', context, request)
             return HttpResponse(context['bmapperurl'])
 
-
+@login_required()
 def gmapper(request):
     if request.method == 'POST' and request.POST != {}:
         requestObject = dict(request.POST.iteritems())
@@ -88,7 +88,7 @@ def gmapper(request):
             loginfo(logger, 'gmapper', context, request)
             return render(request, 'maps.html', context)
 
-
+@login_required()
 def csv(request):
     if request.method == 'POST' and request.POST != {}:
         requestObject = dict(request.POST.iteritems())
@@ -111,7 +111,7 @@ def csv(request):
                 context['messages'] = messages
                 return search(request)
 
-
+@login_required()
 def statistics(request):
     if request.method == 'POST' and request.POST != {}:
         requestObject = dict(request.POST.iteritems())
