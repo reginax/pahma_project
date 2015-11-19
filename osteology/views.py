@@ -50,6 +50,20 @@ def search(request):
     return render(request, 'search.html', context)
 
 @login_required()
+def skeleton(request):
+    if request.method == 'GET' and request.GET != {}:
+        context = {'searchValues': dict(request.GET.iteritems())}
+        context = doSearch(context, prmz)
+
+    else:
+        context = setConstants({}, prmz)
+
+    loginfo(logger, 'start search', context, request)
+    context['additionalInfo'] = AdditionalInfo.objects.filter(live=True)
+    return render(request, 'osteo.html', context)
+
+
+@login_required()
 def retrieveResults(request):
     if request.method == 'POST' and request.POST != {}:
         requestObject = dict(request.POST.iteritems())
