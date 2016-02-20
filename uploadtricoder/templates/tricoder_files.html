@@ -1,13 +1,13 @@
 {% if numProblems > 0 %}
-    <h2><span style="color:red">{{ numProblems }} problems found! Some files not uploaded!</span></h2>
-{% else %}
-    {% if validateonly %}
-        <h2><span style="color:red">Validation only! {{ count }} files examined!</span></h2>
-    {% endif %}
+    <h2><span style="color:red">{{ numProblems }} problem{{ numProblems|pluralize }} found! Some files not uploaded!</span></h2>
 {% endif %}
 
 {% if count %}
-    <h3>{{ count }} file{{ count|pluralize }} processed.</h3>
+    {% if validateonly %}
+        <h2><span style="color:red">Validation only! {{ count }} file{{ count|pluralize }} examined!</span></h2>
+    {% else %}
+        <h3>{{ count }} file{{ count|pluralize }} processed.</h3>
+    {% endif %}
 {% endif %}
 
 <table cellspace="1" id="resultsListing" class="tablesorter">

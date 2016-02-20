@@ -10,6 +10,11 @@ from django.core.servers.basehttp import FileWrapper
 #from django import forms
 import time, datetime, re
 from utils import SERVERINFO, TITLE, POSTBLOBPATH, handle_uploaded_file, getCSID, get_tricoder_file, get_tricoder_filelist, loginfo
+
+# read common config file, just for the version info
+from common.appconfig import loadConfiguration
+prmz = loadConfiguration('common')
+
 import subprocess
 
 today = time.strftime("%Y-%m-%d", time.localtime())
@@ -127,7 +132,7 @@ def uploadfiles(request):
 
     return render(request, 'uploadtricoder.html',
                   {'apptitle': TITLE, 'serverinfo': SERVERINFO, 'tricoder_upload_files': tricoder_files,
-                   'count': len(tricoder_files),
+                   'count': len(tricoder_files), 'version': prmz.VERSION,
                    'constants': constants, 'tricoder_fileinfo': tricoder_fileinfo, 'validateonly': trcdr.validateonly,
                    'status': status, 'timestamp': timestamp, 'directory': 'input', 'numProblems': numProblems,
                    'elapsedtime': '%8.2f' % elapsedtime})
@@ -147,7 +152,7 @@ def checkfilename(request):
     status = 'up'
     timestamp = time.strftime("%b %d %Y %H:%M:%S", time.localtime())
 
-    return render(request, 'uploadtricoder.html', {'filenames2check': listoffilenames,
+    return render(request, 'uploadtricoder.html', {'filenames2check': listoffilenames, 'version': prmz.VERSION,
                                                    'objectnumbers': objectnumbers, 'timestamp': timestamp,
                                                    'elapsedtime': '%8.2f' % elapsedtime, 'directory': 'input',
                                                    'status': status, 'apptitle': TITLE, 'serverinfo': SERVERINFO})
@@ -161,7 +166,7 @@ def showresults(request):
     status = 'up'
     timestamp = time.strftime("%b %d %Y %H:%M:%S", time.localtime())
     return render(request, 'uploadtricoder.html',
-                  {'timestamp': timestamp,
+                  {'timestamp': timestamp, 'version': prmz.VERSION,
                    'status': status, 'apptitle': TITLE, 'serverinfo': SERVERINFO,
                    'filecontent': f.read(), 'filename': filename, 'directory': directory})
 
@@ -193,7 +198,7 @@ def showqueue(request):
     timestamp = time.strftime("%b %d %Y %H:%M:%S", time.localtime())
 
     return render(request, 'uploadtricoder.html',
-                  {'timestamp': timestamp,
+                  {'timestamp': timestamp, 'version': prmz.VERSION,
                    'elapsedtime': '%8.2f' % elapsedtime, 'directory': directory,
                    'status': status, 'apptitle': TITLE, 'serverinfo': SERVERINFO, 'tricoder_files': tricoder_files,
                    'tricoder_filecount': tricoder_filecount, 'stats': 'M R C Total'.split(' '),
