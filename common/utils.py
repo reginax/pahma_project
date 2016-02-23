@@ -8,11 +8,8 @@ import cgi
 from os import path
 from copy import deepcopy
 
-
-from reportlab.pdfgen import canvas
-
 from io import BytesIO
-from common.table import makeReport
+# from common.table import makeReport
 from django.http import HttpResponse, HttpResponseRedirect
 # from cspace_django_site.main import cspace_django_site
 
@@ -268,10 +265,10 @@ def setup4Print(request, context, prmz):
 
     buffer = BytesIO()
 
-    report = makeReport(buffer, 'Letter', 'header', 'footer')
-    pdf = report.fillReport(table)
+#    report = makeReport(buffer, 'Letter', 'header', 'footer')
+#    pdf = report.fillReport(table)
 
-    response.write(pdf)
+#    response.write(pdf)
     return response
 
 
