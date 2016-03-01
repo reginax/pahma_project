@@ -35,7 +35,7 @@ INSTALLED_APPS = (
     'search',
     'osteology',
     #'toolbox',
-    'simplesearch',
+    #'simplesearch',
     'uploadmedia',
-    #'uploadtricoder',
+    'uploadtricoder',
 )
