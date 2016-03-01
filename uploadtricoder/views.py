@@ -4,10 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 import json
 # from common.cspace import logged_in_or_basicauth
-from django.shortcuts import render, HttpResponse, redirect
-from django.core.servers.basehttp import FileWrapper
-#from django.conf import settings
-#from django import forms
+from django.shortcuts import render, HttpResponse
 import time, datetime, re
 from utils import SERVERINFO, TITLE, POSTBLOBPATH, handle_uploaded_file, getCSID, get_tricoder_file, get_tricoder_filelist, loginfo
 
@@ -16,6 +13,7 @@ from common.appconfig import loadConfiguration
 prmz = loadConfiguration('common')
 
 import subprocess
+from .models import AdditionalInfo
 
 today = time.strftime("%Y-%m-%d", time.localtime())
 filenamepattern = r'^barcode.TRIDATA_' + re.escape(today) + r'_[\w_\.]+\.DAT$'
