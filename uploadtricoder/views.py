@@ -15,9 +15,6 @@ prmz = loadConfiguration('common')
 import subprocess
 from .models import AdditionalInfo
 
-today = time.strftime("%Y-%m-%d", time.localtime())
-filenamepattern = r'^barcode.TRIDATA_' + re.escape(today) + r'_[\w_\.]+\.DAT$'
-
 class trcdr:  # empty class for tricoder metadata
     pass
 
@@ -31,6 +28,9 @@ def prepareFiles(request, validateonly):
         # we gotta do this for now!
         if 'barcode.' not in afile.name: afile.name = 'barcode.' + afile.name
         fileinfo = {'id': lineno, 'name': afile.name, 'status': '', 'date': time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())}
+        # always use the current date as the date for the filename checking
+        today = time.strftime("%Y-%m-%d", time.localtime())
+        filenamepattern = r'^barcode.TRIDATA_' + re.escape(today) + r'_[\w_\.]+\.DAT$'
         if not re.match(filenamepattern, afile.name):
             fileinfo['status'] = 'filename is not valid'
             numProblems += 1
