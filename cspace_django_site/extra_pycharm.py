@@ -9,7 +9,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
+    #'rest_framework',
     'django_tables2',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
@@ -23,7 +23,7 @@ INSTALLED_APPS = (
     'suggest',
     'suggestpostgres',
     'suggestsolr',
-    'batchuploadimages',
+    #'batchuploadimages',
     # 'standard' apps
     #'asura',
     'imagebrowser',
@@ -33,8 +33,9 @@ INSTALLED_APPS = (
     'ireports',
     'landing',
     'search',
+    'osteology',
     #'toolbox',
-    'simplesearch',
-    #'uploadmedia',
+    #'simplesearch',
+    'uploadmedia',
     'uploadtricoder',
 )
